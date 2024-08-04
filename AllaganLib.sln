@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Universalis", "AllaganLib.Universalis\AllaganLib.Universalis.csproj", "{C348F2EC-696D-4E09-ADDB-C3EB04538AC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Shared", "AllaganLib.Shared\AllaganLib.Shared.csproj", "{2090477D-FC33-4AD6-B450-A79D45F7D18A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Interface", "AllaganLib.Interface\AllaganLib.Interface.csproj", "{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C348F2EC-696D-4E09-ADDB-C3EB04538AC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C348F2EC-696D-4E09-ADDB-C3EB04538AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C348F2EC-696D-4E09-ADDB-C3EB04538AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C348F2EC-696D-4E09-ADDB-C3EB04538AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2090477D-FC33-4AD6-B450-A79D45F7D18A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2090477D-FC33-4AD6-B450-A79D45F7D18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2090477D-FC33-4AD6-B450-A79D45F7D18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2090477D-FC33-4AD6-B450-A79D45F7D18A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
