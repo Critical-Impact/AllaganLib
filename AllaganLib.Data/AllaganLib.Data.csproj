@@ -51,6 +51,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CSVFile" Version="3.1.0" />
+        <PackageReference Include="CsvHelper" Version="30.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -60,9 +65,4 @@
     <ItemGroup>
         <AdditionalFiles Include="stylecop.json" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\AllaganLib.Shared\AllaganLib.Shared.csproj" />
-    </ItemGroup>
-
 </Project>

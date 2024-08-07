@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.1] - 2024-08-07
+
+### Added
+
+- Wizard,VerticalSplitter added to AllaganLib.Interface
+- Added AllaganLib.Data for CSV saving/loading
+
 ## [1.0.0] - 2024-08-04
 
 ### Added

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Shared", "Allaga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Interface", "AllaganLib.Interface\AllaganLib.Interface.csproj", "{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Data", "AllaganLib.Data\AllaganLib.Data.csproj", "{BFD34B5A-868C-44C6-84B5-9960965697E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0E0C143-2E59-4D1A-ACA2-98607E3C036F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
