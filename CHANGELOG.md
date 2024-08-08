@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.2] - 2024-08-08
+
+### Added
+
+- Fix CSV skipping the first row
+- Fix the wizard showing scrollbars where the image is
+
 ## [1.0.1] - 2024-08-07
 
 ### Added

@@ -103,7 +103,8 @@ public class WizardWidget<T>
                 using (var sideBarImage = ImRaii.Child(
                            "sideBarImage",
                            new Vector2(200, 0) * ImGui.GetIO().FontGlobalScale,
-                           false))
+                           false,
+                           ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
                 {
                     if (sideBarImage)
                     {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 
 using AllaganLib.Data.Interfaces;
+using CSVFile;
 using CsvHelper;
 using Lumina;
 using Lumina.Data;
@@ -58,7 +59,11 @@ public class CsvLoaderService
                 return items;
             }
 
-            var csvReader = CSVFile.CSVReader.FromString(reader.ReadToEnd());
+            var csvReader = CSVFile.CSVReader.FromString(
+                reader.ReadToEnd(), new CSVSettings()
+            {
+                HeaderRowIncluded = hasHeaders
+            });
             var headerSkipped = false;
             foreach (var line in csvReader.Lines())
             {
