@@ -9,11 +9,11 @@ using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class ChoiceSetting<T, TS> : FormField<T, TS>
+public abstract class ChoiceFormField<T, TS> : FormField<T, TS>
     where T : IComparable
     where TS : IConfigurable<T?>
 {
-    public ChoiceSetting(ImGuiService imGuiService)
+    public ChoiceFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
@@ -35,9 +35,9 @@ public abstract class ChoiceSetting<T, TS> : FormField<T, TS>
         return this.Choices.SingleOrDefault(c => c.Key.Equals(choice)).Value;
     }
 
-    public override void Draw(TS configuration)
+    public override void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
     {
-        ImGui.SetNextItemWidth(this.LabelSize);
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
@@ -53,7 +53,7 @@ public abstract class ChoiceSetting<T, TS> : FormField<T, TS>
         var activeChoice = this.CurrentValue(configuration);
 
         var currentSearchCategory = this.GetFormattedChoice(activeChoice);
-        ImGui.SetNextItemWidth(this.InputSize);
+        ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         using (var combo = ImRaii.Combo("##" + this.Key + "Combo", currentSearchCategory))
         {
             if (combo.Success)

@@ -6,10 +6,10 @@ using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class ColorSetting<T> : FormField<Vector4, T>
+public abstract class ColorFormField<T> : FormField<Vector4, T>
     where T : IConfigurable<Vector4?>
 {
-    public ColorSetting(ImGuiService imGuiService)
+    public ColorFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
@@ -24,7 +24,7 @@ public abstract class ColorSetting<T> : FormField<Vector4, T>
         configuration.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration)
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
 
@@ -44,7 +44,7 @@ public abstract class ColorSetting<T> : FormField<Vector4, T>
         }
 
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(this.LabelSize);
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);

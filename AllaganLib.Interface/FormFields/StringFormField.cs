@@ -4,10 +4,10 @@ using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class StringSetting<T> : FormField<string, T>
+public abstract class StringFormField<T> : FormField<string, T>
     where T : IConfigurable<string?>
 {
-    public StringSetting(ImGuiService imGuiService)
+    public StringFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
@@ -27,10 +27,10 @@ public abstract class StringSetting<T> : FormField<string, T>
         return this.CurrentValue(configuration) != null;
     }
 
-    public override void Draw(T configuration)
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration) ?? "";
-        ImGui.SetNextItemWidth(this.LabelSize);
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
@@ -42,7 +42,7 @@ public abstract class StringSetting<T> : FormField<string, T>
             ImGui.LabelText("##" + this.Key + "Label", this.Name);
         }
 
-        ImGui.SameLine();
+        ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
         {
             this.UpdateFilterConfiguration(configuration, value);

@@ -193,4 +193,21 @@ public class CsvLoaderService
             return false;
         }
     }
+
+    /// <summary>
+    /// Takes a list of strings, inserts them into a csv and saves them to a specific file path.
+    /// </summary>
+    /// <param name="lines">A list of lines representing each row to export to the csv.</param>
+    /// <param name="filePath">The file path to save to.</param>
+    public void ToCsv(List<List<string>> lines, string filePath)
+    {
+        using (StreamWriter writer = new StreamWriter(filePath))
+        {
+            var csvWriter = new CSVFile.CSVWriter(writer);
+            foreach (var line in lines)
+            {
+                csvWriter.WriteLine(line);
+            }
+        }
+    }
 }

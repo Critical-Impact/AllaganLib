@@ -1,33 +1,39 @@
+using System;
+using System.Globalization;
+
 using AllaganLib.Interface.Services;
 using Dalamud.Interface.Colors;
 using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class IntegerSetting<T> : FormField<int, T>
-    where T : IConfigurable<int?>
+public abstract class DateFormField<T> : FormField<DateTime?, T>
+    where T : IConfigurable<DateTime?>
 {
-    public IntegerSetting(ImGuiService imGuiService)
+    public DateFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
 
-    public virtual string? Affix { get; }
-
-    public override int CurrentValue(T configurable)
+    public override DateTime? CurrentValue(T configurable)
     {
         return configurable.Get(this.Key) ?? this.DefaultValue;
     }
 
-    public override void UpdateFilterConfiguration(T configurable, int newValue)
+    public override void UpdateFilterConfiguration(T configurable, DateTime? newValue)
     {
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration)
+    public override bool HasValueSet(T configuration)
     {
-        var value = this.CurrentValue(configuration).ToString();
-        ImGui.SetNextItemWidth(this.LabelSize);
+        return this.CurrentValue(configuration) != null;
+    }
+
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    {
+        var value = this.CurrentValue(configuration)?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
@@ -39,20 +45,12 @@ public abstract class IntegerSetting<T> : FormField<int, T>
             ImGui.LabelText("##" + this.Key + "Label", this.Name);
         }
 
-        ImGui.SetNextItemWidth(this.InputSize);
-        if (ImGui.InputText("##" + this.Key + "Input", ref value, 100, ImGuiInputTextFlags.CharsDecimal))
+        if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
         {
-            int parsedNumber;
-            if (int.TryParse(value, out parsedNumber))
+            if (DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces, out var date))
             {
-                this.UpdateFilterConfiguration(configuration, parsedNumber);
+                this.UpdateFilterConfiguration(configuration, date);
             }
-        }
-
-        if (this.Affix != null)
-        {
-            ImGui.SameLine();
-            ImGui.Text(this.Affix);
         }
 
         ImGui.SameLine();

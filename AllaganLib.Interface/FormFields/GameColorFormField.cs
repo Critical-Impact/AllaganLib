@@ -12,7 +12,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class GameColorSetting<T> : FormField<uint, T>
+public abstract class GameColorFormField<T> : FormField<uint, T>
     where T : IConfigurable<uint?>
 {
     private readonly Dictionary<uint, UIColor> uiColors;
@@ -27,7 +27,7 @@ public abstract class GameColorSetting<T> : FormField<uint, T>
         configurable.Set(this.Key, newValue);
     }
 
-    public GameColorSetting(ImGuiService imGuiService, IDataManager dataManager)
+    public GameColorFormField(ImGuiService imGuiService, IDataManager dataManager)
         : base(imGuiService)
     {
         var list = new List<UIColor>(dataManager.GetExcelSheet<UIColor>()!.Distinct(new UIColorComparer()));
@@ -57,10 +57,10 @@ public abstract class GameColorSetting<T> : FormField<uint, T>
         this.uiColors = list.ToDictionary(c => c.RowId, c => c);
     }
 
-    public override void Draw(T configuration)
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
-        ImGui.SetNextItemWidth(this.LabelSize);
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);

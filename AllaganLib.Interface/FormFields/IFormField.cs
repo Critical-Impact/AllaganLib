@@ -26,5 +26,5 @@ public interface IFormField<T>
 
     public bool HasValueSet(T configuration);
 
-    public void Draw(T configuration);
+    public void Draw(T configuration, int? labelSize = null, int? inputSize = null);
 }

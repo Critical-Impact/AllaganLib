@@ -20,7 +20,7 @@ public abstract class FormField<T, TS> : IFormField<TS>
 
     public abstract T CurrentValue(TS configuration);
 
-    public abstract void Draw(TS configuration);
+    public abstract void Draw(TS configuration, int? labelSize = null, int? inputSize = null);
 
     public abstract void UpdateFilterConfiguration(TS configuration, T? newValue);
 

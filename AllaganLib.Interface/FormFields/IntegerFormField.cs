@@ -4,30 +4,30 @@ using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class BooleanSetting<T> : FormField<bool, T>
-    where T : IConfigurable<bool?>
+public abstract class IntegerFormField<T> : FormField<int, T>
+    where T : IConfigurable<int?>
 {
-    private readonly string[] Choices = new[] { "N/A", "Yes", "No" };
-
-    protected BooleanSetting(ImGuiService imGuiService)
+    public IntegerFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
 
-    public override bool CurrentValue(T configurable)
+    public virtual string? Affix { get; }
+
+    public override int CurrentValue(T configurable)
     {
         return configurable.Get(this.Key) ?? this.DefaultValue;
     }
 
-    public override void UpdateFilterConfiguration(T configurable, bool newValue)
+    public override void UpdateFilterConfiguration(T configurable, int newValue)
     {
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration)
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
     {
-        var currentValue = this.CurrentValue(configuration);
-        ImGui.SetNextItemWidth(this.LabelSize);
+        var value = this.CurrentValue(configuration).ToString();
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
@@ -39,12 +39,20 @@ public abstract class BooleanSetting<T> : FormField<bool, T>
             ImGui.LabelText("##" + this.Key + "Label", this.Name);
         }
 
-        if (ImGui.Checkbox("##" + this.Key + "Boolean", ref currentValue))
+        ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
+        if (ImGui.InputText("##" + this.Key + "Input", ref value, 100, ImGuiInputTextFlags.CharsDecimal))
         {
-            if (currentValue != this.CurrentValue(configuration))
+            int parsedNumber;
+            if (int.TryParse(value, out parsedNumber))
             {
-                this.UpdateFilterConfiguration(configuration, currentValue);
+                this.UpdateFilterConfiguration(configuration, parsedNumber);
             }
+        }
+
+        if (this.Affix != null)
+        {
+            ImGui.SameLine();
+            ImGui.Text(this.Affix);
         }
 
         ImGui.SameLine();

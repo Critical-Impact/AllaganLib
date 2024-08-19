@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.3] - 2024-08-19
+
+### Added
+
+- FormFields can have their label and input size specified when drawing
+- Settings renamed to FormFields
+- Grid system added that utilizes FormFields/Columns
+
+### Fixed
+
+- UniversalisListing had lastReviewTime as a int and not a long
+
+
 ## [1.0.2] - 2024-08-08
 
 ### Added

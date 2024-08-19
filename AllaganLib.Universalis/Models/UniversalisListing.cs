@@ -2,7 +2,7 @@ namespace AllaganLib.Universalis.Models;
 
 public class UniversalisListing
 {
-    public int lastReviewTime { get; set; }
+    public long lastReviewTime { get; set; }
 
     public int pricePerUnit { get; set; }
 

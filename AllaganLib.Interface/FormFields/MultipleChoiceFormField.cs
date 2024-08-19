@@ -9,11 +9,11 @@ using Dalamud.Interface.Utility.Raii;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class MultipleChoiceSetting<T, TS> : FormField<List<T>, TS>
+public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
     where T : notnull
     where TS : IConfigurable<List<T>?>
 {
-    public MultipleChoiceSetting(ImGuiService imGuiService)
+    public MultipleChoiceFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
     }
@@ -28,18 +28,15 @@ public abstract class MultipleChoiceSetting<T, TS> : FormField<List<T>, TS>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(TS configuration)
+    public override void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
     {
-        var currentX = ImGui.GetCursorPosX();
-        currentX += ImGui.GetFontSize() + (ImGui.GetStyle().FramePadding.X * 2.0f) +
-                    ImGui.GetStyle().ItemInnerSpacing.X;
-        this.DrawSearchBox(configuration, currentX);
-        this.DrawResults(configuration, currentX);
+        this.DrawSearchBox(configuration);
+        this.DrawResults(configuration);
     }
 
-    public virtual void DrawSearchBox(TS configuration, float currentX)
+    public virtual void DrawSearchBox(TS configuration, int? labelSize = null, int? inputSize = null)
     {
-        ImGui.SetNextItemWidth(this.LabelSize);
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
@@ -54,7 +51,7 @@ public abstract class MultipleChoiceSetting<T, TS> : FormField<List<T>, TS>
         var choices = this.GetChoices(configuration);
         var selectedChoices = this.CurrentValue(configuration);
         var currentSearchCategory = "";
-        ImGui.SetNextItemWidth(this.InputSize);
+        ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         using (var combo = ImRaii.Combo("##" + this.Key + "Combo", currentSearchCategory, ImGuiComboFlags.HeightLarge))
         {
             if (combo.Success)
@@ -120,7 +117,7 @@ public abstract class MultipleChoiceSetting<T, TS> : FormField<List<T>, TS>
         }
     }
 
-    public virtual void DrawResults(TS configuration, float currentX)
+    public virtual void DrawResults(TS configuration, int? labelSize = null, int? inputSize = null)
     {
         var choices = this.GetChoices(configuration);
         var selectedChoices = this.CurrentValue(configuration);
