@@ -35,20 +35,8 @@ public abstract class ChoiceFormField<T, TS> : FormField<T, TS>
         return this.Choices.SingleOrDefault(c => c.Key.Equals(choice)).Value;
     }
 
-    public override void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(TS configuration, int? inputSize = null)
     {
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
-
         var choices = this.Choices;
         var activeChoice = this.CurrentValue(configuration);
 
@@ -71,17 +59,6 @@ public abstract class ChoiceFormField<T, TS> : FormField<T, TS>
                         this.UpdateFilterConfiguration(configuration, item.Key);
                     }
                 }
-            }
-        }
-
-        ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
             }
         }
     }

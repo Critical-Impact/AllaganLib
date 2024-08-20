@@ -17,10 +17,10 @@ public abstract class BooleanColumn<TConfiguration, TData, TMessageBase> : Strin
 {
     private readonly ChoiceColumnFilter choiceColumnFilter;
 
-    protected BooleanColumn(ChoiceColumnFilter choiceColumnFilter, ImGuiService imGuiService)
+    protected BooleanColumn(ImGuiService imGuiService, ChoiceColumnFilter? choiceColumnFilter = null)
         : base(imGuiService)
     {
-        this.choiceColumnFilter = choiceColumnFilter;
+        this.choiceColumnFilter = choiceColumnFilter ?? new ChoiceColumnFilter(new List<string>() { "true", "false" });
         this.HideReset = true;
         this.ColourModified = false;
     }
@@ -43,7 +43,7 @@ public abstract class BooleanColumn<TConfiguration, TData, TMessageBase> : Strin
             {
                 var boolValue = currentValue == "true";
                 using var disabled = ImRaii.Disabled(true);
-                ImGui.Checkbox("checkBox" + this.Key, ref boolValue);
+                ImGui.Checkbox("##checkBox" + this.Key, ref boolValue);
             }
         }
 

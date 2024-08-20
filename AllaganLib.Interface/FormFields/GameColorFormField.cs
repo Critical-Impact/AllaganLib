@@ -57,22 +57,9 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
         this.uiColors = list.ToDictionary(c => c.RowId, c => c);
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
-
-        ImGui.SameLine();
         var currentColour = new Vector4(255, 255, 255, 255);
         if (this.uiColors.TryGetValue(value, out var toConvert))
         {
@@ -109,16 +96,6 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
             if (index % 10 != 0)
             {
                 ImGui.SameLine();
-            }
-        }
-
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
             }
         }
     }

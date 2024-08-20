@@ -1,5 +1,7 @@
 using System.Numerics;
 using AllaganLib.Interface.Services;
+using Dalamud.Interface.Colors;
+using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
@@ -20,7 +22,43 @@ public abstract class FormField<T, TS> : IFormField<TS>
 
     public abstract T CurrentValue(TS configuration);
 
-    public abstract void Draw(TS configuration, int? labelSize = null, int? inputSize = null);
+    public abstract void DrawInput(TS configuration, int? inputSize = null);
+
+    public virtual void DrawLabel(TS configuration, int? labelSize = null)
+    {
+        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
+        if (this.ColourModified && this.HasValueSet(configuration))
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
+            ImGui.LabelText("##" + this.Key + "Label", this.Name);
+            ImGui.PopStyleColor();
+        }
+        else
+        {
+            ImGui.LabelText("##" + this.Key + "Label", this.Name);
+        }
+    }
+
+    public virtual void DrawHelp(TS configuration)
+    {
+        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
+        if (!this.HideReset && this.HasValueSet(configuration))
+        {
+            ImGui.SameLine();
+            if (ImGui.Button("Reset##" + this.Key + "Reset"))
+            {
+                this.Reset(configuration);
+            }
+        }
+    }
+
+    public virtual void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
+    {
+        this.DrawLabel(configuration, labelSize);
+        this.DrawInput(configuration, inputSize);
+        ImGui.SameLine();
+        this.DrawHelp(configuration);
+    }
 
     public abstract void UpdateFilterConfiguration(TS configuration, T? newValue);
 

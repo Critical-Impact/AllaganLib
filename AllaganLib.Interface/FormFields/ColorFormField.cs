@@ -24,7 +24,7 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
         configuration.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
 
@@ -35,7 +35,13 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
         {
             this.UpdateFilterConfiguration(configuration, value);
         }
+    }
 
+    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    {
+        var value = this.CurrentValue(configuration);
+
+        this.DrawInput(configuration, inputSize);
         ImGui.SameLine();
         if (this.HasValueSet(configuration) && value.W == 0)
         {
@@ -44,27 +50,9 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
         }
 
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
+        this.DrawLabel(configuration, labelSize);
 
         ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
-            }
-        }
+        this.DrawHelp(configuration);
     }
 }

@@ -30,37 +30,14 @@ public abstract class DateFormField<T> : FormField<DateTime?, T>
         return this.CurrentValue(configuration) != null;
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration)?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
-
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
         {
             if (DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces, out var date))
             {
                 this.UpdateFilterConfiguration(configuration, date);
-            }
-        }
-
-        ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
             }
         }
     }

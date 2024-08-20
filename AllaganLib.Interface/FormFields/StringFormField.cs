@@ -27,36 +27,13 @@ public abstract class StringFormField<T> : FormField<string, T>
         return this.CurrentValue(configuration) != null;
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration) ?? "";
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
-
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
         {
             this.UpdateFilterConfiguration(configuration, value);
-        }
-
-        ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
-            }
         }
     }
 }

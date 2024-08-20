@@ -24,21 +24,9 @@ public abstract class IntegerFormField<T> : FormField<int, T>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration).ToString();
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
-
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 100, ImGuiInputTextFlags.CharsDecimal))
         {
@@ -53,17 +41,6 @@ public abstract class IntegerFormField<T> : FormField<int, T>
         {
             ImGui.SameLine();
             ImGui.Text(this.Affix);
-        }
-
-        ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
-            }
         }
     }
 }

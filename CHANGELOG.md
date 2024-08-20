@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.4] - 2024-08-20
+
+### Added
+
+- Added FlagsEnumFormField
+
+### Changed
+
+- Reworked FormFields to have Input,Label,Help and Draw as individual functions allowing each to be used individually
+
+
 ## [1.0.3] - 2024-08-19
 
 ### Added

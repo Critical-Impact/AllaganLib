@@ -24,37 +24,15 @@ public abstract class BooleanFormField<T> : FormField<bool, T>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(T configuration, int? labelSize, int? inputSize)
+    public override void DrawInput(T configuration, int? inputSize = null)
     {
         var currentValue = this.CurrentValue(configuration);
-        ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
-        if (this.ColourModified && this.HasValueSet(configuration))
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.HealerGreen);
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-            ImGui.PopStyleColor();
-        }
-        else
-        {
-            ImGui.LabelText("##" + this.Key + "Label", this.Name);
-        }
 
         if (ImGui.Checkbox("##" + this.Key + "Boolean", ref currentValue))
         {
             if (currentValue != this.CurrentValue(configuration))
             {
                 this.UpdateFilterConfiguration(configuration, currentValue);
-            }
-        }
-
-        ImGui.SameLine();
-        this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
-        if (!this.HideReset && this.HasValueSet(configuration))
-        {
-            ImGui.SameLine();
-            if (ImGui.Button("Reset##" + this.Key + "Reset"))
-            {
-                this.Reset(configuration);
             }
         }
     }
