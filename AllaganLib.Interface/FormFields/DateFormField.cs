@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 
 using AllaganLib.Interface.Services;
+using AllaganLib.Interface.Widgets;
 using Dalamud.Interface.Colors;
 using ImGuiNET;
 
@@ -10,9 +11,12 @@ namespace AllaganLib.Interface.FormFields;
 public abstract class DateFormField<T> : FormField<DateTime?, T>
     where T : IConfigurable<DateTime?>
 {
-    public DateFormField(ImGuiService imGuiService)
+    private readonly DatePickerWidget datePickerWidget;
+
+    public DateFormField(DatePickerWidget datePickerWidget, ImGuiService imGuiService)
         : base(imGuiService)
     {
+        this.datePickerWidget = datePickerWidget;
     }
 
     public override DateTime? CurrentValue(T configurable)
@@ -32,13 +36,10 @@ public abstract class DateFormField<T> : FormField<DateTime?, T>
 
     public override void DrawInput(T configuration, int? inputSize = null)
     {
-        var value = this.CurrentValue(configuration)?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
-        if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
+        var currentValue = this.CurrentValue(configuration);
+        if (this.datePickerWidget.Draw("##" + this.Key + "Input", ref currentValue, inputSize))
         {
-            if (DateTime.TryParse(value, CultureInfo.CurrentCulture, DateTimeStyles.AllowWhiteSpaces, out var date))
-            {
-                this.UpdateFilterConfiguration(configuration, date);
-            }
+            this.UpdateFilterConfiguration(configuration, currentValue);
         }
     }
 }
