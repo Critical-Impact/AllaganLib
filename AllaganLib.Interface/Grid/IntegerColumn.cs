@@ -91,12 +91,12 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
         });
     }
 
-    public virtual int? CurrentValueAsInteger(TData item)
+    public virtual int CurrentValueAsInteger(TData item)
     {
         var currentValue = this.CurrentValue(item);
         if (currentValue == null || !int.TryParse(currentValue, out var result))
         {
-            return null;
+            return int.MaxValue;
         }
 
         return result;

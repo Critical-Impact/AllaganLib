@@ -63,23 +63,27 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
     public ImGuiSortDirection? SortDirection { get; set; }
 
     private bool isDirty = true;
-    
+
     private List<TData> items = new();
 
     public abstract List<TData> GetItems();
-    
+
     public List<TData> GetFilteredItems(TConfiguration configuration)
     {
         if (this.isDirty)
         {
             var newData = this.GetItems().AsEnumerable();
-            foreach (var column in this.Columns)
+            for (var index = 0; index < this.Columns.Count; index++)
             {
+                var column = this.Columns[index];
                 newData = column.Filter(configuration, newData);
-                newData = column.Sort(configuration, newData, this.SortDirection ?? ImGuiSortDirection.Ascending);
+                if (this.SortColumn == index)
+                {
+                    newData = column.Sort(configuration, newData, this.SortDirection ?? ImGuiSortDirection.Ascending);
+                }
             }
 
-            items = newData.ToList();
+            this.items = newData.ToList();
         }
 
         return this.items;
@@ -213,7 +217,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                         var hoveredRow = -1;
                                         var available = ImGui.GetFrameHeightWithSpacing();
                                         ImGui.Selectable("", false, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowItemOverlap, new Vector2(0, available));
-                                        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled & ImGuiHoveredFlags.AllowWhenOverlapped & ImGuiHoveredFlags.AllowWhenBlockedByPopup & ImGuiHoveredFlags.AllowWhenBlockedByActiveItem & ImGuiHoveredFlags.AnyWindow) && ImGui.IsMouseReleased(ImGuiMouseButton.Right)) 
+                                        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled & ImGuiHoveredFlags.AllowWhenOverlapped & ImGuiHoveredFlags.AllowWhenBlockedByPopup & ImGuiHoveredFlags.AllowWhenBlockedByActiveItem & ImGuiHoveredFlags.AnyWindow) && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
                                         {
                                             ImGui.OpenPopup("RightClick" + index);
                                         }
