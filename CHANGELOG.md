@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.6] - 2024-09-08
+
+### Fixed
+
+- Fix IntgerColumn sorting 
+
 ## [1.0.5] - 2024-08-22
 
 ### Added

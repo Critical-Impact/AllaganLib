@@ -30,7 +30,7 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
     public abstract bool HideFilter { get; set; }
 
     public abstract ImGuiTableColumnFlags ColumnFlags { get; set; }
-    
+
     public abstract string EmptyText { get; set; }
 
     public IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
@@ -68,7 +68,7 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
         IEnumerable<TData> items,
         ImGuiSortDirection direction)
     {
-        return direction == ImGuiSortDirection.Ascending ? items.OrderBy(this.CurrentValue) : items.OrderByDescending(this.CurrentValue);
+        return direction == ImGuiSortDirection.Ascending ? items.OrderBy(this.CurrentValueAsInteger) : items.OrderByDescending(this.CurrentValueAsInteger);
     }
 
     public virtual IEnumerable<TData> Filter(TConfiguration config, IEnumerable<TData> items)
@@ -90,6 +90,18 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
             return currentValue.PassesFilter(filterComparisonText);
         });
     }
+
+    public virtual int? CurrentValueAsInteger(TData item)
+    {
+        var currentValue = this.CurrentValue(item);
+        if (currentValue == null || !int.TryParse(currentValue, out var result))
+        {
+            return null;
+        }
+
+        return result;
+    }
+
 
     public virtual string CsvExport(TData item)
     {
