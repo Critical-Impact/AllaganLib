@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.8] - 2024-09-09
+
+### Fixed
+
+- Allow all columns to have their draw overridden
+
 ## [1.0.7] - 2024-09-08
 
 ### Fixed

@@ -29,10 +29,10 @@ public abstract class StringColumn<TConfiguration, TData, TMessageBase> : String
     public abstract bool HideFilter { get; set; }
 
     public abstract ImGuiTableColumnFlags ColumnFlags { get; set; }
-    
+
     public abstract string EmptyText { get; set; }
 
-    public IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
+    public virtual IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
     {
         ImGui.TableNextColumn();
         if (ImGui.TableGetColumnFlags().HasFlag(ImGuiTableColumnFlags.IsEnabled))

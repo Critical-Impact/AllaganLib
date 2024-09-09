@@ -33,7 +33,7 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
 
     public abstract string EmptyText { get; set; }
 
-    public IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
+    public virtual IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
     {
         ImGui.TableNextColumn();
         if (ImGui.TableGetColumnFlags().HasFlag(ImGuiTableColumnFlags.IsEnabled))
