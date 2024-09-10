@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.9] - 2024-09-10
+
+### Fixed
+
+- Columns will now respect their ColumnFlags
+
+### Added
+
+- IconColumn added
+
 ## [1.0.8] - 2024-09-09
 
 ### Fixed

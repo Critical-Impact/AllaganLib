@@ -35,14 +35,7 @@ public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConf
 
     public void Setup(int columnIndex)
     {
-        var imGuiTableColumnFlags = ImGuiTableColumnFlags.WidthFixed;
-
-        if (columnIndex == 0)
-        {
-            imGuiTableColumnFlags |= ImGuiTableColumnFlags.NoHide;
-        }
-
-        ImGui.TableSetupColumn(this.RenderName ?? this.Name, imGuiTableColumnFlags, this.Width, (uint)columnIndex);
+        ImGui.TableSetupColumn(this.RenderName ?? this.Name, this.ColumnFlags, this.Width, (uint)columnIndex);
     }
 }
 
