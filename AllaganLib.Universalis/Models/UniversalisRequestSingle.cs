@@ -2,6 +2,8 @@ namespace AllaganLib.Universalis.Models;
 
 public class UniversalisRequestSingle
 {
+    public ulong lastUploadTime { get; set; }
+
     public uint itemID { internal get; set; }
 
     public float averagePriceNQ { get; set; }

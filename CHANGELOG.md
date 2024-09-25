@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.0.10] - 2024-09-25
+
+### Fixed
+
+- Universalis requests will pull all data and will also provide the last updated date.
+
 ## [1.0.9] - 2024-09-10
 
 ### Fixed

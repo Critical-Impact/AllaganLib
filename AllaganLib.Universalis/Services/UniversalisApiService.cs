@@ -159,7 +159,7 @@ public class UniversalisApiService : BackgroundService
         var itemIdsString = string.Join(",", itemIdList.Select(c => c.ToString()).ToArray());
         this.pluginLog.Verbose($"Sending request for items {itemIdsString} to universalis API.");
         var url =
-            $"https://universalis.app/api/v2/{worldName}/{itemIdsString}?listings=20&entries=20";
+            $"https://universalis.app/api/v2/{worldName}/{itemIdsString}";
         try
         {
             if (token.IsCancellationRequested)
