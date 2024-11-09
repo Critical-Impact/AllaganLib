@@ -8,7 +8,7 @@ using AllaganLib.Shared.Extensions;
 using Dalamud.Interface.Colors;
 using Dalamud.Plugin.Services;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace AllaganLib.Interface.FormFields;
 

@@ -13,7 +13,7 @@ using AllaganLib.Universalis.Models;
 
 using Dalamud.Plugin.Services;
 
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 
 using Microsoft.Extensions.Hosting;
 
@@ -144,14 +144,14 @@ public class UniversalisApiService : BackgroundService
         string worldName;
         if (!this.worldNames.ContainsKey(worldId))
         {
-            var world = this.dataManager.GetExcelSheet<World>()!.GetRow(worldId);
+            var world = this.dataManager.GetExcelSheet<World>().GetRowOrDefault(worldId);
             if (world == null)
             {
                 this.queuedCount -= itemIdList.Count;
                 return;
             }
 
-            this.worldNames[worldId] = world.Name.RawString;
+            this.worldNames[worldId] = world.Value.Name.ExtractText();
         }
 
         worldName = this.worldNames[worldId];

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Interface", "All
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.Data", "AllaganLib.Data\AllaganLib.Data.csproj", "{BFD34B5A-868C-44C6-84B5-9960965697E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllaganLib.GameSheets", "AllaganLib.GameSheets\AllaganLib.GameSheets.csproj", "{4A1ECEA2-12FB-4656-AE3E-04F04B9DF6DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFD34B5A-868C-44C6-84B5-9960965697E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A1ECEA2-12FB-4656-AE3E-04F04B9DF6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A1ECEA2-12FB-4656-AE3E-04F04B9DF6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A1ECEA2-12FB-4656-AE3E-04F04B9DF6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A1ECEA2-12FB-4656-AE3E-04F04B9DF6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
