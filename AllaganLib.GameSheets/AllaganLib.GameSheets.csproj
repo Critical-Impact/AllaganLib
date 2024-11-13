@@ -16,6 +16,10 @@
         <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <CodeAnalysisRuleSet>custom.ruleset</CodeAnalysisRuleSet>
+    </PropertyGroup>
+
 <!--    <PropertyGroup>-->
 <!--        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>-->
 <!--        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>-->

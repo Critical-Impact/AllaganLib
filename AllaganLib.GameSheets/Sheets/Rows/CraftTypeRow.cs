@@ -1,7 +1,3 @@
-// <copyright file="CraftTypeRow.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 using AllaganLib.GameSheets.Model;
 using Lumina.Excel.Sheets;
 

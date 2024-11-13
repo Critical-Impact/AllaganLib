@@ -1,7 +1,3 @@
-// <copyright file="SatisfactionSupplySheet.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
 using Lumina;
@@ -11,16 +7,19 @@ namespace AllaganLib.GameSheets.Sheets;
 
 public class SatisfactionSupplySheet : ExtendedSubrowSheet<SatisfactionSupply, SatisfactionSupplyRow, SatisfactionSupplySheet>, IExtendedSheet
 {
+    private SatisfactionNpcSheet? satisfactionNpcSheet;
+
     public SatisfactionSupplySheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer)
         : base(gameData, sheetManager, sheetIndexer)
     {
     }
 
+    public SatisfactionNpcSheet GetSatisfactionNpcSheet()
+    {
+        return this.satisfactionNpcSheet ??= this.SheetManager.GetSheet<SatisfactionNpcSheet>();
+    }
+
     public override void CalculateLookups()
     {
     }
-}
-public class SatisfactionSupplyRow : ExtendedSubrow<SatisfactionSupply, SatisfactionSupplyRow, SatisfactionSupplySheet>
-{
-
 }

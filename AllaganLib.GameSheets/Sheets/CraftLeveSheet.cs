@@ -1,6 +1,6 @@
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using Lumina;
 using Lumina.Excel.Sheets;
 
@@ -16,9 +16,4 @@ public class CraftLeveSheet : ExtendedSheet<CraftLeve, CraftLeveRow, CraftLeveSh
     public override void CalculateLookups()
     {
     }
-}
-
-public class CraftLeveRow : ExtendedRow<CraftLeve, CraftLeveRow, CraftLeveSheet>
-{
-
 }

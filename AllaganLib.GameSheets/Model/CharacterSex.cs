@@ -1,4 +1,4 @@
-namespace CriticalCommonLib.Enums
+namespace AllaganLib.GameSheets.Model
 {
     public enum CharacterSex {
         Male = 0,

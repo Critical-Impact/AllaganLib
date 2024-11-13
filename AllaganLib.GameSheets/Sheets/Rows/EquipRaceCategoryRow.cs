@@ -1,5 +1,4 @@
 using AllaganLib.GameSheets.Model;
-using CriticalCommonLib.Enums;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;

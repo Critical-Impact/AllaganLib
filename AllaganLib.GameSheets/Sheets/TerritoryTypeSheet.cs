@@ -1,6 +1,6 @@
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using Lumina;
 using Lumina.Excel.Sheets;
 
@@ -15,9 +15,4 @@ public class TerritoryTypeSheet : ExtendedSheet<TerritoryType, TerritoryTypeRow,
     public override void CalculateLookups()
     {
     }
-}
-
-public class TerritoryTypeRow : ExtendedRow<TerritoryType, TerritoryTypeRow, TerritoryTypeSheet>
-{
-
 }

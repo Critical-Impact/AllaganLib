@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
 using Autofac;
 using Lumina;
+using Lumina.Excel;
 using LuminaSupplemental.Excel.Model;
 using LuminaSupplemental.Excel.Services;
 
@@ -13,6 +15,56 @@ namespace AllaganLib.GameSheets.Extensions;
 
 public static class ContainerBuilderExtensions
 {
+    /// <summary>
+    /// Registers the services/classes required to use SheetManager in your own container. This starts a second container that the SheetManager controls, allowing it to handle it's own disposal.
+    /// </summary>
+    /// <param name="containerBuilder"></param>
+    public static void RegisterGameSheetManager(this ContainerBuilder containerBuilder)
+    {
+        containerBuilder.RegisterType<SheetManager>().SingleInstance();
+        containerBuilder.Register<SheetManagerStartupOptions>(c => new SheetManagerStartupOptions()).SingleInstance();
+        containerBuilder.Register<SheetIndexer>(c => c.Resolve<SheetManager>().SheetIndexer).SingleInstance().ExternallyOwned();
+        containerBuilder.Register<ItemInfoCache>(c => c.Resolve<SheetManager>().ItemInfoCache).SingleInstance().ExternallyOwned();
+        containerBuilder.Register<NpcLevelCache>(c => c.Resolve<SheetManager>().NpcLevelCache).SingleInstance().ExternallyOwned();
+        containerBuilder.Register<NpcShopCache>(c => c.Resolve<SheetManager>().NpcShopCache).SingleInstance().ExternallyOwned();
+        containerBuilder.RegisterGeneric((context, parameters) =>
+        {
+            var gameData = context.Resolve<GameData>();
+            var method = typeof(GameData).GetMethod(nameof(GameData.GetExcelSheet))
+                ?.MakeGenericMethod(parameters);
+            var sheet = method!.Invoke(gameData, [null, null])!;
+            return sheet;
+        })
+        .As(typeof(ExcelSheet<>));
+
+        Assembly assembly = typeof(SheetManager).Assembly;
+
+        var extendedSheetTypes = assembly.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface && (t.IsExtendedSheet() || t.IsExtendedSubrowSheet()));
+
+        foreach (var extendedSheetType in extendedSheetTypes)
+        {
+            containerBuilder.Register(context =>
+            {
+                return context.Resolve<SheetManager>().SheetContainer.Resolve(extendedSheetType);
+            }).As(extendedSheetType).SingleInstance().ExternallyOwned();
+        }
+
+        Assembly luminaSupplemental = typeof(ICsv).Assembly;
+
+        var csvs = luminaSupplemental.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface && t.GetInterface("ICsv") != null);
+
+        foreach (var csvType in csvs)
+        {
+            var listType = typeof(List<>).MakeGenericType(csvType);
+            containerBuilder.Register(context =>
+            {
+                return context.Resolve<SheetManager>().SheetContainer.Resolve(listType);
+            }).As(listType).SingleInstance().ExternallyOwned();
+        }
+    }
+
     public static void RegisterExtendedSheets(this ContainerBuilder builder)
     {
         Assembly assembly = typeof(SheetManager).Assembly;

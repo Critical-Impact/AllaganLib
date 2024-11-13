@@ -10,6 +10,8 @@ public class GCScripShopItemRow : ExtendedSubrow<GCScripShopItem, GCScripShopIte
     private ShopListingItem? cost;
     private ItemRow? item;
 
+    public GCScripShopCategoryRow Category => this.Sheet.GetGCScripShopCategorySheet().GetRow(this.RowId);
+
     public IEnumerable<IShopListingItem> Rewards
     {
         get { yield return this; }
@@ -22,7 +24,7 @@ public class GCScripShopItemRow : ExtendedSubrow<GCScripShopItem, GCScripShopIte
             yield return this.cost ??= new ShopListingItem(
                 this.Sheet.GetItemSheet(),
                 this,
-                HardcodedItems.SealItemId,
+                this.Category.GrandCompany.ItemId,
                 this.Base.CostGCSeals);
         }
     }

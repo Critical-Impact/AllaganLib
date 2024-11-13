@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina;
 using Lumina.Excel;
@@ -27,9 +27,9 @@ public class GilShopSheet : ExtendedSheet<GilShop, GilShopRow, GilShopSheet>, IE
         this.shopNamesByShopId = shopNames.ToDictionary(c => c.ShopId, c => c);
     }
 
-    public string GetShopName(uint shopId)
+    public string? GetShopName(uint shopId)
     {
-        return this.shopNamesByShopId.ContainsKey(shopId) ? this.shopNamesByShopId[shopId].Name : "Vendor";
+        return this.shopNamesByShopId.ContainsKey(shopId) ? this.shopNamesByShopId[shopId].Name : null;
     }
 
     public List<uint> GetShopIds(uint shopId)

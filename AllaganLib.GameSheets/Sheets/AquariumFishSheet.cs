@@ -1,10 +1,6 @@
-// <copyright file="AquariumFishSheet.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using Lumina;
 using Lumina.Excel.Sheets;
 
@@ -20,9 +16,4 @@ public class AquariumFishSheet : ExtendedSheet<AquariumFish, AquariumFishRow, Aq
     {
 
     }
-}
-
-public class AquariumFishRow : ExtendedRow<AquariumFish, AquariumFishRow, AquariumFishSheet>
-{
-
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Extensions;
+using AllaganLib.GameSheets.ItemSources;
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets.Caches;
 using AllaganLib.GameSheets.Sheets.Helpers;
-using AllaganLib.GameSheets.Sheets.ItemSources;
 using AllaganLib.Shared.Extensions;
 using AllaganLib.Shared.Time;
-using CriticalCommonLib.Enums;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;

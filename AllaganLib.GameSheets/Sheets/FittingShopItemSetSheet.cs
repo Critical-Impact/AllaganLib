@@ -1,10 +1,6 @@
-// <copyright file="FittingShopItemSetSheet.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using Lumina;
 using Lumina.Excel.Sheets;
 
@@ -19,9 +15,4 @@ public class FittingShopItemSetSheet : ExtendedSheet<FittingShopItemSet, Fitting
     public override void CalculateLookups()
     {
     }
-}
-
-public class FittingShopItemSetRow : ExtendedRow<FittingShopItemSet, FittingShopItemSetRow, FittingShopItemSetSheet>
-{
-
 }

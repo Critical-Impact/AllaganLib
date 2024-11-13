@@ -1,10 +1,6 @@
-// <copyright file="FateShopSheet.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
-
+using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
-using AllaganLib.GameSheets.Sheets.Caches;
 using Lumina;
 using Lumina.Excel.Sheets;
 
@@ -19,9 +15,4 @@ public class FateShopSheet : ExtendedSheet<FateShop, FateShopRow, FateShopSheet>
     public override void CalculateLookups()
     {
     }
-}
-
-public class FateShopRow : ExtendedRow<FateShop, FateShopRow, FateShopSheet>
-{
-
 }
