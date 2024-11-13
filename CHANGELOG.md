@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.0] - 2024-11-13
+
+### Added
+
+- AllaganLib.GameData created, this provides a way of caching extra data on top of lumina. It allows for rows and sheets to be cached while still gaining the benefits of the improvements made in Lumina 5
+- Initial support for API11
+
 ## [1.0.10] - 2024-09-25
 
 ### Fixed
