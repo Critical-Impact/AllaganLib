@@ -9,6 +9,7 @@
         <PackageProjectUrl>https://github.com/Critical-Impact/AllaganLib</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Critical-Impact/AllaganLib</RepositoryUrl>
         <Authors>Critical-Impact</Authors>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup>

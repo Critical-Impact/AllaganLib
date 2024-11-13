@@ -1,6 +1,6 @@
 using System;
 using System.Numerics;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace AllaganLib.Shared.Extensions;
 

@@ -20,6 +20,24 @@ public abstract class FormField<T, TS> : IFormField<TS>
 
     public virtual int InputSize { get; set; } = 300;
 
+    public abstract string Key { get; set; }
+
+    public abstract string Name { get; set; }
+
+    public abstract string HelpText { get; set; }
+
+    public bool HideReset { get; set; } = false;
+
+    public bool ColourModified { get; set; } = true;
+
+    public abstract string Version { get; }
+
+    public virtual string? Image { get; } = null;
+
+    public virtual Vector2? ImageSize { get; } = null;
+
+    public virtual string WizardName => this.Name;
+
     public abstract T CurrentValue(TS configuration);
 
     public abstract void DrawInput(TS configuration, int? inputSize = null);
@@ -61,24 +79,6 @@ public abstract class FormField<T, TS> : IFormField<TS>
     }
 
     public abstract void UpdateFilterConfiguration(TS configuration, T? newValue);
-
-    public abstract string Key { get; set; }
-
-    public abstract string Name { get; set; }
-
-    public abstract string HelpText { get; set; }
-
-    public bool HideReset { get; set; } = false;
-
-    public bool ColourModified { get; set; } = true;
-
-    public abstract string Version { get; }
-
-    public virtual string? Image { get; } = null;
-
-    public virtual Vector2? ImageSize { get; } = null;
-
-    public virtual string WizardName => this.Name;
 
     public virtual bool HasValueSet(TS configuration)
     {

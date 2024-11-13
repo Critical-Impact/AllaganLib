@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Custom StyleCop Rules" Description="Custom ruleset for disabling specific StyleCop rules" ToolsVersion="15.0">
+    <Rules AnalyzerId="StyleCopAnalyzers" RuleNamespace="StyleCop.Analyzers">
+        <!-- Disable SA1633 (file must have header) -->
+        <Rule Id="SA1633" Action="None" />
+        <!-- Disable SA1652 (enable XML documentation output) -->
+        <Rule Id="SA1652" Action="None" />
+    </Rules>
+</RuleSet>
