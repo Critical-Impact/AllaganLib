@@ -33,10 +33,12 @@
             <Private>True</Private>
         </Reference>
         <Reference Include="Lumina">
-            <HintPath>/var/home/blair/Development/Lumina.ExcelNew/src/Lumina.Excel/bin/Debug/net8.0/Lumina.dll</HintPath>
+            <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
+            <Private>True</Private>
         </Reference>
         <Reference Include="Lumina.Excel">
-            <HintPath>/var/home/blair/Development/Lumina.ExcelNew/src/Lumina.Excel/bin/Debug/net8.0/Lumina.Excel.dll</HintPath>
+            <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
+            <Private>True</Private>
         </Reference>
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>

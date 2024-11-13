@@ -34,10 +34,12 @@
             <Private>True</Private>
         </Reference>
         <Reference Include="Lumina">
-            <HintPath>..\..\..\Downloads\NewLumina\Lumina.Excel\net8.0\Lumina.dll</HintPath>
+            <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
+            <Private>True</Private>
         </Reference>
         <Reference Include="Lumina.Excel">
-            <HintPath>..\..\..\Downloads\NewLumina\Lumina.Excel\net8.0\Lumina.Excel.dll</HintPath>
+            <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
+            <Private>True</Private>
         </Reference>
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>

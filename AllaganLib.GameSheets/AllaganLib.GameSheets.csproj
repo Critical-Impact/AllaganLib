@@ -20,31 +20,7 @@
         <CodeAnalysisRuleSet>custom.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
-<!--    <PropertyGroup>-->
-<!--        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>-->
-<!--        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>-->
-<!--        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(HOME)/Library/Application Support/XIV on Mac/dalamud/Hooks/dev/</DalamudLibPath>-->
-<!--        <DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>-->
-<!--    </PropertyGroup>-->
-
     <ItemGroup>
-<!--        <Reference Include="Dalamud">-->
-<!--            <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>-->
-<!--            <Private>True</Private>-->
-<!--        </Reference>-->
-<!--        <Reference Include="ImGui.NET">-->
-<!--            <HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>-->
-<!--            <Private>True</Private>-->
-<!--        </Reference>-->
-<!--        <Reference Include="FFXIVClientStructs">-->
-<!--            <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>-->
-<!--            <Private>True</Private>-->
-<!--        </Reference>-->
-
-        <Reference Include="LuminaSupplemental.Excel">
-          <HintPath>..\..\..\Development\LuminaSupplemental\src\LuminaSupplemental.Excel\bin\Release\net8.0-windows\LuminaSupplemental.Excel.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
         <Reference Include="Newtonsoft.Json" PrivateAssets="All">
             <HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
             <Private>True</Private>
@@ -58,7 +34,7 @@
         <PackageReference Include="CSVFile" Version="3.2.0" />
         <PackageReference Include="Lumina" Version="5.2.1" />
         <PackageReference Include="Lumina.Excel" Version="7.0.3" />
-<!--        <PackageReference Include="LuminaSupplemental.Excel" Version="2.0.6" />-->
+        <PackageReference Include="LuminaSupplemental.Excel" Version="2.1.1" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
