@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.1] - 2024-11-16
+
+### Added
+
+- AllaganLib.GameData
+  - Add AddonSheet
+  - General improvements to the ItemInfoCache
+  - Filter out -1 ingredients in the RecipeSheet
+  - Improvements to uses
+
+
 ## [1.1.0] - 2024-11-13
 
 ### Added
