@@ -6,8 +6,8 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemQuickVentureSource : ItemVentureSource
 {
-    public ItemQuickVentureSource(ItemRow itemRow, RetainerTaskRow retainerTaskRow)
-        : base(itemRow, retainerTaskRow, ItemInfoType.QuickVenture)
+    public ItemQuickVentureSource(ItemRow itemRow, ItemRow venture, RetainerTaskRow retainerTaskRow)
+        : base(itemRow, venture, retainerTaskRow, ItemInfoType.QuickVenture)
     {
     }
 }

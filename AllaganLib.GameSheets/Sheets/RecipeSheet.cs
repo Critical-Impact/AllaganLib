@@ -67,7 +67,7 @@ public class RecipeSheet : ExtendedSheet<Recipe, RecipeRow, RecipeSheet>, IExten
             this,
             row =>
             {
-                return row.Base.Ingredient.Select(c => c.RowId);
+                return row.Base.Ingredient.Select(c => c.RowId).Where(c => c != uint.MaxValue);
             });
     }
 

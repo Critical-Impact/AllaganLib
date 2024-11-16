@@ -23,7 +23,7 @@ public class RecipeRow : ExtendedRow<Recipe, RecipeRow, RecipeSheet>
         get
         {
             return this.recipeLevelTableRow ??=
-                this.Sheet.GetRecipeLevelTableSheet().GetRowOrDefault(this.Base.CraftType.RowId);
+                this.Sheet.GetRecipeLevelTableSheet().GetRowOrDefault(this.Base.RecipeLevelTable.RowId);
         }
     }
 
@@ -37,6 +37,11 @@ public class RecipeRow : ExtendedRow<Recipe, RecipeRow, RecipeSheet>
                 for (var index = 0; index < this.Base.Ingredient.Count; index++)
                 {
                     var ingredient = this.Base.Ingredient[index];
+                    if (ingredient.RowId == uint.MaxValue)
+                    {
+                        // Handles a case where the ingredient's ID = -1;
+                        continue;
+                    }
                     var count = this.Base.AmountIngredient[index];
                     if (ingredient.RowId == 0 || count == 0)
                     {

@@ -8,10 +8,11 @@ public class ItemVentureSource : ItemSource
 {
     private readonly RetainerTaskRow retainerTaskRow;
 
-    public ItemVentureSource(ItemRow itemRow, RetainerTaskRow retainerTaskRow, ItemInfoType ventureType)
+    public ItemVentureSource(ItemRow itemRow, ItemRow venture, RetainerTaskRow retainerTaskRow, ItemInfoType ventureType)
         : base(ventureType)
     {
         this.Item = itemRow;
+        this.CostItem = venture;
         this.retainerTaskRow = retainerTaskRow;
     }
 

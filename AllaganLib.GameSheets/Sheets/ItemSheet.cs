@@ -20,6 +20,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
     private Dictionary<uint, List<FishingSpotRow>>? fishingSpots;
     private GatheringItemSheet? gatheringItemSheet;
     private FishingSpotSheet? fishingSpotSheet;
+    private AddonSheet? addonSheet;
     private EquipSlotCategorySheet? equipSlotCategorySheet;
     private EquipRaceCategorySheet? equipRaceCategorySheet;
     private ClassJobCategorySheet? classJobCategorySheet;
@@ -27,6 +28,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
     public Dictionary<string, uint>? itemsBySearchString;
     private Dictionary<uint, CabinetCategoryRow>? cabinetCategories;
     private Dictionary<uint, decimal>? itemPatches;
+    private Dictionary<uint, string>? itemsSearchStringsById;
 
     public ItemSheet(
         GameData gameData,
@@ -62,7 +64,6 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
 
             return this.itemsByName;
         }
-        set => this.itemsByName = value;
     }
 
     public Dictionary<string, uint> ItemsBySearchString
@@ -71,12 +72,24 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         {
             if (this.itemsBySearchString == null)
             {
-                this.itemsBySearchString = this.DistinctBy(c => c.Base.Name.ExtractText()).ToDictionary(c => c.Base.Name.ExtractText().ToParseable(), c => c.RowId);
+                this.itemsBySearchString = this.DistinctBy(c => c.Base.Name.ExtractText().ToParseable()).ToDictionary(c => c.Base.Name.ExtractText().ToParseable(), c => c.RowId);
             }
 
             return this.itemsBySearchString;
         }
-        set => this.itemsBySearchString = value;
+    }
+
+    public Dictionary<uint, string> ItemsSearchStringsById
+    {
+        get
+        {
+            if (this.itemsSearchStringsById == null)
+            {
+                this.itemsSearchStringsById = this.ToDictionary(c => c.RowId, c => c.Base.Name.ExtractText().ToParseable());
+            }
+
+            return this.itemsSearchStringsById;
+        }
     }
 
     public List<ItemSource> GetItemSources(uint itemId)
@@ -112,6 +125,12 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
     public EquipRaceCategorySheet GetEquipRaceCategorySheet()
     {
         return this.equipRaceCategorySheet ??= this.SheetManager.GetSheet<EquipRaceCategorySheet>();
+    }
+
+
+    public AddonSheet GetAddonSheet()
+    {
+        return this.addonSheet ??= this.SheetManager.GetSheet<AddonSheet>();
     }
 
     public List<GatheringItemRow>? GetGatheringItems(uint itemId)

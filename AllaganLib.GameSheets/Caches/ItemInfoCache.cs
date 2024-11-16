@@ -40,94 +40,8 @@ public class ItemInfoCache
     private Dictionary<ItemInfoType, List<ItemSource>>? itemSourcesByType;
     private Dictionary<ItemInfoType, List<ItemSource>>? itemUsesByType;
 
-    public Dictionary<ItemInfoType, HashSet<uint>> GetItemSourceMapLocationsByItemId(uint itemId)
-    {
-        return this.itemSourceMapLocations.TryGetValue(itemId, out var result) ? result : new Dictionary<ItemInfoType, HashSet<uint>>();
-    }
-
-    public Dictionary<ItemInfoType, HashSet<uint>> GetItemUseMapLocationsByItemId(uint itemId)
-    {
-        return this.itemUseMapLocations.TryGetValue(itemId, out var result) ? result : new Dictionary<ItemInfoType, HashSet<uint>>();
-    }
-
-    public List<ItemSource> GetItemSourcesByType(ItemInfoType type)
-    {
-        this.itemSourcesByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
-        if (this.itemSourcesByType.TryGetValue(type, out var byType))
-        {
-            return byType;
-        }
-
-        return [];
-    }
-
-    public List<T> GetItemSourcesByType<T>(ItemInfoType type)
-        where T : ItemSource
-    {
-        this.itemSourcesByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
-        if (this.itemSourcesByType.TryGetValue(type, out var byType))
-        {
-            return byType.Cast<T>().ToList();
-        }
-
-        return [];
-    }
-
-    public List<ItemSource> GetItemUsesByType(ItemInfoType type)
-    {
-        this.itemUsesByType ??= this.itemUses.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
-        if (this.itemUsesByType.TryGetValue(type, out var byType))
-        {
-            return byType;
-        }
-
-        return [];
-    }
-
-    public List<ItemSource>? GetItemSources(uint itemId, uint? sourceId = null)
-    {
-        if (sourceId != null)
-        {
-            return this.GetItemSources(itemId, sourceId.Value);
-        }
-
-        return this.itemSources.GetValueOrDefault(itemId);
-    }
-
-    public List<T>? GetItemSources<T>(uint itemId, ItemInfoType itemInfoType)
-    {
-        return this.itemSources.GetValueOrDefault(itemId)?.Where(c => c.Type == itemInfoType).OfType<T>().ToList();
-    }
-
-    public bool HasItemSources(uint itemId, ItemInfoType itemInfoType)
-    {
-        return this.itemSources.GetValueOrDefault(itemId)?.Any(c => c.Type == itemInfoType) ?? false;
-    }
-
-    public bool HasItemSources(uint itemId, ItemInfoCategory itemInfoCategory)
-    {
-        return this.itemSources.GetValueOrDefault(itemId)?.Select(c => c.Type).InCategory(itemInfoCategory) ?? false;
-    }
-
-    public List<ItemSource>? GetItemUses(uint itemId)
-    {
-        return this.itemUses.GetValueOrDefault(itemId);
-    }
-
-    public List<ItemSource>? GetItemSources(uint itemId, uint sourceId)
-    {
-        return this.itemSourceUseMap.GetValueOrDefault((itemId, sourceId));
-    }
-
-    public List<IShop>? GetNpcShops(uint npcId)
-    {
-        return this.eNpcIdToIShopLookup.GetValueOrDefault(npcId);
-    }
-
-    public Dictionary<uint, List<IShop>>? GetNpcShops()
-    {
-        return this.eNpcIdToIShopLookup;
-    }
+    private Dictionary<ItemInfoType, HashSet<uint>>? itemSourceIdsByType;
+    private Dictionary<ItemInfoType, HashSet<uint>>? itemUseIdsByType;
 
     public ItemInfoCache(
         SheetManager sheetManager,
@@ -167,6 +81,140 @@ public class ItemInfoCache
         this.eNpcIdToIShopLookup = new Dictionary<uint, List<IShop>>();
         this.itemSourceMapLocations = new();
         this.itemUseMapLocations = new();
+    }
+
+    public Dictionary<ItemInfoType, HashSet<uint>> GetItemSourceMapLocationsByItemId(uint itemId)
+    {
+        return this.itemSourceMapLocations.TryGetValue(itemId, out var result) ? result : new Dictionary<ItemInfoType, HashSet<uint>>();
+    }
+
+    public Dictionary<ItemInfoType, HashSet<uint>> GetItemUseMapLocationsByItemId(uint itemId)
+    {
+        return this.itemUseMapLocations.TryGetValue(itemId, out var result) ? result : new Dictionary<ItemInfoType, HashSet<uint>>();
+    }
+
+    public List<ItemSource> GetItemSourcesByType(ItemInfoType type)
+    {
+        this.itemSourcesByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
+        if (this.itemSourcesByType.TryGetValue(type, out var byType))
+        {
+            return byType;
+        }
+
+        return [];
+    }
+
+    public List<T> GetItemSourcesByType<T>(ItemInfoType type)
+        where T : ItemSource
+    {
+        this.itemSourcesByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
+        if (this.itemSourcesByType.TryGetValue(type, out var byType))
+        {
+            return byType.Cast<T>().ToList();
+        }
+
+        return [];
+    }
+
+    public HashSet<uint> GetItemSourceIdsByType(ItemInfoType type)
+    {
+        this.itemSourceIdsByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.Select(d => d.Item.RowId).Distinct().ToHashSet());
+        if (this.itemSourceIdsByType.TryGetValue(type, out var byType))
+        {
+            return byType;
+        }
+
+        return [];
+    }
+
+    public HashSet<uint> GetItemUseIdsByType(ItemInfoType type)
+    {
+        this.itemUseIdsByType ??= this.itemUses.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.Select(d => d.Item.RowId).Distinct().ToHashSet());
+        if (this.itemUseIdsByType.TryGetValue(type, out var byType))
+        {
+            return byType;
+        }
+
+        return [];
+    }
+
+
+    public HashSet<uint> GetItemSourceIdsByCategory(ItemInfoCategory category)
+    {
+        this.itemSourceIdsByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.Select(d => d.Item.RowId).Distinct().ToHashSet());
+        return this.itemSourceIdsByType.Where(c => c.Key.InCategory(category)).SelectMany(c => c.Value).ToHashSet();
+    }
+
+    public HashSet<uint> GetItemUseIdsByCategory(ItemInfoCategory category)
+    {
+        this.itemUseIdsByType ??= this.itemUses.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.Select(d => d.Item.RowId).Distinct().ToHashSet());
+        return this.itemUseIdsByType.Where(c => c.Key.InCategory(category)).SelectMany(c => c.Value).ToHashSet();
+    }
+
+    public List<ItemSource> GetItemUsesByType(ItemInfoType type)
+    {
+        this.itemUsesByType ??= this.itemUses.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
+        if (this.itemUsesByType.TryGetValue(type, out var byType))
+        {
+            return byType;
+        }
+
+        return [];
+    }
+
+    public List<ItemSource>? GetItemSources(uint itemId, uint? sourceId = null)
+    {
+        if (sourceId != null)
+        {
+            return this.GetItemSources(itemId, sourceId.Value);
+        }
+
+        return this.itemSources.GetValueOrDefault(itemId);
+    }
+
+    public List<T>? GetItemSources<T>(uint itemId, ItemInfoType itemInfoType)
+    {
+        return this.itemSources.GetValueOrDefault(itemId)?.Where(c => c.Type == itemInfoType).OfType<T>().ToList();
+    }
+
+    public bool HasItemSources(uint itemId, ItemInfoType itemInfoType)
+    {
+        return this.itemSources.GetValueOrDefault(itemId)?.Any(c => c.Type == itemInfoType) ?? false;
+    }
+
+    public bool HasItemSources(uint itemId, ItemInfoCategory itemInfoCategory)
+    {
+        return this.itemSources.GetValueOrDefault(itemId)?.Select(c => c.Type).InCategory(itemInfoCategory) ?? false;
+    }
+
+    public bool HasItemUses(uint itemId, ItemInfoType itemInfoType)
+    {
+        return this.itemUses.GetValueOrDefault(itemId)?.Any(c => c.Type == itemInfoType) ?? false;
+    }
+
+    public bool HasItemUses(uint itemId, ItemInfoCategory itemInfoCategory)
+    {
+        return this.itemUses.GetValueOrDefault(itemId)?.Select(c => c.Type).InCategory(itemInfoCategory) ?? false;
+    }
+
+    public List<ItemSource>? GetItemUses(uint itemId)
+    {
+        return this.itemUses.GetValueOrDefault(itemId);
+    }
+
+    public List<ItemSource>? GetItemSources(uint itemId, uint sourceId)
+    {
+        return this.itemSourceUseMap.GetValueOrDefault((itemId, sourceId));
+    }
+
+    public List<IShop>? GetNpcShops(uint npcId)
+    {
+        return this.eNpcIdToIShopLookup.GetValueOrDefault(npcId);
+    }
+
+    public Dictionary<uint, List<IShop>>? GetNpcShops()
+    {
+        return this.eNpcIdToIShopLookup;
     }
 
     public void BuildCache()
@@ -471,6 +519,8 @@ public class ItemInfoCache
             }
         }
 
+        var ventureItem = itemSheet.GetRow(HardcodedItems.VentureId);
+
         foreach (var retainerTask in retainerTaskSheet)
         {
             foreach (var drop in retainerTask.Drops)
@@ -478,31 +528,31 @@ public class ItemInfoCache
                 switch (retainerTask.RetainerTaskType)
                 {
                     case RetainerTaskType.HighlandExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, retainerTask, ItemInfoType.MiningExplorationVenture));
+                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.MiningExplorationVenture));
                         break;
                     case RetainerTaskType.WoodlandExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, retainerTask, ItemInfoType.BotanyExplorationVenture));
+                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.BotanyExplorationVenture));
                         break;
                     case RetainerTaskType.WatersideExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, retainerTask, ItemInfoType.FishingExplorationVenture));
+                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.FishingExplorationVenture));
                         break;
                     case RetainerTaskType.FieldExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, retainerTask, ItemInfoType.CombatExplorationVenture));
+                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.CombatExplorationVenture));
                         break;
                     case RetainerTaskType.QuickExploration:
-                        this.AddItemSource(new ItemQuickVentureSource(drop, retainerTask));
+                        this.AddItemSource(new ItemQuickVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.Hunting:
-                        this.AddItemSource(new ItemVentureSource(drop, retainerTask, ItemInfoType.CombatVenture));
+                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.CombatVenture));
                         break;
                     case RetainerTaskType.Mining:
-                        this.AddItemSource(new ItemVentureSource(drop, retainerTask, ItemInfoType.MiningVenture));
+                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.MiningVenture));
                         break;
                     case RetainerTaskType.Botanist:
-                        this.AddItemSource(new ItemVentureSource(drop, retainerTask, ItemInfoType.BotanyVenture));
+                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.BotanyVenture));
                         break;
                     case RetainerTaskType.Fishing:
-                        this.AddItemSource(new ItemVentureSource(drop, retainerTask, ItemInfoType.FishingVenture));
+                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.FishingVenture));
                         break;
                 }
             }
@@ -550,7 +600,6 @@ public class ItemInfoCache
             var tuple = (dungeonBossDrop.ContentFinderConditionId, dungeonBossDrop.FightNo);
             if (!dungeonBossesByIds.TryGetValue(tuple, out var dungeonBoss))
             {
-                //TODO: maybe warn the user or something or show in dev builds
                 continue;
             }
 
@@ -571,7 +620,6 @@ public class ItemInfoCache
             var tuple = (dungeonBossChest.ContentFinderConditionId, dungeonBossChest.FightNo);
             if (!dungeonBossesByIds.TryGetValue(tuple, out var dungeonBoss))
             {
-                //TODO: maybe warn the user or something or show in dev builds
                 continue;
             }
 
@@ -606,13 +654,13 @@ public class ItemInfoCache
             {
                 var data = hwdGathererInspection.Base.HWDGathererInspectionData[index];
 
-                if (data.RequiredItem.RowId == 0 || data.ItemReceived.RowId == 0 ||
-                    data.RequiredItem.Value.Item.RowId == 0)
+                if ((data.RequiredItem.RowId == 0 && data.FishParameter.RowId == 0) || data.ItemReceived.RowId == 0 ||
+                    (data.RequiredItem.Value.Item.RowId == 0 && data.FishParameter.Value.Item.RowId == 0))
                 {
                     continue;
                 }
 
-                var requiredItem = itemSheet.GetRowOrDefault(data.RequiredItem.Value.Item.RowId);
+                var requiredItem = itemSheet.GetRowOrDefault(data.RequiredItem.Value.Item.RowId != 0 ? data.RequiredItem.Value.Item.RowId : data.FishParameter.Value.Item.RowId);
                 var receivedItem = itemSheet.GetRowOrDefault(data.ItemReceived.RowId);
 
                 if (requiredItem == null || receivedItem == null)
@@ -620,7 +668,7 @@ public class ItemInfoCache
                     continue;
                 }
 
-                var source = new ItemSkybuilderInspectionSource(hwdGathererInspection, index, requiredItem, receivedItem);
+                var source = new ItemSkybuilderInspectionSource(hwdGathererInspection, index, receivedItem, requiredItem);
                 this.AddItemSource(source);
                 this.AddItemUse(source);
                 this.AddItemSourceUseCombo(source, source);

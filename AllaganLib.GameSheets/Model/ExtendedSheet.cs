@@ -45,6 +45,7 @@ public abstract class ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> : IRead
     public ItemInfoCache ItemInfoCache { get; }
 
     public TBase this[int index] => this.BaseSheet.GetRow((uint)index);
+    public TBase this[uint index] => this.BaseSheet.GetRow(index);
 
     public uint StartRow
     {

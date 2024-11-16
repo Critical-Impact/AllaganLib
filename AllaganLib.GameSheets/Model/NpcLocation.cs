@@ -1,4 +1,5 @@
 using System;
+using AllaganLib.GameSheets.Sheets.Helpers;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
@@ -47,12 +48,10 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
 
             if (this.Map.ValueNullable != null)
             {
-                return 0;
-
-                // return MapUtil.ConvertWorldCoordXZToMapCoord(
-                //     (float)this.X,
-                //     this.Map.Value.SizeFactor,
-                //     this.Map.Value.OffsetX); //TODO: UNCOMMENT ME
+                return MapUtility.ConvertWorldCoordXZToMapCoord(
+                    (float)this.X,
+                    this.Map.Value.SizeFactor,
+                    this.Map.Value.OffsetX);
             }
 
             return 0;
@@ -74,12 +73,10 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
 
             if (this.Map.ValueNullable != null)
             {
-                return 0;
-                //TODO: UNCOMMENT ME
-                // return MapUtil.ConvertWorldCoordXZToMapCoord(
-                //     (float)this.Y,
-                //     this.Map.Value.SizeFactor,
-                //     this.Map.Value.OffsetY);
+                return MapUtility.ConvertWorldCoordXZToMapCoord(
+                    (float)this.Y,
+                    this.Map.Value.SizeFactor,
+                    this.Map.Value.OffsetY);
             }
 
             return 0;

@@ -6,9 +6,11 @@ public static class HardcodedItems
 {
     public const int GlamourChestSize = 800;
     public const uint FreeCompanyCreditItemId = 80;
+    public const uint FreeCompanyCreditAddonId = 80;
     public const int StormSealId = 20;
     public const int SerpentSealId = 21;
     public const int FlameSealId = 22;
+    public const int VentureId = 21072;
 
     public static readonly uint[] CalamitySalvagers =
     {

@@ -15,17 +15,9 @@ using LuminaSupplemental.Excel.Services;
 
 namespace AllaganLib.GameSheets.Service;
 
-public class SheetManagerStartupOptions
-{
-    public bool BuildNpcLevels { get; set; } = true;
-
-    public bool BuildNpcShops { get; set; } = true;
-
-    public bool BuildItemInfoCache { get; set; } = true;
-
-    public bool CalculateLookups { get; set; } = true;
-}
-
+/// <summary>
+/// SheetManager creates an extra layer on top of Lumina, allowing you to cache extra data on custom Sheets and Rows.
+/// </summary>
 public class SheetManager : IDisposable, IAsyncDisposable
 {
     private IContainer sheetContainer;
@@ -35,6 +27,11 @@ public class SheetManager : IDisposable, IAsyncDisposable
     private NpcLevelCache? npcLevelCache;
     private ItemInfoCache? itemInfoCache;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SheetManager"/> class.
+    /// </summary>
+    /// <param name="gameData">An instance of Lumina's GameData. If you are using dalamud, this is available via IDataManager.GameData.</param>
+    /// <param name="startupOptions">The options to use when constructing the sheet manager.</param>
     public SheetManager(GameData gameData, SheetManagerStartupOptions startupOptions)
     {
         this.sheetContainer = this.CreateContainer(gameData, startupOptions);
@@ -106,6 +103,10 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<FateItem>(CsvLoader.FateItemResourceName);
         containerBuilder.RegisterCsv<ItemPatch>(CsvLoader.ItemPatchResourceName);
         containerBuilder.RegisterCsv<ItemSupplement>(CsvLoader.ItemSupplementResourceName);
+        if (startupOptions.ContainerBuilderHook != null)
+        {
+            startupOptions.ContainerBuilderHook.Invoke(containerBuilder);
+        }
 
         return containerBuilder.Build();
     }

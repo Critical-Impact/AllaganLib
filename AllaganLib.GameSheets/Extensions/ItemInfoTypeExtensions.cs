@@ -11,6 +11,33 @@ public static class ItemInfoTypeExtensions
         return itemInfoTypes.AsEnumerable().InCategory(category);
     }
 
+    public static bool InCategory(this ItemInfoType itemInfoType, ItemInfoCategory category)
+    {
+        switch (category)
+        {
+            case ItemInfoCategory.Gathering:
+                return itemInfoType.IsGathering();
+            case ItemInfoCategory.RegularGathering:
+                return itemInfoType.IsRegularGathering();
+            case ItemInfoCategory.EphemeralGathering:
+                return itemInfoType.IsEphemeralGathering();
+            case ItemInfoCategory.HiddenGathering:
+                return itemInfoType.IsHiddenGathering();
+            case ItemInfoCategory.TimedGathering:
+                return itemInfoType.IsTimedGathering();
+            case ItemInfoCategory.NormalVenture:
+                return itemInfoType.IsNormalVenture();
+            case ItemInfoCategory.ExplorationVenture:
+                return itemInfoType.IsExplorationVenture();
+            case ItemInfoCategory.AllVentures:
+                return itemInfoType.IsExplorationVenture() || itemInfoType.IsNormalVenture() || itemInfoType == ItemInfoType.QuickVenture;
+            case ItemInfoCategory.Shop:
+                return itemInfoType.IsShop();
+        }
+
+        return false;
+    }
+
     public static bool InCategory(this IEnumerable<ItemInfoType> itemInfoTypes, ItemInfoCategory category)
     {
         switch (category)

@@ -107,6 +107,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         where T : ItemSource
         => this.Sources.Where(c => types.Contains(c.Type)).Cast<T>().ToList();
 
+    public List<T> GetUsesByType<T>(params ItemInfoType[] types)
+        where T : ItemSource
+        => this.Uses.Where(c => types.Contains(c.Type)).Cast<T>().ToList();
+
     public bool HasSourcesByType(params ItemInfoType[] types) => this.Sources.Any(c => types.Contains(c.Type));
 
     public bool HasUsesByType(params ItemInfoType[] types) => this.Uses.Any(c => types.Contains(c.Type));
@@ -168,6 +172,35 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
         return false;
     }
+
+    public List<T> GetUsesByCategory<T>(ItemInfoCategory category) where T : ItemSource
+    {
+        var allTypes = Enum.GetValues<ItemInfoType>();
+        switch (category)
+        {
+            case ItemInfoCategory.Gathering:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsGathering()).ToArray());
+            case ItemInfoCategory.RegularGathering:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsRegularGathering()).ToArray());
+            case ItemInfoCategory.EphemeralGathering:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsEphemeralGathering()).ToArray());
+            case ItemInfoCategory.HiddenGathering:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsHiddenGathering()).ToArray());
+            case ItemInfoCategory.TimedGathering:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsTimedGathering()).ToArray());
+            case ItemInfoCategory.NormalVenture:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsNormalVenture()).ToArray());
+            case ItemInfoCategory.ExplorationVenture:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsExplorationVenture()).ToArray());
+            case ItemInfoCategory.AllVentures:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsExplorationVenture() || c.IsNormalVenture() || c == ItemInfoType.QuickVenture).ToArray());
+            case ItemInfoCategory.Shop:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsShop()).ToArray());
+        }
+
+        return new List<T>();
+    }
+
 
     public Dictionary<ItemInfoType, HashSet<uint>> SourceMapLocationsByType =>
         this.sourceMapLocationsByType ??=
@@ -295,86 +328,6 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
         return itemSources.Where(c => c.Type == preferenceType).Select(c => c.MapIds).Where(c => c != null).SelectMany(c => c!).ToHashSet();
     }
-
-    //
-    // public HashSet<uint> GetSourceMaps(ItemInfoType preferenceType, uint? itemId)
-    // {
-    //     if (this.sourceMaps == null)
-    //     {
-    //         this.sourceMaps = new();
-    //     }
-    //
-    //     var sourceKey = (preferenceType, itemId);
-    //     if (!this.sourceMaps.ContainsKey(sourceKey))
-    //     {
-    //         HashSet<uint> maps = new();
-    //         if (preferenceType == IngredientPreferenceType.Buy)
-    //         {
-    //             var vendorsBySourceItemId = VendorsBySourceItemId(1);
-    //             if (vendorsBySourceItemId.Count != 0)
-    //             {
-    //                 foreach (var map in vendorsBySourceItemId.SelectMany(c => c.ENpcs)
-    //                              .SelectMany(c => c.Locations).Select(c => c.MapEx.Value).Distinct())
-    //                 {
-    //                     if (map == null) continue;
-    //                     maps.Add(map.RowId);
-    //                 }
-    //             }
-    //         }
-    //         //TODO: Add in house vendors here somehow or maybe from wherever calls this
-    //         else if (preferenceType == IngredientPreferenceType.Item && itemId != null)
-    //         {
-    //             var vendorsBySourceItemId = VendorsBySourceItemId(itemId.Value);
-    //             if (vendorsBySourceItemId.Count != 0)
-    //             {
-    //                 foreach (var map in vendorsBySourceItemId.SelectMany(c => c.ENpcs)
-    //                              .SelectMany(c => c.Locations).Select(c => c.MapEx.Value).Distinct())
-    //                 {
-    //                     if (map == null) continue;
-    //                     maps.Add(map.RowId);
-    //                 }
-    //             }
-    //         }
-    //         else if (preferenceType == IngredientPreferenceType.Mobs)
-    //         {
-    //             var locations = MobDrops.SelectMany(c => c.MobSpawnPositions).Select(c => c.MapEx.Value).Distinct()
-    //                 .ToList();
-    //             if (locations.Count != 0)
-    //             {
-    //                 foreach (var map in locations)
-    //                 {
-    //                     if (map == null) continue;
-    //                     maps.Add(map.RowId);
-    //                 }
-    //             }
-    //         }
-    //         else if (preferenceType == IngredientPreferenceType.Botany)
-    //         {
-    //             var gatheringSources = GetGatheringSources();
-    //             foreach (var gatheringSource in gatheringSources)
-    //             {
-    //                 if (gatheringSource.IsHarvesting || gatheringSource.IsLogging)
-    //                 {
-    //                     maps.Add(gatheringSource.TerritoryType.Map.Row);
-    //                 }
-    //             }
-    //         }
-    //         else if (preferenceType == IngredientPreferenceType.Mining)
-    //         {
-    //             var gatheringSources = GetGatheringSources();
-    //             foreach (var gatheringSource in gatheringSources)
-    //             {
-    //                 if (gatheringSource.IsMining || gatheringSource.IsQuarrying)
-    //                 {
-    //                     maps.Add(gatheringSource.TerritoryType.Map.Row);
-    //                 }
-    //             }
-    //         }
-    //
-    //         this.sourceMaps[sourceKey] = maps;
-    //     }
-    //     return this.sourceMaps[sourceKey];
-    // }
 
     //Vendors
 
@@ -515,7 +468,31 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool AvailableAtEphemeralNode => this.GatheringItems?.Any(c => c.AvailableAtEphemeralNode) ?? false;
 
-    public string NameString => this.Base.Name.ExtractText();
+    public string NameString
+    {
+        get
+        {
+            if (this.RowId == HardcodedItems.FreeCompanyCreditItemId)
+            {
+                return this.Sheet.GetAddonSheet().GetRow(102233).Base.Text.ExtractText();
+            }
+
+            return this.Base.Name.ExtractText();
+        }
+    }
+
+    public ushort Icon
+    {
+        get
+        {
+            if (this.RowId == HardcodedItems.FreeCompanyCreditItemId)
+            {
+                return 65011;
+            }
+
+            return this.Base.Icon;
+        }
+    }
 
     public string GarlandToolsId
     {
