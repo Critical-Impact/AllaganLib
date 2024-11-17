@@ -33,6 +33,25 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     private Dictionary<ItemInfoType, HashSet<uint>>? useMapLocationsByType;
     private ClassJobCategoryRow? classJobCategory;
 
+    public enum ActionType : ushort
+    {
+        Minions = 853, // minions
+        Bardings = 1_013, // bardings
+        Mounts = 1_322, // mounts
+        CrafterBooks = 2_136, // crafter books
+        Miscellaneous = 2_633, // riding maps, blu totems, emotes/dances, hairstyles
+        Cards = 3_357, // cards
+        GathererBooks = 4_107, // gatherer books
+        OrchestrionRolls = 25_183, // orchestrion rolls
+        // these appear to be server-side
+        // FieldNotes = 19_743, // bozjan field notes
+        FashionAccessories = 20_086, // fashion accessories
+        // missing: 2_894 (always false),
+        FramersKits = 29_459,
+    }
+
+    private static readonly ActionType[] ValidActions = (ActionType[])Enum.GetValues(typeof(ActionType));
+
     public uint RowId => this.Base.RowId;
 
     public string SearchString
@@ -95,6 +114,26 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     public CabinetCategoryRow? CabinetCategory => this.Sheet.GetCabinetCategory(this.RowId);
 
     //Acqusition
+    public bool CanBeAcquired
+    {
+        get
+        {
+            var action = this.Base.ItemAction.ValueNullable;
+            return IsValidAction(action);
+        }
+    }
+
+    public static bool IsValidAction(ItemAction? action)
+    {
+        if (action == null || action.Value.RowId == 0)
+        {
+            return false;
+        }
+
+        var type = (ActionType)action.Value.Type;
+        return ValidActions.Contains(type);
+    }
+
     public List<ItemSource> Sources => this.sources ??= this.Sheet.GetItemSources(this.RowId);
 
     public List<ItemSource> Uses => this.uses ??= this.Sheet.GetItemUses(this.RowId);
@@ -439,7 +478,11 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
 
     //CraftRecipe
+    public bool CanOpenCraftLog => this.Sheet.SheetManager.GetSheet<RecipeSheet>().HasRecipesByItemId(this.RowId);
+
     public bool CanBeCrafted => this.Sheet.SheetManager.GetSheet<RecipeSheet>().HasRecipesByItemId(this.RowId) || this.CompanyCraftSequence != null;
+
+    public bool IsCompanyCraft => this.CompanyCraftSequence != null;
 
     public List<RecipeRow> Recipes => this.Sheet.SheetManager.GetSheet<RecipeSheet>().GetRecipesByItemId(this.RowId) ?? new List<RecipeRow>();
 
@@ -449,6 +492,8 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     //Gathering
     public List<GatheringItemRow> GatheringItems => this.gatheringItems ??= this.Sheet.GetGatheringItems(this.RowId) ?? new List<GatheringItemRow>();
+
+    public bool CanBeGathered => this.HasSourcesByCategory(ItemInfoCategory.Gathering);
 
     public List<GatheringPointTransientRow> GatheringPointTransients => this.gatheringPointTransients ??=
         this.GatheringItems.SelectMany(c => c.GatheringPointTransients.ToList()).ToList();

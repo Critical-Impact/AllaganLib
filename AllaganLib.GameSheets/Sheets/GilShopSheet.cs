@@ -5,7 +5,6 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina;
-using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
 

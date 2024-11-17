@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Extensions;
 using AllaganLib.GameSheets.Model;
 using Autofac;
-using Autofac.Core;
 using Lumina;
 using Lumina.Excel;
 using LuminaSupplemental.Excel.Model;

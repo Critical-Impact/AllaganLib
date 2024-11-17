@@ -3,7 +3,7 @@ using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;
 
-public class TerritoryTypeRow : ExtendedRow<TerritoryType, TerritoryTypeRow, TerritoryTypeSheet>
+public class AddonRow : ExtendedRow<Addon, AddonRow, AddonSheet>
 {
     
 }

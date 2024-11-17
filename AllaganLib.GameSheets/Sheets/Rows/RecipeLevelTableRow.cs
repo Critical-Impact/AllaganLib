@@ -1,9 +1,8 @@
 using System;
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class RecipeLevelTableRow : ExtendedRow<RecipeLevelTable, RecipeLevelTableRow, RecipeLevelTableSheet>
 {

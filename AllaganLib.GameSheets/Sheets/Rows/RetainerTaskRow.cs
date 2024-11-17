@@ -2,36 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, RetainerTaskSheet>
 {
     private ClassJobCategoryRow? classJobCategoryRow;
     private RetainerTaskNormalRow? retainerTaskNormalRow;
     private RetainerTaskRandomRow? retainerTaskRandomRow;
-    
+
     public ClassJobCategoryRow? ClassJobCategoryRow => this.Base.ClassJobCategory.IsValid ? this.classJobCategoryRow ??=
         this.Sheet.GetClassJobCategorySheet().GetRow(this.Base.ClassJobCategory.RowId) : null;
-    
+
     public RetainerTaskNormalRow? RetainerTaskNormalRow => this.Base.Task.Is<RetainerTaskNormal>() ? this.retainerTaskNormalRow ??=
         this.Sheet.GetRetainerTaskNormalSheet().GetRow(this.Base.Task.RowId) : null;
-    
+
     public RetainerTaskRandomRow? RetainerTaskRandomRow => this.Base.Task.Is<RetainerTaskRandom>() ? this.retainerTaskRandomRow ??=
         this.Sheet.GetRetainerTaskRandomSheet().GetRow(this.Base.Task.RowId) : null;
-    
+
     public bool IsGatheringVenture => this.ClassJobCategoryRow?.IsGathering ?? false;
-    
+
     public bool IsFishingVenture => this.ClassJobCategoryRow?.Base.FSH ?? false;
-    
+
     public bool IsMiningVenture => this.ClassJobCategoryRow?.Base.MIN ?? false;
-    
+
     public bool IsBotanistVenture => this.ClassJobCategoryRow?.Base.BTN ?? false;
-    
+
     public bool IsCombatVenture => this.ClassJobCategoryRow?.IsCombat ?? false;
-    
+
     public uint Quantity
     {
         get
@@ -40,16 +39,16 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
             {
                 return this.RetainerTaskNormalRow.Base.Quantity.LastOrDefault();
             }
-            
+
             if (this.RetainerTaskRandomRow != null)
             {
                 return 1;
             }
-            
+
             return 0;
         }
     }
-    
+
     public string Quantities
     {
         get
@@ -58,16 +57,16 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
             {
                 return this.RetainerTaskNormalRow.Quantities;
             }
-            
+
             if (this.RetainerTaskRandomRow != null)
             {
                 return "1";
             }
-            
+
             return "0";
         }
     }
-    
+
     public RetainerTaskType RetainerTaskType
     {
         get
@@ -114,13 +113,13 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
                     return RetainerTaskType.Hunting;
                 }
             }
-            
+
             return RetainerTaskType.Unknown;
         }
     }
-    
+
     private List<ItemRow>? drops;
-    
+
     public List<ItemRow> Drops
     {
         get
@@ -129,7 +128,7 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
             {
                 return this.drops;
             }
-            
+
             var dropsList = new List<ItemRow>();
             if (this.RetainerTaskRandomRow != null)
             {
@@ -147,15 +146,15 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
                     }
                 }
             }
-            
+
             this.drops = dropsList;
-            
+
             return this.drops;
         }
     }
-    
+
     private string? formattedName;
-    
+
     public string FormattedName
     {
         get
@@ -175,11 +174,11 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
                     this.formattedName = "Unknown Task";
                 }
             }
-            
+
             return this.formattedName;
         }
     }
-    
+
     public string ExperienceString
     {
         get
@@ -188,11 +187,11 @@ public class RetainerTaskRow : ExtendedRow<RetainerTask, RetainerTaskRow, Retain
             {
                 return this.Base.Experience.ToString();
             }
-            
+
             return "N/A";
         }
     }
-    
+
     public string DurationString
     {
         get

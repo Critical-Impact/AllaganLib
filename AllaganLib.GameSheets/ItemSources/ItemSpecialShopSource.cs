@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
@@ -19,14 +18,14 @@ public class ItemSpecialShopSource : ItemShopSource
 
     public SpecialShopRow SpecialShop => this.specialShop;
 
-    public ItemSpecialShopSource(IShopListingItem shopListingItem, IShopListing shopListing, SpecialShopRow specialShop)
+    public ItemSpecialShopSource(ItemRow reward, ItemRow? cost, IShopListingItem shopListingItem, IShopListing shopListing, SpecialShopRow specialShop)
         : base(specialShop, ItemInfoType.SpecialShop)
     {
         this.shopListing = shopListing;
         this.specialShop = specialShop;
         this.shopListingItem = shopListingItem;
-        this.Item = shopListingItem.Item;
-        this.CostItem = shopListing.Costs.FirstOrDefault()?.Item;
+        this.Item = reward;
+        this.CostItem = cost;
     }
 
     public override uint Quantity => this.shopListingItem.Count;

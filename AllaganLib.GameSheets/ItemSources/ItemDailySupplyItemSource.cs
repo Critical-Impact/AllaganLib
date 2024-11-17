@@ -1,5 +1,4 @@
 using AllaganLib.GameSheets.Caches;
-using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
@@ -9,6 +8,9 @@ public class ItemDailySupplyItemSource : ItemSource
     private readonly int supplyIndex;
 
     public DailySupplyItemRow DailySupplyItem { get; }
+
+    public GCSupplyDutyRewardRow? DailySupplyRewardRow =>
+        this.DailySupplyItem.GetGCSupplyDutyRewardRow(this.supplyIndex);
 
     public ItemDailySupplyItemSource(DailySupplyItemRow dailySupplyItem, int supplyIndex, ItemRow itemRow)
         : base(ItemInfoType.GCDailySupply)

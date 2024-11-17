@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Extensions;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
+using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina;
 using Lumina.Excel.Sheets;
 

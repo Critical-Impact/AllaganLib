@@ -6,16 +6,15 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemCompanyCraftRequirementSource : ItemSource
 {
-    public RecipeRow Recipe { get; }
-
     public CompanyCraftSequenceRow CompanyCraftSequence { get; }
 
     public CompanyCraftMaterial CompanyCraftMaterial { get; }
 
-    public ItemCompanyCraftRequirementSource(ItemRow item, CompanyCraftMaterial companyCraftMaterial, CompanyCraftSequenceRow companyCraftSequence)
+    public ItemCompanyCraftRequirementSource(ItemRow item, ItemRow costItem, CompanyCraftMaterial companyCraftMaterial, CompanyCraftSequenceRow companyCraftSequence)
         : base(ItemInfoType.FreeCompanyCraftRecipe)
     {
         this.Item = item;
+        this.CostItem = costItem;
         this.CompanyCraftSequence = companyCraftSequence;
         this.CompanyCraftMaterial = companyCraftMaterial;
     }

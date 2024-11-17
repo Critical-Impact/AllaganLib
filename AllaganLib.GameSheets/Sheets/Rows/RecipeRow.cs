@@ -9,6 +9,9 @@ public class RecipeRow : ExtendedRow<Recipe, RecipeRow, RecipeSheet>
     private CraftTypeRow? craftTypeRow;
     private RecipeLevelTableRow? recipeLevelTableRow;
     private Dictionary<uint, uint>? ingredientCounts;
+    private ItemRow? itemResult;
+
+    public ItemRow? ItemResult => this.itemResult ??= this.Sheet.GetItemSheet().GetRowOrDefault(this.Base.ItemResult.RowId);
 
     public CraftTypeRow? CraftType
     {

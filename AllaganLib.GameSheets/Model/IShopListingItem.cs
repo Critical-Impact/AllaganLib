@@ -1,6 +1,4 @@
 using AllaganLib.GameSheets.Sheets.Rows;
-using Lumina.Excel;
-
 
 namespace AllaganLib.GameSheets.Model
 {

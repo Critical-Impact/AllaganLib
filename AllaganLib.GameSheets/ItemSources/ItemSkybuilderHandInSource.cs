@@ -1,5 +1,6 @@
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Sheets.Rows;
+using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
@@ -15,6 +16,9 @@ public class ItemSkybuilderHandInSource : ItemSource
         this.CrafterSupplyRow = crafterSupplyRow;
         this.Item = item;
     }
+
+    public HWDCrafterSupply.HWDCrafterSupplyParamsStruct HWDCrafterSupplyParams =>
+        this.CrafterSupplyRow.Base.HWDCrafterSupplyParams[this.rowIndex];
 
     public byte Level => this.CrafterSupplyRow.Base.HWDCrafterSupplyParams[this.rowIndex].Level;
 

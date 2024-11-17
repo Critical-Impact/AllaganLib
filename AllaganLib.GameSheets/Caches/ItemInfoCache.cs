@@ -271,11 +271,13 @@ public class ItemInfoCache
 
         foreach (var recipe in recipeSheet)
         {
-            var source = new ItemCraftResultSource(itemSheet.GetRow(recipe.Base.ItemResult.RowId), recipe);
+            var result = itemSheet.GetRow(recipe.Base.ItemResult.RowId);
+            var source = new ItemCraftResultSource(result, recipe);
             this.AddItemSource(source);
             foreach (var ingredientCount in recipe.IngredientCounts)
             {
-                var use = new ItemCraftRequirementSource(itemSheet.GetRow(ingredientCount.Key), recipe);
+                var ingredientItem = itemSheet.GetRow(ingredientCount.Key);
+                var use = new ItemCraftRequirementSource(result, ingredientItem, recipe);
                 this.AddItemUse(use);
                 this.AddItemSourceUseCombo(source, use);
             }
@@ -298,7 +300,12 @@ public class ItemInfoCache
             this.AddItemSource(source);
             foreach (var requiredItem in companyCraftSequence.MaterialsRequired(null))
             {
-                var use = new ItemCompanyCraftRequirementSource(item, requiredItem, companyCraftSequence);
+                var costItem = itemSheet.GetRowOrDefault(requiredItem.ItemId);
+                if (costItem == null)
+                {
+                    continue;
+                }
+                var use = new ItemCompanyCraftRequirementSource(item, costItem, requiredItem, companyCraftSequence);
                 this.AddItemUse(use);
                 this.AddItemSourceUseCombo(source, use);
             }
@@ -359,6 +366,12 @@ public class ItemInfoCache
 
             foreach (var specialShopListing in specialShop.SpecialShopListings)
             {
+                // Fix for blank items that SQ seems to have added
+                if (specialShopListing.Rewards.All(c => c.Item.Icon == 0))
+                {
+                    continue;
+                }
+
                 List<ItemSource> sources = new();
                 foreach (var shopListingItem in specialShopListing.Rewards)
                 {
@@ -368,35 +381,27 @@ public class ItemInfoCache
                         this.AddItemSource(source);
                         this.AddItemSourceMapLocation(source.Item.RowId, mapIds, ItemInfoType.FateShop);
                         sources.Add(source);
-                    }
-                    else
-                    {
-                        var source = new ItemSpecialShopSource(shopListingItem, specialShopListing, specialShop);
-                        this.AddItemSource(source);
-                        this.AddItemSourceMapLocation(shopListingItem.Item.RowId, mapIds, ItemInfoType.SpecialShop);
-                        sources.Add(source);
-                    }
-                }
 
-                foreach (var cost in specialShopListing.Costs)
-                {
-                    if (specialShop is { IsFateShop: true, FateShop: not null })
-                    {
-                        var use = new ItemFateShopSource(cost, specialShopListing, specialShop.FateShop, specialShop);
-                        this.AddItemUse(use);
-                        this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.FateShop);
-                        foreach (var source in sources)
+                        foreach (var cost in specialShopListing.Costs)
                         {
+                            var use = new ItemFateShopSource(cost, specialShopListing, specialShop.FateShop, specialShop);
+                            this.AddItemUse(use);
+                            this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.FateShop);
                             this.AddItemSourceUseCombo(source, use);
                         }
                     }
                     else
                     {
-                        var use = new ItemSpecialShopSource(cost, specialShopListing, specialShop);
-                        this.AddItemUse(use);
-                        this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.SpecialShop);
-                        foreach (var source in sources)
+                        var source = new ItemSpecialShopSource(shopListingItem.Item, null, shopListingItem, specialShopListing, specialShop);
+                        this.AddItemSource(source);
+                        this.AddItemSourceMapLocation(shopListingItem.Item.RowId, mapIds, ItemInfoType.SpecialShop);
+                        sources.Add(source);
+
+                        foreach (var cost in specialShopListing.Costs)
                         {
+                            var use = new ItemSpecialShopSource(shopListingItem.Item, cost.Item, shopListingItem, specialShopListing, specialShop);
+                            this.AddItemUse(use);
+                            this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.SpecialShop);
                             this.AddItemSourceUseCombo(source, use);
                         }
                     }
@@ -444,7 +449,7 @@ public class ItemInfoCache
             {
                 var mapIds = bNpcNameRow.MapIds;
 
-                this.AddItemSource(new ItemMonsterDropSource(item, bNpcNameRow));
+                this.AddItemSource(new ItemMonsterDropSource(item, bNpcNameRow, mobDrop));
                 this.AddItemSourceMapLocation(mobDrop.Item.RowId, mapIds, ItemInfoType.Monster);
             }
         }

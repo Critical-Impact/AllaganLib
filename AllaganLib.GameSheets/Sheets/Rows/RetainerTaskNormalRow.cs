@@ -2,7 +2,7 @@ using System.Linq;
 using AllaganLib.GameSheets.Model;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class RetainerTaskNormalRow : ExtendedRow<RetainerTaskNormal, RetainerTaskNormalRow, RetainerTaskNormalSheet>
 {

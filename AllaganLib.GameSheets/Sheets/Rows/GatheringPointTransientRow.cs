@@ -2,7 +2,7 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.Shared.Time;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class GatheringPointTransientRow : ExtendedRow<GatheringPointTransient, GatheringPointTransientRow, GatheringPointTransientSheet>
 {

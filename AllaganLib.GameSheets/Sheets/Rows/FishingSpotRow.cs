@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSpotSheet>
 {

@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using AllaganLib.GameSheets.Sheets;
-using AllaganLib.GameSheets.Sheets.Rows;
-using Lumina.Excel;
 
+using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.Model
 {

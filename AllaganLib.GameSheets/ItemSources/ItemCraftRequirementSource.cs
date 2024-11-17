@@ -7,10 +7,11 @@ public class ItemCraftRequirementSource : ItemSource
 {
     public RecipeRow Recipe { get; }
 
-    public ItemCraftRequirementSource(ItemRow item, RecipeRow recipe)
+    public ItemCraftRequirementSource(ItemRow item, ItemRow ingredient, RecipeRow recipe)
         : base(ItemInfoType.CraftRecipe)
     {
         this.Item = item;
+        this.CostItem = ingredient;
         this.Recipe = recipe;
     }
 
