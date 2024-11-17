@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.2] - 2024-11-17
+
+### Fixed
+
+- AllaganLib.GameData
+  - Updates to the sources/uses
+  - Daily supply item now has a link to the reward row
+  - Fix namespaces/formatting in AllaganLib.GameSheets
+
 ## [1.1.1] - 2024-11-16
 
 ### Added
@@ -22,7 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - General improvements to the ItemInfoCache
   - Filter out -1 ingredients in the RecipeSheet
   - Improvements to uses
-
 
 ## [1.1.0] - 2024-11-13
 
