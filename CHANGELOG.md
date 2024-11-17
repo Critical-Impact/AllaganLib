@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.3] - 2024-11-17
+
+### Fixed
+
+- AllaganLib.GameData
+  - Remove dependency on DotBenchmark
+
 ## [1.1.2] - 2024-11-17
 
 ### Fixed
