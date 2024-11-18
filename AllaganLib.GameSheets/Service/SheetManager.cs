@@ -10,6 +10,8 @@ using Lumina.Excel;
 using LuminaSupplemental.Excel.Model;
 using LuminaSupplemental.Excel.Services;
 
+using ILogger = Serilog.ILogger;
+
 namespace AllaganLib.GameSheets.Service;
 
 /// <summary>
@@ -77,6 +79,11 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterType<NpcShopCache>().SingleInstance();
         containerBuilder.RegisterType<NpcLevelCache>().SingleInstance();
         containerBuilder.RegisterType<ItemInfoCache>().SingleInstance();
+        if (startupOptions.Logger != null)
+        {
+            containerBuilder.RegisterInstance(startupOptions.Logger).As<ILogger>();
+        }
+
         containerBuilder.RegisterInstance(startupOptions).SingleInstance();
         containerBuilder.RegisterExtendedSheets();
         containerBuilder.RegisterCsv<AirshipDrop>(CsvLoader.AirshipDropResourceName);

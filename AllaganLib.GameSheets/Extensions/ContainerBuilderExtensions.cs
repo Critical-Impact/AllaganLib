@@ -10,6 +10,7 @@ using Lumina;
 using Lumina.Excel;
 using LuminaSupplemental.Excel.Model;
 using LuminaSupplemental.Excel.Services;
+using ILogger = Serilog.ILogger;
 
 namespace AllaganLib.GameSheets.Extensions;
 
@@ -19,10 +20,11 @@ public static class ContainerBuilderExtensions
     /// Registers the services/classes required to use SheetManager in your own container. This starts a second container that the SheetManager controls, allowing it to handle it's own disposal.
     /// </summary>
     /// <param name="containerBuilder"></param>
-    public static void RegisterGameSheetManager(this ContainerBuilder containerBuilder)
+    /// <param name="sheetManagerStartupOptions"></param>
+    public static void RegisterGameSheetManager(this ContainerBuilder containerBuilder, SheetManagerStartupOptions? sheetManagerStartupOptions = null)
     {
         containerBuilder.RegisterType<SheetManager>().SingleInstance();
-        containerBuilder.Register<SheetManagerStartupOptions>(c => new SheetManagerStartupOptions()).SingleInstance();
+        containerBuilder.Register<SheetManagerStartupOptions>(c => sheetManagerStartupOptions ?? new SheetManagerStartupOptions()).SingleInstance();
         containerBuilder.Register<SheetIndexer>(c => c.Resolve<SheetManager>().SheetIndexer).SingleInstance().ExternallyOwned();
         containerBuilder.Register<ItemInfoCache>(c => c.Resolve<SheetManager>().ItemInfoCache).SingleInstance().ExternallyOwned();
         containerBuilder.Register<NpcLevelCache>(c => c.Resolve<SheetManager>().NpcLevelCache).SingleInstance().ExternallyOwned();
@@ -106,27 +108,33 @@ public static class ContainerBuilderExtensions
         where T : ICsv, new()
     {
         var gameData = context.Resolve<GameData>();
+        ILogger? logger = null;
+        context.TryResolve(out logger);
+        logger?.Verbose($"Loading data from {resourceName}");
         try
         {
             var lines = CsvLoader.LoadResource<T>(
                 resourceName,
                 out var failedLines,
+                out var exceptions,
                 gameData,
                 gameData.Options.DefaultExcelLanguage);
 
+            foreach (var exception in exceptions.Select(c => c.Message))
+            {
+                logger?.Error(string.Join(",", exception));
+            }
+
             if (failedLines.Count != 0)
             {
-                foreach (var failedLine in failedLines)
-                {
-                    // Handle or log failed lines here
-                }
+                logger?.Error($"Failed to load CSV data from {resourceName}: {string.Join(",", failedLines)}");
             }
 
             return lines;
         }
         catch (Exception e)
         {
-            // Handle or log exception here
+            logger?.Error($"Failed to load CSV data from {resourceName} - " + e.ToString());
         }
 
         return new List<T>();

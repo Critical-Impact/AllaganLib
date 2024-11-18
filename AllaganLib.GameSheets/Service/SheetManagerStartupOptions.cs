@@ -1,5 +1,6 @@
 using System;
 using Autofac;
+using Serilog;
 
 namespace AllaganLib.GameSheets.Service;
 
@@ -29,4 +30,9 @@ public class SheetManagerStartupOptions
     /// If you need to add custom sheets/classes to the SheetManager container, you can provide a hook that the SheetManager will run will building it's container.
     /// </summary>
     public Action<ContainerBuilder>? ContainerBuilderHook { get; set; } = null;
+
+    /// <summary>
+    /// A serilog logger to output any errors/debug messages to
+    /// </summary>
+    public ILogger? Logger { get; set; } = null;
 }
