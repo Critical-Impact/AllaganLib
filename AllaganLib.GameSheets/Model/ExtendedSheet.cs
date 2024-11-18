@@ -27,7 +27,7 @@ public abstract class ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> : IRead
         ItemInfoCache itemInfoCache)
     {
         this.GameData = gameData;
-        this.BaseSheet = gameData.GetExcelSheet<TBase>(Language.English)!;
+        this.BaseSheet = gameData.GetExcelSheet<TBase>(gameData.Options.DefaultExcelLanguage)!;
         this.SheetManager = sheetManager;
         this.SheetIndexer = sheetIndexer;
         this.ItemInfoCache = itemInfoCache;

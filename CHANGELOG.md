@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.4] - 2024-11-18
+
+### Fixed
+
+- AllaganLib.GameData
+  - Stopped SheetManager from always loading sheets in english
+  - Stopped certain gathering points from showing up that had bad data
+  - Added item uses: Chocobo Item, Indoor Furnishing
+  - Added item sources: Achievement
+
 ## [1.1.3] - 2024-11-17
 
 ### Fixed

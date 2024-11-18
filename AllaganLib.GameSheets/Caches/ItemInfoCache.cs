@@ -6,6 +6,9 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
 using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Helpers;
+using Lumina;
+using Lumina.Excel;
+using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
 
 namespace AllaganLib.GameSheets.Caches;
@@ -14,6 +17,7 @@ public class ItemInfoCache
 {
     private readonly SheetManager sheetManager;
     private readonly SheetIndexer sheetIndexer;
+    private readonly GameData gameData;
     private readonly List<StoreItem> storeItems;
     private readonly List<MobDrop> mobDrops;
     private readonly List<MobSpawnPosition> mobSpawnPositions;
@@ -46,6 +50,7 @@ public class ItemInfoCache
     public ItemInfoCache(
         SheetManager sheetManager,
         SheetIndexer sheetIndexer,
+        GameData gameData,
         List<StoreItem> storeItems,
         List<MobDrop> mobDrops,
         List<MobSpawnPosition> mobSpawnPositions,
@@ -62,6 +67,7 @@ public class ItemInfoCache
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
+        this.gameData = gameData;
         this.storeItems = storeItems;
         this.mobDrops = mobDrops;
         this.mobSpawnPositions = mobSpawnPositions;
@@ -243,6 +249,57 @@ public class ItemInfoCache
         var hwdCrafterSupplySheet = this.sheetManager.GetSheet<HWDCrafterSupplySheet>();
         var craftLeveSheet = this.sheetManager.GetSheet<CraftLeveSheet>();
         var cabinetSheet = this.sheetManager.GetSheet<CabinetSheet>();
+        var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
+        var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
+        var furnitureCatalogSheet = this.gameData.GetExcelSheet<FurnitureCatalogItemList>()!;
+
+        foreach (var furnitureCatalogItem in furnitureCatalogSheet)
+        {
+            if (!furnitureCatalogItem.Item.IsValid || furnitureCatalogItem.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            var item = itemSheet.GetRowOrDefault(furnitureCatalogItem.Item.RowId);
+
+            if (item != null)
+            {
+                var source = new ItemFurnitureSource(item, new RowRef<FurnitureCatalogItemList>(this.gameData.Excel, furnitureCatalogItem.RowId));
+                this.AddItemUse(source);
+            }
+        }
+
+        foreach (var achievement in achievementSheet)
+        {
+            if (!achievement.Item.IsValid || achievement.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            var item = itemSheet.GetRowOrDefault(achievement.Item.RowId);
+
+            if (item != null)
+            {
+                var source = new ItemAchievementSource(item, new RowRef<Achievement>(this.gameData.Excel, achievement.RowId));
+                this.AddItemSource(source);
+            }
+        }
+
+        foreach (var buddyItem in buddyItemSheet)
+        {
+            if (!buddyItem.Item.IsValid || buddyItem.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            var item = itemSheet.GetRowOrDefault(buddyItem.Item.RowId);
+
+            if (item != null)
+            {
+                var source = new ItemBuddySource(item, new RowRef<Buddy>(this.gameData.Excel, buddyItem.RowId));
+                this.AddItemUse(source);
+            }
+        }
 
         foreach (var cabinet in cabinetSheet)
         {

@@ -253,6 +253,8 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool ObtainedFishing => this.sources?.Any(c => c.Type == ItemInfoType.Fishing) ?? false;
 
+    public bool ObtainedAchievement => this.sources?.Any(c => c.Type == ItemInfoType.Achievement) ?? false;
+
     public bool ObtainedSpearFishing => this.sources?.Any(c => c.Type == ItemInfoType.Spearfishing) ?? false;
 
     public bool ObtainedNormalVenture => this.sources?.Any(c => c.Type.IsNormalVenture()) ?? false;
@@ -274,6 +276,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     public uint SellToVendorPriceHQ => this.Base.PriceLow + 1;
 
     public uint BuyFromVendorPriceHQ => this.Base.PriceMid + 1;
+
+    public bool IsBuddyItem => this.uses?.Any(c => c.Type == ItemInfoType.BuddyItem) ?? false;
+
+    public bool IsFurnitureItem => this.uses?.Any(c => c.Type == ItemInfoType.FurnitureItem) ?? false;
 
     public bool CanTryOn
     {

@@ -57,4 +57,7 @@ public enum ItemInfoType
     GCDailySupply,
     CraftLeve,
     Armoire,
+    Achievement,
+    BuddyItem,
+    FurnitureItem,
 }
