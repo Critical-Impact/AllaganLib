@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Use dalamud serilog
 - Bump LuminaSupplemental.Excel
-- SheetManager now accepts a ILogger in it's options
+- SheetManager now accepts a ILogger in its options
 
 ## [1.1.5] - 2024-11-18
 
