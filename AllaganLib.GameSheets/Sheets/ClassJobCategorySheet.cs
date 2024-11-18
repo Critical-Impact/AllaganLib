@@ -35,7 +35,7 @@ public class ClassJobCategorySheet : ExtendedSheet<ClassJobCategory, ClassJobCat
         return this.classJobCategoryLookup.TryGetValue(classJobCategory, out var value) && value.Contains(classJobId);
     }
 
-    public void CalculateClassJobCategoryLookup()
+    private void CalculateClassJobCategoryLookup()
     {
         if (!this.classJobCategoryLookupCalculated)
         {
@@ -55,11 +55,13 @@ public class ClassJobCategorySheet : ExtendedSheet<ClassJobCategory, ClassJobCat
 
             foreach (var classJobCategory in this)
             {
+                if (classJobCategory.RowId == 0) continue;
+
                 //Dont hate me, there's now probably a better way to do this now
                 var map = new HashSet<uint>();
                 foreach (var prop in propertyInfos)
                 {
-                    var parsed = prop.GetValue(classJobCategory, null);
+                    var parsed = prop.GetValue(classJobCategory.Base, null);
                     if (parsed is bool b && (bool?)b == true)
                     {
                         if (classJobMap.TryGetValue(prop.Name, out var classJobRowId))

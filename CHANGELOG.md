@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.5] - 2024-11-18
+
+### Fixed
+
+- AllaganLib.GameData
+  - Added shared model methods on ItemRow and the classes required to determine the primary model string
+  - Fixed a bug in the "IsItemEquppableBy" method in ClassJobCategorySheet
+
 ## [1.1.4] - 2024-11-18
 
 ### Fixed
