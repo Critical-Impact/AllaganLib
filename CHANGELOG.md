@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.7] - 2024-11-21 
+
+### Updated
+
+- Updated LuminaSupplemental
+
+### Added
+
+- AllaganLib.GameData
+  - Add new uses ItemStainSource and ItemGlamourReadySource
+
+
 ## [1.1.6] - 2024-11-18
 
 ### Fixed

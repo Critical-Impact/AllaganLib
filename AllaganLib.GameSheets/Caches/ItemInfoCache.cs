@@ -6,6 +6,7 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
 using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Helpers;
+using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -249,9 +250,44 @@ public class ItemInfoCache
         var hwdCrafterSupplySheet = this.sheetManager.GetSheet<HWDCrafterSupplySheet>();
         var craftLeveSheet = this.sheetManager.GetSheet<CraftLeveSheet>();
         var cabinetSheet = this.sheetManager.GetSheet<CabinetSheet>();
+        var stainSheet = this.gameData.GetExcelSheet<Stain>()!;
+        var stainTransientSheet = this.gameData.GetExcelSheet<StainTransient>()!;
         var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
         var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
         var furnitureCatalogSheet = this.gameData.GetExcelSheet<FurnitureCatalogItemList>()!;
+        var mirageStoreSetItemLookupSheet = this.gameData.GetExcelSheet<MirageStoreSetItemLookup>()!;
+
+        foreach (var stain in stainSheet)
+        {
+            if (stain.RowId == 0)
+            {
+                continue;
+            }
+
+            var stainTransient = stainTransientSheet.GetRow(stain.RowId);
+
+            if (stainTransient.Item1.IsValid && stainTransient.Item1.RowId != 0)
+            {
+                var item = itemSheet.GetRowOrDefault(stainTransient.Item1.RowId);
+
+                if (item != null)
+                {
+                    var source = new ItemStainSource(item, new RowRef<Stain>(this.gameData.Excel, stain.RowId));
+                    this.AddItemUse(source);
+                }
+            }
+
+            if (stainTransient.Item2.IsValid && stainTransient.Item2.RowId != 0)
+            {
+                var item = itemSheet.GetRowOrDefault(stainTransient.Item2.RowId);
+
+                if (item != null)
+                {
+                    var source = new ItemStainSource(item, new RowRef<Stain>(this.gameData.Excel, stain.RowId));
+                    this.AddItemUse(source);
+                }
+            }
+        }
 
         foreach (var furnitureCatalogItem in furnitureCatalogSheet)
         {
@@ -283,6 +319,36 @@ public class ItemInfoCache
                 var source = new ItemAchievementSource(item, new RowRef<Achievement>(this.gameData.Excel, achievement.RowId));
                 this.AddItemSource(source);
             }
+        }
+
+        Dictionary<uint, HashSet<uint>> setItems = new();
+
+        foreach (var mirageStoreSetItem in mirageStoreSetItemLookupSheet)
+        {
+
+            if (mirageStoreSetItem.Item[0].RowId == 0)
+            {
+                continue;
+            }
+
+            var setItem = mirageStoreSetItem.Item[0].RowId;
+
+            for (var index = 1; index < mirageStoreSetItem.Item.Count; index++)
+            {
+                var mainItem = mirageStoreSetItem.Item[index];
+                if (!mainItem.IsValid || mainItem.RowId == 0)
+                {
+                    continue;
+                }
+                setItems.TryAdd(mainItem.RowId, new HashSet<uint>());
+                setItems[mainItem.RowId].Add(setItem);
+            }
+        }
+
+        foreach (var setItem in setItems)
+        {
+            var source = new ItemGlamourReadySource(itemSheet.GetRow(setItem.Key), setItem.Value.Select(c => itemSheet.GetRow(c)).ToList());
+            this.AddItemUse(source);
         }
 
         foreach (var buddyItem in buddyItemSheet)

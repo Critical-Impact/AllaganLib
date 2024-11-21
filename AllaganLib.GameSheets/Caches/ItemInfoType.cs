@@ -60,4 +60,6 @@ public enum ItemInfoType
     Achievement,
     BuddyItem,
     FurnitureItem,
+    Stain,
+    GlamourReady
 }
