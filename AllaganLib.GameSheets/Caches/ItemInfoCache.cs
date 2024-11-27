@@ -246,16 +246,33 @@ public class ItemInfoCache
         var satisfactionSupplySheet = this.sheetManager.GetSheet<SatisfactionSupplySheet>();
         var hwdGathererInspectionSheet = this.sheetManager.GetSheet<HWDGathererInspectionSheet>();
         var aquariumFishSheet = this.sheetManager.GetSheet<AquariumFishSheet>();
-        var dailySupplyItemSheet = this.sheetManager.GetSheet<DailySupplyItemSheet>();
+        var gcSupplyDutySheet = this.sheetManager.GetSheet<GCSupplyDutySheet>();
         var hwdCrafterSupplySheet = this.sheetManager.GetSheet<HWDCrafterSupplySheet>();
         var craftLeveSheet = this.sheetManager.GetSheet<CraftLeveSheet>();
         var cabinetSheet = this.sheetManager.GetSheet<CabinetSheet>();
+        var gcSupplyDutyRewardSheet = this.sheetManager.GetSheet<GCSupplyDutyRewardSheet>();
         var stainSheet = this.gameData.GetExcelSheet<Stain>()!;
         var stainTransientSheet = this.gameData.GetExcelSheet<StainTransient>()!;
         var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
         var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
         var furnitureCatalogSheet = this.gameData.GetExcelSheet<FurnitureCatalogItemList>()!;
-        var mirageStoreSetItemLookupSheet = this.gameData.GetExcelSheet<MirageStoreSetItemLookup>()!;
+        var mirageStoreSetItemSheet = this.gameData.GetExcelSheet<MirageStoreSetItem>()!;
+
+        var rewards = gcSupplyDutyRewardSheet.ToDictionary(c => c.RowId, c => c);
+        var maxiLevel = rewards.Select(c => c.Key).Max();
+
+        foreach (var item in itemSheet)
+        {
+            if (item.Base.LevelItem.RowId <= maxiLevel && item.Base.PriceLow != 0 && item.CanTryOn &&
+                item.Base.Rarity is 2 or 3 or 7)
+            {
+                if (rewards.TryGetValue(item.Base.LevelItem.RowId, out var reward))
+                {
+                    var source = new ItemGCExpertDeliverySource(item, reward);
+                    this.AddItemUse(source);
+                }
+            }
+        }
 
         foreach (var stain in stainSheet)
         {
@@ -323,25 +340,24 @@ public class ItemInfoCache
 
         Dictionary<uint, HashSet<uint>> setItems = new();
 
-        foreach (var mirageStoreSetItem in mirageStoreSetItemLookupSheet)
+        foreach (var mirageStoreSetItem in mirageStoreSetItemSheet)
         {
-
-            if (mirageStoreSetItem.Item[0].RowId == 0)
-            {
-                continue;
-            }
-
-            var setItem = mirageStoreSetItem.Item[0].RowId;
-
-            for (var index = 1; index < mirageStoreSetItem.Item.Count; index++)
-            {
-                var mainItem = mirageStoreSetItem.Item[index];
-                if (!mainItem.IsValid || mainItem.RowId == 0)
+            List<uint> ids = new List<uint>
                 {
-                    continue;
+                    mirageStoreSetItem.Unknown0, mirageStoreSetItem.Unknown1, mirageStoreSetItem.Unknown2,
+                    mirageStoreSetItem.Unknown3, mirageStoreSetItem.Unknown4, mirageStoreSetItem.Unknown5,
+                    mirageStoreSetItem.Unknown6, mirageStoreSetItem.Unknown7, mirageStoreSetItem.Unknown8,
+                    mirageStoreSetItem.Unknown9, mirageStoreSetItem.Unknown10,
+                };
+            ids = ids.Where(c => c != 0).ToList();
+
+            foreach (var mainItem in ids)
+            {
+                foreach (var secondaryItem in ids)
+                {
+                    setItems.TryAdd(mainItem, new HashSet<uint>());
+                    setItems[mainItem].Add(secondaryItem);
                 }
-                setItems.TryAdd(mainItem.RowId, new HashSet<uint>());
-                setItems[mainItem.RowId].Add(setItem);
             }
         }
 
@@ -362,7 +378,7 @@ public class ItemInfoCache
 
             if (item != null)
             {
-                var source = new ItemBuddySource(item, new RowRef<Buddy>(this.gameData.Excel, buddyItem.RowId));
+                var source = new ItemBuddySource(item, new RowRef<BuddyItem>(this.gameData.Excel, buddyItem.RowId));
                 this.AddItemUse(source);
             }
         }
@@ -447,7 +463,7 @@ public class ItemInfoCache
 
             foreach (var gilShopItem in gilShop.GilShopItems)
             {
-                var source = new ItemGilShopSource(gilShopItem, gilShop, isCalamitySalvager ? ItemInfoType.CalamitySalvagerShop : ItemInfoType.GilShop);
+                var source = isCalamitySalvager ? new ItemCalamitySalvagerShopSource(gilShopItem, gilShop) : new ItemGilShopSource(gilShopItem, gilShop);
                 this.AddItemSource(source);
                 this.AddItemUse(source);
                 this.AddItemSourceUseCombo(source, source);
@@ -553,13 +569,15 @@ public class ItemInfoCache
             }
         }
 
+
+
         foreach (var storeItem in this.storeItems)
         {
             var item = itemSheet.GetRowOrDefault(storeItem.ItemId);
             var fittingShopItemSetRow = fittingShopItemSetSheet.GetRowOrDefault(storeItem.FittingShopItemSetId);
             if (item != null)
             {
-                this.AddItemSource(new ItemCashShopSource(item, fittingShopItemSetRow));
+                this.AddItemSource(new ItemCashShopSource(item, storeItem, fittingShopItemSetRow));
             }
         }
 
@@ -656,31 +674,31 @@ public class ItemInfoCache
                 switch (retainerTask.RetainerTaskType)
                 {
                     case RetainerTaskType.HighlandExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.MiningExplorationVenture));
+                        this.AddItemSource(new ItemHighlandExplorationVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.WoodlandExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.BotanyExplorationVenture));
+                        this.AddItemSource(new ItemWoodlandExplorationVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.WatersideExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.FishingExplorationVenture));
+                        this.AddItemSource(new ItemWatersideExplorationVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.FieldExploration:
-                        this.AddItemSource(new ItemExplorationVentureSource(drop, ventureItem, retainerTask, ItemInfoType.CombatExplorationVenture));
+                        this.AddItemSource(new ItemFieldExplorationVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.QuickExploration:
                         this.AddItemSource(new ItemQuickVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.Hunting:
-                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.CombatVenture));
+                        this.AddItemSource(new ItemHuntingVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.Mining:
-                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.MiningVenture));
+                        this.AddItemSource(new ItemMiningVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.Botanist:
-                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.BotanyVenture));
+                        this.AddItemSource(new ItemBotanistVentureSource(drop, ventureItem, retainerTask));
                         break;
                     case RetainerTaskType.Fishing:
-                        this.AddItemSource(new ItemVentureSource(drop, ventureItem, retainerTask, ItemInfoType.FishingVenture));
+                        this.AddItemSource(new ItemFishingVentureSource(drop, ventureItem, retainerTask));
                         break;
                 }
             }
@@ -908,19 +926,19 @@ public class ItemInfoCache
                 switch (normalType)
                 {
                     case 0:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.Mining));
+                        this.AddItemSource(new ItemMiningSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.Mining);
                         continue;
                     case 1:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.Quarrying));
+                        this.AddItemSource(new ItemQuarryingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.Quarrying);
                         continue;
                     case 2:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.Logging));
+                        this.AddItemSource(new ItemLoggingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.Logging);
                         continue;
                     case 3:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.Harvesting));
+                        this.AddItemSource(new ItemHarvestingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.Harvesting);
                         continue;
                 }
@@ -931,19 +949,19 @@ public class ItemInfoCache
                 switch (ephemeralType)
                 {
                     case 0:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.EphemeralMining));
+                        this.AddItemSource(new ItemEphemeralMiningSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.EphemeralMining);
                         continue;
                     case 1:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.EphemeralQuarrying));
+                        this.AddItemSource(new ItemEphemeralQuarryingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.EphemeralQuarrying);
                         continue;
                     case 2:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.EphemeralLogging));
+                        this.AddItemSource(new ItemEphemeralLoggingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.EphemeralLogging);
                         continue;
                     case 3:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.EphemeralHarvesting));
+                        this.AddItemSource(new ItemEphemeralHarvestingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.EphemeralHarvesting);
                         continue;
                 }
@@ -954,19 +972,19 @@ public class ItemInfoCache
                 switch (timedType)
                 {
                     case 0:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.TimedMining));
+                        this.AddItemSource(new ItemTimedMiningSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedMining);
                         continue;
                     case 1:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.TimedQuarrying));
+                        this.AddItemSource(new ItemTimedQuarryingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedQuarrying);
                         continue;
                     case 2:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.TimedLogging));
+                        this.AddItemSource(new ItemTimedLoggingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedLogging);
                         continue;
                     case 3:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.TimedHarvesting));
+                        this.AddItemSource(new ItemTimedHarvestingSource(gatheringItem));
                         this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedHarvesting);
                         continue;
                 }
@@ -977,20 +995,20 @@ public class ItemInfoCache
                 switch (hiddenType)
                 {
                     case 0:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.HiddenMining));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenMining);
+                        this.AddItemSource(new ItemTimedMiningSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedMining);
                         continue;
                     case 1:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.HiddenQuarrying));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenQuarrying);
+                        this.AddItemSource(new ItemTimedQuarryingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedQuarrying);
                         continue;
                     case 2:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.HiddenLogging));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenLogging);
+                        this.AddItemSource(new ItemTimedLoggingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedLogging);
                         continue;
                     case 3:
-                        this.AddItemSource(new ItemGatheringSource(gatheringItem, ItemInfoType.HiddenHarvesting));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenHarvesting);
+                        this.AddItemSource(new ItemTimedHarvestingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedHarvesting);
                         continue;
                 }
             }
@@ -1007,18 +1025,23 @@ public class ItemInfoCache
             this.AddItemUse(new ItemAquariumSource(item, aquariumRow));
         }
 
-        foreach (var dailySupplyItem in dailySupplyItemSheet)
+        foreach (var gcSupplyDuty in gcSupplyDutySheet)
         {
-            for (var index = 0; index < dailySupplyItem.Base.Item.Count; index++)
+            for (var index = 0; index < gcSupplyDuty.Base.SupplyData.Count; index++)
             {
-                var itemId = dailySupplyItem.Base.Item[index];
-                var item = itemSheet.GetRowOrDefault(itemId.RowId);
-                if (item == null)
+                var supplyData = gcSupplyDuty.Base.SupplyData[index];
+                for (var i = 0; i < supplyData.Item.Count; i++)
                 {
-                    continue;
-                }
+                    var rowRef = supplyData.Item[i];
+                    var count = supplyData.ItemCount[i];
+                    var item = itemSheet.GetRowOrDefault(rowRef.RowId);
+                    if (item == null)
+                    {
+                        continue;
+                    }
 
-                this.AddItemUse(new ItemDailySupplyItemSource(dailySupplyItem, index, item));
+                    this.AddItemUse(new ItemGCSupplyDutySource(gcSupplyDuty, count, item));
+                }
             }
         }
     }

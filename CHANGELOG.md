@@ -13,6 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.8] - 2024-11-27 
+
+### Changes
+
+- AllaganLib.GameData
+  - Bump LuminaSupplemental
+  - A large number of sources/uses were split into their own classes
+
+### Fixes
+
+- AllaganLib.GameData
+  - Glamour Ready sets will calculate correctly
+  - The correct amount of chocobo(buddy) item uses are now calculated
+  - Spearfishing sources now list the correct maps
+  - Glamour chest bumped to 8000(internally it has this?)
+
+### Added
+
+- AllaganLib.GameData
+  - Added Expert Delivery Source(use)
+  - Cash shop sources now have the price in USD
+
 ## [1.1.7] - 2024-11-21 
 
 ### Updated

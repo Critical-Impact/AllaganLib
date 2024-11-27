@@ -55,6 +55,7 @@ public enum ItemInfoType
     CustomDelivery,
     Aquarium,
     GCDailySupply,
+    GCExpertDelivery,
     CraftLeve,
     Armoire,
     Achievement,

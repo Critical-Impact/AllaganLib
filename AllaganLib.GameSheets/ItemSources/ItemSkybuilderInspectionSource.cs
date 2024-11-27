@@ -12,7 +12,8 @@ public class ItemSkybuilderInspectionSource : ItemSource
 
     public HWDGathererInspection.HWDGathererInspectionDataStruct InspectionData => this.GathererInspectionRow.Base.HWDGathererInspectionData[this.itemIndex];
 
-    public ItemSkybuilderInspectionSource(HWDGathererInspectionRow gathererInspectionRow, int itemIndex, ItemRow item, ItemRow costItem) : base(ItemInfoType.SkybuilderInspection)
+    public ItemSkybuilderInspectionSource(HWDGathererInspectionRow gathererInspectionRow, int itemIndex, ItemRow item, ItemRow costItem)
+        : base(ItemInfoType.SkybuilderInspection)
     {
         this.itemIndex = itemIndex;
         this.GathererInspectionRow = gathererInspectionRow;

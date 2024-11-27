@@ -15,33 +15,33 @@ public class SpecialShopRow : ExtendedRow<SpecialShop, SpecialShopRow, SpecialSh
     private FateShopRow? fateShopRow;
     private string? name;
     private HashSet<uint>? mapIds;
-    
+
     public string Name => this.ToString();
-    
+
     public IEnumerable<IShopListing> ShopListings => this.shopListings ??= this.BuildShopItems().ShopListings;
-    
+
     public IEnumerable<IShopListing> SpecialShopListings => this.specialShopListings ??= this.BuildShopItems().ShopListings;
-    
+
     public HashSet<uint> MapIds => this.mapIds ??= this.ENpcs.SelectMany(c => c.Locations.Select(d => d.Map.RowId)).Distinct().ToHashSet();
-    
+
     public IEnumerable<ENpcBaseRow> ENpcs =>
         this.eNpcs ??= this.Sheet.GetShopIds(this.RowId)
             .Select(c => this.Sheet.GetENpcBaseSheet().GetRow(c)).ToList();
-    
+
     public IEnumerable<ItemRow> Items => this.rewards ??= this.BuildShopItems().Rewards;
-    
+
     public IEnumerable<ItemRow> CostItems => this.costs ??= this.BuildShopItems().Costs;
-    
+
     public FateShopRow? FateShop => this.GetFateShopAdjustedRowId() == null ? null : this.fateShopRow ??= this.Sheet.GetFateShopSheet().GetRow(this.GetFateShopAdjustedRowId()!.Value);
-    
+
     public bool IsFateShop => this.GetFateShopAdjustedRowId() != null;
-    
+
     private uint? GetFateShopAdjustedRowId()
     {
         var adjustedId = this.Sheet.GetSpecialShopToFateShop(this.RowId);
         return adjustedId;
     }
-    
+
     public override string ToString()
     {
         if (this.name == null)
@@ -55,22 +55,22 @@ public class SpecialShopRow : ExtendedRow<SpecialShop, SpecialShopRow, SpecialSh
                     this.name = resident.Value.Singular.ExtractText();
                 }
             }
-            
+
             if (this.name == null)
             {
                 var shopName = this.Sheet.GetShopName(this.GetFateShopAdjustedRowId() ?? this.RowId);
                 this.name = shopName ?? this.Base.Name.ExtractText();
             }
         }
-        
+
         if (this.name == string.Empty)
         {
             this.name = "Unknown Vendor";
         }
-        
+
         return this.name;
     }
-    
+
     private (SpecialShopListing[] ShopListings, List<ItemRow> Rewards, List<ItemRow> Costs) BuildShopItems()
     {
         var shopListingsLookup = new List<SpecialShopListing>();
@@ -86,7 +86,7 @@ public class SpecialShopRow : ExtendedRow<SpecialShop, SpecialShopRow, SpecialSh
                 costItemsLookup.AddRange(specialShopListing.Costs.Select(listing => listing.Item));
             }
         }
-        
+
         return (shopListingsLookup.ToArray(), rewardItemsLookup, costItemsLookup);
     }
 }

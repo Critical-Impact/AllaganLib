@@ -7,12 +7,12 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemBuddySource : ItemSource
 {
-    public RowRef<Buddy> Buddy { get; }
+    public RowRef<BuddyItem> BuddyItem { get; }
 
-    public ItemBuddySource(ItemRow item, RowRef<Buddy> buddy)
+    public ItemBuddySource(ItemRow item, RowRef<BuddyItem> buddy)
         : base(ItemInfoType.BuddyItem)
     {
-        this.Buddy = buddy;
+        this.BuddyItem = buddy;
         this.Item = item;
     }
 

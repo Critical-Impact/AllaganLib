@@ -11,6 +11,7 @@ public class SpearfishingItemSheet : ExtendedSheet<SpearfishingItem, Spearfishin
     IExtendedSheet
 {
     private ItemSheet? itemSheet;
+    private SpearfishingNotebookSheet? spearFishingNotebookSheet;
 
     public SpearfishingItemSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache) : base(
         gameData,
@@ -23,6 +24,11 @@ public class SpearfishingItemSheet : ExtendedSheet<SpearfishingItem, Spearfishin
     public ItemSheet GetItemSheet()
     {
         return this.itemSheet ??= this.SheetManager.GetSheet<ItemSheet>();
+    }
+
+    public SpearfishingNotebookSheet GetSpearfishingNoteBookSheet()
+    {
+        return this.spearFishingNotebookSheet ??= this.SheetManager.GetSheet<SpearfishingNotebookSheet>();
     }
 
     public override void CalculateLookups()

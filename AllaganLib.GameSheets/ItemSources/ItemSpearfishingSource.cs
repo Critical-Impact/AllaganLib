@@ -20,5 +20,5 @@ public class ItemSpearfishingSource : ItemSource
 
     public SpearfishingItemRow SpearfishingItemRow => this.spearfishingItemRow;
 
-    public override HashSet<uint>? MapIds => this.SpearfishingItemRow.Base.TerritoryType.ValueNullable == null ? null : [this.SpearfishingItemRow.Base.TerritoryType.Value.Map.RowId];
+    public override HashSet<uint>? MapIds => this.SpearfishingItemRow.SpearfishingNotebook?.TerritoryType == null ? null : [this.SpearfishingItemRow.SpearfishingNotebook.TerritoryType.Base.Map.RowId];
 }

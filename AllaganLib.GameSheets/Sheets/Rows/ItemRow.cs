@@ -22,6 +22,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     private List<GatheringTypeRow>? gatheringTypes;
     private List<GatheringItemRow>? gatheringItems;
     private List<GatheringPointTransientRow>? gatheringPointTransients;
+    private List<GatheringPointRow>? gatheringPoints;
     private List<BitfieldUptime>? gatheringUpTimes;
     private List<ItemSource>? sources;
     private List<ItemSource>? uses;
@@ -283,6 +284,8 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool IsFurnitureItem => this.uses?.Any(c => c.Type == ItemInfoType.FurnitureItem) ?? false;
 
+    public bool IsExpertDelivery => this.uses?.Any(c => c.Type == ItemInfoType.GCExpertDelivery) ?? false;
+
     public bool CanTryOn
     {
         get
@@ -486,7 +489,11 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
 
     //CraftRecipe
-    public bool CanOpenCraftLog => this.Sheet.SheetManager.GetSheet<RecipeSheet>().HasRecipesByItemId(this.RowId);
+    public bool CanOpenCraftingLog => this.Sheet.SheetManager.GetSheet<RecipeSheet>().HasRecipesByItemId(this.RowId);
+
+    public bool CanOpenGatheringLog => this.HasSourcesByCategory(ItemInfoCategory.Gathering);
+
+    public bool CanOpenFishingLog => this.HasSourcesByType(ItemInfoType.Fishing) || this.HasSourcesByType(ItemInfoType.Spearfishing);
 
     public bool CanBeCrafted => this.Sheet.SheetManager.GetSheet<RecipeSheet>().HasRecipesByItemId(this.RowId) || this.CompanyCraftSequence != null;
 
@@ -505,6 +512,9 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public List<GatheringPointTransientRow> GatheringPointTransients => this.gatheringPointTransients ??=
         this.GatheringItems.SelectMany(c => c.GatheringPointTransients.ToList()).ToList();
+
+    public List<GatheringPointRow> GatheringPoints => this.gatheringPoints ??=
+        this.GatheringItems.SelectMany(c => c.GatheringPoints.ToList()).ToList();
 
     public List<GatheringTypeRow> GatheringTypes => this.gatheringTypes ??= this.GenerateGatheringTypes();
 

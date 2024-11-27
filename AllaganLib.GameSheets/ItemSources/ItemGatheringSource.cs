@@ -4,7 +4,7 @@ using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
-public class ItemGatheringSource : ItemSource
+public abstract class ItemGatheringSource : ItemSource
 {
     private readonly GatheringItemRow gatheringItem;
 

@@ -11,7 +11,7 @@ public class ItemGilShopSource : ItemShopSource
 
     public GilShopRow GilShop { get; }
 
-    public ItemGilShopSource(GilShopItemRow gilShopItem, GilShopRow gilShop, ItemInfoType shopType)
+    public ItemGilShopSource(GilShopItemRow gilShopItem, GilShopRow gilShop, ItemInfoType shopType = ItemInfoType.GilShop)
         : base(gilShop, shopType)
     {
         this.GilShopItem = gilShopItem;

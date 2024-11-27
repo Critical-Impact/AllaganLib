@@ -36,7 +36,7 @@ public class GatheringItemRow : ExtendedRow<GatheringItem, GatheringItemRow, Gat
             }
 
             this.itemRowPopulated = true;
-            if (!this.Base.Item.Is<Item>())
+            if (!this.Base.Item.Is<Item>() || this.Base.Item.RowId == 0)
             {
                 return null;
             }
@@ -95,7 +95,7 @@ public class GatheringItemRow : ExtendedRow<GatheringItem, GatheringItemRow, Gat
             var points = pointBases.SelectMany(
                 c => this.Sheet.GetGatheringPointSheet().GetGatheringPointsByGatheringPointBaseId(c.RowId)?.Where(c => c.Base.TerritoryType.RowId > 1) ?? []).ToList();
 
-            transientPointRows = points.Select(
+            transientPointRows = points.Where(c => c.Base.TerritoryType.RowId > 1).Select(
                 c => this.Sheet.SheetManager.GetSheet<GatheringPointTransientSheet>().GetRow(c.RowId)).Where(c => c.Base.EphemeralEndTime != 65535 || c.Base.EphemeralStartTime != 65535 || c.Base.GatheringRarePopTimeTable.RowId != 0).ToList();
 
             pointRows = points;

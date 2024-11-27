@@ -3,7 +3,7 @@ using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
-public class ItemVentureSource : ItemSource
+public abstract class ItemVentureSource : ItemSource
 {
     private readonly RetainerTaskRow retainerTaskRow;
 

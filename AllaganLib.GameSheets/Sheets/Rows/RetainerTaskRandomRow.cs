@@ -6,7 +6,7 @@ namespace AllaganLib.GameSheets.Sheets.Rows;
 public class RetainerTaskRandomRow : ExtendedRow<RetainerTaskRandom, RetainerTaskRandomRow, RetainerTaskRandomSheet>
 {
     private RetainerTaskRow? retainerTaskRow;
-    
+
     public RetainerTaskRow? RetainerTaskRow
     {
         get
@@ -16,28 +16,35 @@ public class RetainerTaskRandomRow : ExtendedRow<RetainerTaskRandom, RetainerTas
             {
                 return this.retainerTaskRow ??= this.Sheet.GetRetainerTaskSheet().GetRow(retainerTaskId.Value);
             }
-            
+
             return null;
         }
     }
-    
+
     private string? formattedName;
-    
+
     public string FormattedName
     {
         get
         {
             if (this.formattedName == null)
             {
-                this.formattedName = this.Base.Name.ExtractText() + " - Lv " + (this.RetainerTaskRow?.Base.RetainerLevel.ToString() ?? "Unknown");
+                if (this.RetainerTaskRow?.Base.RetainerLevel == 0)
+                {
+                    this.formattedName = this.Base.Name.ExtractText();
+                }
+                else
+                {
+                    this.formattedName = this.Base.Name.ExtractText() + " - Lv " + (this.RetainerTaskRow?.Base.RetainerLevel.ToString() ?? "Unknown");
+                }
             }
-            
+
             return this.formattedName;
         }
     }
-    
+
     private string? nameString;
-    
+
     public string NameString
     {
         get
@@ -46,7 +53,7 @@ public class RetainerTaskRandomRow : ExtendedRow<RetainerTaskRandom, RetainerTas
             {
                 this.nameString = this.Base.Name.ExtractText();
             }
-            
+
             return this.nameString;
         }
     }
