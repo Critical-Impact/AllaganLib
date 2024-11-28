@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.10] - 2024-11-28
+
+### Changes
+
+- AllaganLib.GameData
+  - CustomTalk is now parsed when calculating NPC shops
+
 ## [1.1.9] - 2024-11-27
 
 ### Changes

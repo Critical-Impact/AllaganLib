@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lumina;
@@ -91,19 +92,24 @@ public class NpcShopCache
         var specialShopSheet = this.gameData.GetExcelSheet<SpecialShop>()!;
         var topicSelectSheet = this.gameData.GetExcelSheet<TopicSelect>()!;
         var preHandlerSheet = this.gameData.GetExcelSheet<PreHandler>()!;
+        var customTalkSheet = this.gameData.GetExcelSheet<CustomTalk>()!;
         var fateShopLookup = fateShopSheet.Select(c => c.RowId).ToHashSet();
+
+        ReadOnlySpan<Type> customTalkTypes = [typeof(FateShop), typeof(FccShop), typeof(SpecialShop)];
+        var customTalkTypeHash = RowRef.CreateTypeHash(customTalkTypes);
 
         foreach (var extraSpecialShop in ExtraSpecialShops)
         {
             var npcBase = npcBaseSheet.GetRow(extraSpecialShop.Item1);
             var specialShopRef = RowRef.Create<SpecialShop>(this.gameData.Excel, extraSpecialShop.Item2);
-            EvalulateRowRef(npcBase, specialShopRef);
+            EvalulateRowRef(npcBase, specialShopRef, customTalkTypes);
         }
+
         foreach (var extraGilShop in ExtraGilShops)
         {
             var npcBase = npcBaseSheet.GetRow(extraGilShop.Key);
             var specialShopRef = RowRef.Create<GilShop>(this.gameData.Excel, extraGilShop.Value);
-            EvalulateRowRef(npcBase, specialShopRef);
+            EvalulateRowRef(npcBase, specialShopRef, customTalkTypes);
         }
 
         foreach (var npc in npcBaseSheet)
@@ -115,18 +121,20 @@ public class NpcShopCache
                 var specialShops = fateShop.SpecialShop.Where(c => c.RowId != 0).Select(c => (RowRef)c).ToList();
                 foreach (var specialShop in specialShops)
                 {
-                    EvalulateRowRef(npc, specialShop);
+                    EvalulateRowRef(npc, specialShop, customTalkTypes);
                 }
             }
 
             foreach (var variable in npc.ENpcData)
             {
-                EvalulateRowRef(npc, variable);
+                EvalulateRowRef(npc, variable, customTalkTypes);
             }
-
         }
 
-        void EvalulateRowRef(ENpcBase npcBase, RowRef rowRef)
+        var npcToShopIdCount = npcIdToShopIdLookup.Count;
+        var shopIdToNpcIdCount = this.shopIdToNpcIdLookup.Count;
+
+        void EvalulateRowRef(ENpcBase npcBase, RowRef rowRef, ReadOnlySpan<Type> customTalkTypes)
         {
             if (rowRef.Is<FccShop>())
             {
@@ -184,18 +192,37 @@ public class NpcShopCache
                 this.npcIdToShopIdLookup.TryAdd(npcBase.RowId, []);
                 this.npcIdToShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
             }
-            if (rowRef.Is<TopicSelect>())
+            else if (rowRef.Is<CustomTalk>())
+            {
+                var customTalk = customTalkSheet.GetRow(rowRef.RowId);
+                EvalulateRowRef(npcBase, customTalk.SpecialLinks, customTalkTypes);
+                foreach (var scriptStruct in customTalk.Script)
+                {
+                    if (scriptStruct.ScriptArg == 0)
+                    {
+                        continue;
+                    }
+                    var customTalkRef = RowRef.GetFirstValidRowOrUntyped(
+                        this.gameData.Excel,
+                        scriptStruct.ScriptArg,
+                        customTalkTypes,
+                        customTalkTypeHash,
+                        this.gameData.Options.DefaultExcelLanguage);
+                    EvalulateRowRef(npcBase, customTalkRef, customTalkTypes);
+                }
+            }
+            else if (rowRef.Is<TopicSelect>())
             {
                 var topicSelect = topicSelectSheet.GetRow(rowRef.RowId);
                 foreach (var topicShop in topicSelect.Shop)
                 {
-                    EvalulateRowRef(npcBase, topicShop);
+                    EvalulateRowRef(npcBase, topicShop, customTalkTypes);
                 }
             }
             else if (rowRef.Is<PreHandler>())
             {
                 var preHandler = preHandlerSheet.GetRow(rowRef.RowId);
-                EvalulateRowRef(npcBase, preHandler.Target);
+                EvalulateRowRef(npcBase, preHandler.Target, customTalkTypes);
             }
         }
     }
