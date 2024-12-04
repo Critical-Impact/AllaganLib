@@ -256,6 +256,8 @@ public class ItemInfoCache
         var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
         var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
         var furnitureCatalogSheet = this.gameData.GetExcelSheet<FurnitureCatalogItemList>()!;
+        var houseYardObjectSheet = this.gameData.GetExcelSheet<HousingYardObject>()!;
+        var housingPresetSheet = this.gameData.GetExcelSheet<HousingPreset>()!;
         var mirageStoreSetItemSheet = this.gameData.GetExcelSheet<MirageStoreSetItem>()!;
 
         var rewards = gcSupplyDutyRewardSheet.ToDictionary(c => c.RowId, c => c);
@@ -318,6 +320,123 @@ public class ItemInfoCache
             if (item != null)
             {
                 var source = new ItemFurnitureSource(item, new RowRef<FurnitureCatalogItemList>(this.gameData.Excel, furnitureCatalogItem.RowId));
+                this.AddItemUse(source);
+            }
+        }
+
+        foreach (var housingYardObject in houseYardObjectSheet)
+        {
+            if (!housingYardObject.Item.IsValid || housingYardObject.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            var item = itemSheet.GetRowOrDefault(housingYardObject.Item.RowId);
+
+            if (item != null)
+            {
+                var source = new ItemExteriorFurnitureSource(item, new RowRef<HousingYardObject>(this.gameData.Excel, housingYardObject.RowId));
+                this.AddItemUse(source);
+            }
+        }
+
+        foreach (var housingPreset in housingPresetSheet)
+        {
+            if (housingPreset.ExteriorRoof.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.ExteriorRoof.RowId);
+                var source = new ItemHouseRoofSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.ExteriorWall.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.ExteriorWall.RowId);
+                var source = new ItemHouseWallSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.ExteriorWindow.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.ExteriorWindow.RowId);
+                var source = new ItemHouseWindowSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.ExteriorDoor.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.ExteriorDoor.RowId);
+                var source = new ItemHouseDoorSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.InteriorWall.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.InteriorWall.RowId);
+                var source = new ItemHouseWallpaperSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.InteriorFlooring.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.InteriorFlooring.RowId);
+                var source = new ItemHouseFlooringSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.InteriorLighting.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.InteriorLighting.RowId);
+                var source = new ItemHouseLightingSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.OtherFloorWall.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.OtherFloorWall.RowId);
+                var source = new ItemHouseWallpaperSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.OtherFloorFlooring.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.OtherFloorFlooring.RowId);
+                var source = new ItemHouseFlooringSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.OtherFloorLighting.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.OtherFloorLighting.RowId);
+                var source = new ItemHouseLightingSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.BasementWall.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.BasementWall.RowId);
+                var source = new ItemHouseWallpaperSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.BasementFlooring.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.BasementFlooring.RowId);
+                var source = new ItemHouseFlooringSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.BasementLighting.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.BasementLighting.RowId);
+                var source = new ItemHouseLightingSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
+                this.AddItemUse(source);
+            }
+
+            if (housingPreset.MansionLighting.RowId != 0)
+            {
+                var item = itemSheet.GetRow(housingPreset.MansionLighting.RowId);
+                var source = new ItemHouseLightingSource(new RowRef<HousingPreset>(this.gameData.Excel, housingPreset.RowId), item);
                 this.AddItemUse(source);
             }
         }
@@ -899,15 +1018,25 @@ public class ItemInfoCache
             HashSet<uint> timedTypes = new();
             HashSet<uint> hiddenTypes = new();
 
+            // 0 = NotUsed
+            // 1 = Normal (But collectable)
+            // 2 = Unspoiled (Timed)
+            // 3 = Gathering Leve?
+            // 4 = Timed
+            // 5 = Legendary (Timed)
+            // 6 = Unknown
+            // 7 = Diadem Normal
+            // 8 = Diadem Rare
+
             foreach (var gatheringPoint in gatheringItem.GatheringPoints)
             {
                 var gatheringType = gatheringPoint.GatheringPointBase.Base.GatheringType.RowId;
 
-                if (gatheringPoint.GatheringPointTransient.EphemeralNode)
+                if (gatheringPoint.Base.Type != 4 && gatheringPoint.GatheringPointTransient.EphemeralNode)
                 {
                     ephemeralTypes.Add(gatheringType);
                 }
-                else if (gatheringPoint.GatheringPointTransient.TimedNode)
+                else if (gatheringPoint.Base.Type == 4 || gatheringPoint.GatheringPointTransient.TimedNode)
                 {
                     timedTypes.Add(gatheringType);
                 }
@@ -995,20 +1124,20 @@ public class ItemInfoCache
                 switch (hiddenType)
                 {
                     case 0:
-                        this.AddItemSource(new ItemTimedMiningSource(gatheringItem));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedMining);
+                        this.AddItemSource(new ItemHiddenMiningSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenMining);
                         continue;
                     case 1:
-                        this.AddItemSource(new ItemTimedQuarryingSource(gatheringItem));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedQuarrying);
+                        this.AddItemSource(new ItemHiddenQuarryingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenQuarrying);
                         continue;
                     case 2:
-                        this.AddItemSource(new ItemTimedLoggingSource(gatheringItem));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedLogging);
+                        this.AddItemSource(new ItemHiddenLoggingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenLogging);
                         continue;
                     case 3:
-                        this.AddItemSource(new ItemTimedHarvestingSource(gatheringItem));
-                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.TimedHarvesting);
+                        this.AddItemSource(new ItemHiddenHarvestingSource(gatheringItem));
+                        this.AddItemSourceMapLocation(gatheringItem.Item.RowId, mapIds, ItemInfoType.HiddenHarvesting);
                         continue;
                 }
             }

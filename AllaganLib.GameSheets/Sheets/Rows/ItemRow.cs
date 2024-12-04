@@ -537,10 +537,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         {
             if (this.RowId == HardcodedItems.FreeCompanyCreditItemId)
             {
-                return this.Sheet.GetAddonSheet().GetRow(102233).Base.Text.ExtractText();
+                return this.Sheet.GetAddonSheet().GetRow(102233).Base.Text.ExtractText().Replace("\u00AD", string.Empty);
             }
 
-            return this.Base.Name.ExtractText();
+            return this.Base.Name.ExtractText().Replace("\u00AD", string.Empty);
         }
     }
 

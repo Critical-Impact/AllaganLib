@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.11] - 2024-12-04
+
+### Changes
+
+- AllaganLib.GameData
+  - Added exterior house items and housing fixtures as uses
+  - Fixed some minor bugs with gathering node classification
+  - Fixed an issue with german characters
+
 ## [1.1.10] - 2024-11-28
 
 ### Changes

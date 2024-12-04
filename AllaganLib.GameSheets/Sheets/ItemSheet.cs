@@ -28,6 +28,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
     private Dictionary<uint, CabinetCategoryRow>? cabinetCategories;
     private Dictionary<uint, decimal>? itemPatches;
     private Dictionary<uint, string>? itemsSearchStringsById;
+    private Dictionary<uint, string>? itemsNamesById;
 
     public ItemSheet(
         GameData gameData,
@@ -58,7 +59,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         {
             if (this.itemsByName == null)
             {
-                this.itemsByName = this.DistinctBy(c => c.Base.Name.ExtractText()).ToDictionary(c => c.Base.Name.ExtractText(), c => c.RowId);
+                this.itemsByName = this.DistinctBy(c => c.NameString).ToDictionary(c => c.NameString, c => c.RowId);
             }
 
             return this.itemsByName;
@@ -71,7 +72,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         {
             if (this.itemsBySearchString == null)
             {
-                this.itemsBySearchString = this.DistinctBy(c => c.Base.Name.ExtractText().ToParseable()).ToDictionary(c => c.Base.Name.ExtractText().ToParseable(), c => c.RowId);
+                this.itemsBySearchString = this.DistinctBy(c => c.SearchString).ToDictionary(c => c.SearchString, c => c.RowId);
             }
 
             return this.itemsBySearchString;
@@ -84,10 +85,23 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         {
             if (this.itemsSearchStringsById == null)
             {
-                this.itemsSearchStringsById = this.ToDictionary(c => c.RowId, c => c.Base.Name.ExtractText().ToParseable());
+                this.itemsSearchStringsById = this.ToDictionary(c => c.RowId, c => c.SearchString);
             }
 
             return this.itemsSearchStringsById;
+        }
+    }
+
+    public Dictionary<uint, string> ItemsNamesById
+    {
+        get
+        {
+            if (this.itemsNamesById == null)
+            {
+                this.itemsNamesById = this.ToDictionary(c => c.RowId, c => c.NameString);
+            }
+
+            return this.itemsNamesById;
         }
     }
 
