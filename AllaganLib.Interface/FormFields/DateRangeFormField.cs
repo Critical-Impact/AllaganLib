@@ -20,22 +20,34 @@ public abstract class DateRangeFormField<T> : FormField<(DateTime, DateTime)?, T
         return configuration.Get(this.Key) ?? this.DefaultValue;
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var currentValue = this.CurrentValue(configuration);
         var startDate = currentValue?.Item1;
         var endDate = currentValue?.Item2;
+        var wasUpdated = false;
+
         if (this.dateRangePickerWidget.Draw("##" + this.Key + "Input", ref startDate, ref endDate, inputSize))
         {
             if (startDate == null || endDate == null)
             {
-                this.UpdateFilterConfiguration(configuration, null);
+                if (this.AutoSave)
+                {
+                    this.UpdateFilterConfiguration(configuration, null);
+                }
             }
             else
             {
-                this.UpdateFilterConfiguration(configuration, (startDate.Value, endDate.Value));
+                if (this.AutoSave)
+                {
+                    this.UpdateFilterConfiguration(configuration, (startDate.Value, endDate.Value));
+                }
             }
+
+            wasUpdated = true;
         }
+
+        return wasUpdated;
     }
 
     public override void UpdateFilterConfiguration(T configuration, (DateTime, DateTime)? newValue)

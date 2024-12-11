@@ -24,24 +24,32 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
         configuration.Set(this.Key, newValue);
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
+        var wasUpdated = false;
 
         if (ImGui.ColorEdit4(
                 "##" + this.Key + "Color",
                 ref value,
                 ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.NoLabel))
         {
-            this.UpdateFilterConfiguration(configuration, value);
+            if (this.AutoSave)
+            {
+                this.UpdateFilterConfiguration(configuration, value);
+            }
+
+            wasUpdated = true;
         }
+
+        return wasUpdated;
     }
 
-    public override void Draw(T configuration, int? labelSize = null, int? inputSize = null)
+    public override bool Draw(T configuration, int? labelSize = null, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
 
-        this.DrawInput(configuration, inputSize);
+        var result = this.DrawInput(configuration, inputSize);
         ImGui.SameLine();
         if (this.HasValueSet(configuration) && value.W == 0)
         {
@@ -54,5 +62,7 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
 
         ImGui.SameLine();
         this.DrawHelp(configuration);
+
+        return result;
     }
 }

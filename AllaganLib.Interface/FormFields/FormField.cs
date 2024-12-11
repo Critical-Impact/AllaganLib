@@ -5,7 +5,7 @@ using ImGuiNET;
 
 namespace AllaganLib.Interface.FormFields;
 
-public abstract class FormField<T, TS> : IFormField<TS>
+public abstract class FormField<TValue, TConfiguration> : IFormField<TConfiguration>
 {
     public ImGuiService ImGuiService { get; }
 
@@ -14,7 +14,7 @@ public abstract class FormField<T, TS> : IFormField<TS>
         this.ImGuiService = imGuiService;
     }
 
-    public abstract T DefaultValue { get; set; }
+    public abstract TValue DefaultValue { get; set; }
 
     public virtual int LabelSize { get; set; } = 400;
 
@@ -38,11 +38,13 @@ public abstract class FormField<T, TS> : IFormField<TS>
 
     public virtual string WizardName => this.Name;
 
-    public abstract T CurrentValue(TS configuration);
+    public virtual bool AutoSave { get; } = true;
 
-    public abstract void DrawInput(TS configuration, int? inputSize = null);
+    public abstract TValue CurrentValue(TConfiguration configuration);
 
-    public virtual void DrawLabel(TS configuration, int? labelSize = null)
+    public abstract bool DrawInput(TConfiguration configuration, int? inputSize = null);
+
+    public virtual void DrawLabel(TConfiguration configuration, int? labelSize = null)
     {
         ImGui.SetNextItemWidth(labelSize ?? this.LabelSize);
         if (this.ColourModified && this.HasValueSet(configuration))
@@ -57,7 +59,7 @@ public abstract class FormField<T, TS> : IFormField<TS>
         }
     }
 
-    public virtual void DrawHelp(TS configuration)
+    public virtual void DrawHelp(TConfiguration configuration)
     {
         this.ImGuiService.HelpMarker(this.HelpText, this.Image, this.ImageSize);
         if (!this.HideReset && this.HasValueSet(configuration))
@@ -70,17 +72,18 @@ public abstract class FormField<T, TS> : IFormField<TS>
         }
     }
 
-    public virtual void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
+    public virtual bool Draw(TConfiguration configuration, int? labelSize = null, int? inputSize = null)
     {
         this.DrawLabel(configuration, labelSize);
-        this.DrawInput(configuration, inputSize);
+        var result = this.DrawInput(configuration, inputSize);
         ImGui.SameLine();
         this.DrawHelp(configuration);
+        return result;
     }
 
-    public abstract void UpdateFilterConfiguration(TS configuration, T? newValue);
+    public abstract void UpdateFilterConfiguration(TConfiguration configuration, TValue? newValue);
 
-    public virtual bool HasValueSet(TS configuration)
+    public virtual bool HasValueSet(TConfiguration configuration)
     {
         var currentValue = this.CurrentValue(configuration);
         if (currentValue == null && this.DefaultValue == null)
@@ -91,7 +94,7 @@ public abstract class FormField<T, TS> : IFormField<TS>
         return !currentValue?.Equals(this.DefaultValue) ?? true;
     }
 
-    public virtual void Reset(TS configuration)
+    public virtual void Reset(TConfiguration configuration)
     {
         this.UpdateFilterConfiguration(configuration, this.DefaultValue);
     }

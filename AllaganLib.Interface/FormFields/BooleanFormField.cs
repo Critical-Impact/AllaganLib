@@ -24,16 +24,24 @@ public abstract class BooleanFormField<T> : FormField<bool, T>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var currentValue = this.CurrentValue(configuration);
+        var wasUpdated = false;
 
         if (ImGui.Checkbox("##" + this.Key + "Boolean", ref currentValue))
         {
             if (currentValue != this.CurrentValue(configuration))
             {
-                this.UpdateFilterConfiguration(configuration, currentValue);
+                if (this.AutoSave)
+                {
+                    this.UpdateFilterConfiguration(configuration, currentValue);
+                }
+
+                wasUpdated = true;
             }
         }
+
+        return wasUpdated;
     }
 }

@@ -12,7 +12,7 @@ public class ClassJobCategoryRow : ExtendedRow<ClassJobCategory, ClassJobCategor
     private bool isCrafting;
     private bool isCombat;
     private List<uint> classJobIds = new();
-    private List<ClassJobRow>? classJobs = new();
+    private List<ClassJobRow>? classJobs = null;
 
     private void CalculateLookups()
     {

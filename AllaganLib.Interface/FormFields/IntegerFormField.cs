@@ -24,16 +24,23 @@ public abstract class IntegerFormField<T> : FormField<int, T>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration).ToString();
+        var wasUpdated = false;
+
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 100, ImGuiInputTextFlags.CharsDecimal))
         {
             int parsedNumber;
             if (int.TryParse(value, out parsedNumber))
             {
-                this.UpdateFilterConfiguration(configuration, parsedNumber);
+                if (this.AutoSave)
+                {
+                    this.UpdateFilterConfiguration(configuration, parsedNumber);
+                }
+
+                wasUpdated = true;
             }
         }
 
@@ -42,5 +49,7 @@ public abstract class IntegerFormField<T> : FormField<int, T>
             ImGui.SameLine();
             ImGui.Text(this.Affix);
         }
+
+        return wasUpdated;
     }
 }

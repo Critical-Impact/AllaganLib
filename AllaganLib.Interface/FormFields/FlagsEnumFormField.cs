@@ -41,17 +41,20 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
+    public override bool Draw(TS configuration, int? labelSize = null, int? inputSize = null)
     {
-        this.DrawSearchBox(configuration);
-        this.DrawResults(configuration);
+        var wasUpdated = this.DrawSearchBox(configuration);
+        var wasUpdated2 = this.DrawResults(configuration);
+        return wasUpdated || wasUpdated2;
     }
 
-    public override void DrawInput(TS configuration, int? inputSize = null)
+    public override bool DrawInput(TS configuration, int? inputSize = null)
     {
         var choices = this.GetChoices(configuration);
         var selectedChoices = this.CurrentValue(configuration);
         var currentSearchCategory = this.comboLabel ??= this.GetComboLabel(configuration);
+        var wasUpdated = false;
+
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         using (var combo = ImRaii.Combo("##" + this.Key + "Combo", currentSearchCategory, ImGuiComboFlags.HeightLarge))
         {
@@ -73,6 +76,7 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                         if (!selectedChoices.HasFlag(item.Key))
                         {
                             selectedChoices = this.AddFlag(selectedChoices, item.Key);
+                            wasUpdated = true;
                         }
                     }
 
@@ -102,15 +106,25 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                         {
                             if (isSelected)
                             {
+                                wasUpdated = true;
                                 selectedChoices = this.RemoveFlag(selectedChoices, item.Key);
-                                this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                if (this.AutoSave)
+                                {
+                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                }
+
                                 this.comboLabel = null;
                                 this.cachedChoices = null;
                             }
                             else
                             {
+                                wasUpdated = true;
                                 selectedChoices = this.AddFlag(selectedChoices, item.Key);
-                                this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                if (this.AutoSave)
+                                {
+                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                }
+
                                 this.comboLabel = null;
                                 this.cachedChoices = null;
                             }
@@ -119,21 +133,25 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                 }
             }
         }
+
+        return wasUpdated;
     }
 
-    public virtual void DrawSearchBox(TS configuration, int? labelSize = null, int? inputSize = null)
+    public virtual bool DrawSearchBox(TS configuration, int? labelSize = null, int? inputSize = null)
     {
         this.DrawLabel(configuration, labelSize);
         ImGui.SameLine();
-        this.DrawInput(configuration, inputSize);
+        var wasUpdated = this.DrawInput(configuration, inputSize);
         ImGui.SameLine();
         this.DrawHelp(configuration);
+        return wasUpdated;
     }
 
-    public virtual void DrawResults(TS configuration, int? labelSize = null, int? inputSize = null)
+    public virtual bool DrawResults(TS configuration, int? labelSize = null, int? inputSize = null)
     {
         var choices = this.GetChoices(configuration);
         var selectedChoices = this.CurrentValue(configuration);
+        var wasUpdated = false;
 
         var enumValues = Enum.GetValues<T>().Where(c => selectedChoices.HasFlag(c)).ToList();
 
@@ -152,7 +170,12 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                     if (selectedChoices.HasFlag(item))
                     {
                         selectedChoices = this.RemoveFlag(selectedChoices, item);
-                        this.UpdateFilterConfiguration(configuration, selectedChoices);
+                        if (this.AutoSave)
+                        {
+                            this.UpdateFilterConfiguration(configuration, selectedChoices);
+                        }
+
+                        wasUpdated = true;
                     }
                 }
             }
@@ -163,6 +186,8 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                 ImGui.SameLine();
             }
         }
+
+        return wasUpdated;
     }
 
     public abstract Dictionary<T, string> GetChoices(TS configuration);

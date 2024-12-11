@@ -24,16 +24,25 @@ public abstract class StringFormField<T> : FormField<string, T>
 
     public override bool HasValueSet(T configuration)
     {
-        return this.CurrentValue(configuration) != null;
+        return this.CurrentValue(configuration) != this.DefaultValue;
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration) ?? "";
+        var wasUpdated = false;
+
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
         if (ImGui.InputText("##" + this.Key + "Input", ref value, 500))
         {
-            this.UpdateFilterConfiguration(configuration, value);
+            if (this.AutoSave)
+            {
+                this.UpdateFilterConfiguration(configuration, value);
+            }
+
+            wasUpdated = true;
         }
+
+        return wasUpdated;
     }
 }

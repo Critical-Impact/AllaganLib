@@ -57,10 +57,12 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
         this.uiColors = list.ToDictionary(c => c.RowId, c => c);
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var value = this.CurrentValue(configuration);
         var currentColour = new Vector4(255, 255, 255, 255);
+        var wasUpdated = false;
+
         if (this.uiColors.TryGetValue(value, out var toConvert))
         {
             currentColour = toConvert.ConvertUiColorToColor();
@@ -89,7 +91,12 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
 
             if (ImGui.ColorButton(id, color, imGuiColorEditFlags) && uint.TryParse(id, out var convertedId))
             {
-                this.UpdateFilterConfiguration(configuration, convertedId);
+                if (this.AutoSave)
+                {
+                    this.UpdateFilterConfiguration(configuration, convertedId);
+                }
+
+                wasUpdated = true;
             }
 
             index++;
@@ -98,5 +105,7 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
                 ImGui.SameLine();
             }
         }
+
+        return wasUpdated;
     }
 }

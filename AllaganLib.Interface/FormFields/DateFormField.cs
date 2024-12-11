@@ -34,12 +34,21 @@ public abstract class DateFormField<T> : FormField<DateTime?, T>
         return this.CurrentValue(configuration) != null;
     }
 
-    public override void DrawInput(T configuration, int? inputSize = null)
+    public override bool DrawInput(T configuration, int? inputSize = null)
     {
         var currentValue = this.CurrentValue(configuration);
+        var wasUpdated = false;
+
         if (this.datePickerWidget.Draw("##" + this.Key + "Input", ref currentValue, inputSize))
         {
-            this.UpdateFilterConfiguration(configuration, currentValue);
+            if (this.AutoSave)
+            {
+                this.UpdateFilterConfiguration(configuration, currentValue);
+            }
+
+            wasUpdated = true;
         }
+
+        return wasUpdated;
     }
 }

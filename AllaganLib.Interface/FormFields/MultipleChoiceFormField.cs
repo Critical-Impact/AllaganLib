@@ -17,7 +17,7 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
         : base(imGuiService)
     {
     }
-    
+
     public override List<T> CurrentValue(TS configurable)
     {
         return configurable.Get(this.Key) ?? this.DefaultValue;
@@ -28,18 +28,34 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
         configurable.Set(this.Key, newValue);
     }
 
-    public override void Draw(TS configuration, int? labelSize = null, int? inputSize = null)
+    public override bool Draw(TS configuration, int? labelSize = null, int? inputSize = null)
     {
-        base.Draw(configuration, labelSize, inputSize);
-        this.DrawResults(configuration);
+        var wasUpdated = base.Draw(configuration, labelSize, inputSize);
+        var wasUpdated2 = this.DrawResults(configuration);
+        return wasUpdated || wasUpdated2;
     }
 
-    public override void DrawInput(TS configuration, int? inputSize = null)
+    public override bool DrawInput(TS configuration, int? inputSize = null)
     {
         var choices = this.GetChoices(configuration);
-        var selectedChoices = this.CurrentValue(configuration);
+        var selectedChoices = this.CurrentValue(configuration).ToList();
         var currentSearchCategory = "";
+        var wasUpdated = false;
+
         ImGui.SetNextItemWidth(inputSize ?? this.InputSize);
+        if (selectedChoices.Count == 0)
+        {
+            currentSearchCategory = "No items selected.";
+        }
+        else if (selectedChoices.Count == 1)
+        {
+            var actualItem = choices.ContainsKey(selectedChoices[0]) ? choices[selectedChoices[0]] : null;
+            currentSearchCategory = actualItem ?? "No item selected.";
+        }
+        else
+        {
+            currentSearchCategory = $"{selectedChoices.Count} items selected.";
+        }
         using (var combo = ImRaii.Combo("##" + this.Key + "Combo", currentSearchCategory, ImGuiComboFlags.HeightLarge))
         {
             if (combo.Success)
@@ -52,19 +68,33 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
                 }
 
                 var activeChoices = this.GetActiveChoices(configuration);
-                ImGui.SameLine();
-                if (ImGui.Button("Add All"))
+                if (this.ShowAddAll)
                 {
-                    foreach (var item in activeChoices)
+                    ImGui.SameLine();
+                    if (ImGui.Button("Add All"))
                     {
-                        if (!selectedChoices.Contains(item.Key))
+                        foreach (var item in activeChoices)
                         {
-                            selectedChoices.Add(item.Key);
+                            if (!selectedChoices.Contains(item.Key))
+                            {
+                                selectedChoices.Add(item.Key);
+                                wasUpdated = true;
+                            }
                         }
-                    }
 
-                    this._cachedChoices = null;
-                    this.UpdateFilterConfiguration(configuration, selectedChoices);
+                        this._cachedChoices = null;
+                        this.UpdateFilterConfiguration(configuration, selectedChoices);
+                    }
+                }
+
+                if (this.ShowClear)
+                {
+                    ImGui.SameLine();
+                    if (ImGui.Button("Clear"))
+                    {
+                        this._cachedChoices = null;
+                        this.UpdateFilterConfiguration(configuration, null);
+                    }
                 }
 
                 ImGui.Separator();
@@ -79,12 +109,20 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
 
                         if (ImGui.Selectable(
                                 item.Value.Replace("\u0002\u001F\u0001\u0003", "-"),
-                                currentSearchCategory == item.Value))
+                                selectedChoices.Contains(item.Key)))
                         {
                             if (!selectedChoices.Contains(item.Key))
                             {
                                 selectedChoices.Add(item.Key);
                                 this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                wasUpdated = true;
+                                this._cachedChoices = null;
+                            }
+                            else
+                            {
+                                selectedChoices.Remove(item.Key);
+                                this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                wasUpdated = true;
                                 this._cachedChoices = null;
                             }
                         }
@@ -92,12 +130,15 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
                 }
             }
         }
+
+        return wasUpdated;
     }
 
-    public virtual void DrawResults(TS configuration, int? labelSize = null, int? inputSize = null)
+    public virtual bool DrawResults(TS configuration, int? labelSize = null, int? inputSize = null)
     {
         var choices = this.GetChoices(configuration);
-        var selectedChoices = this.CurrentValue(configuration);
+        var selectedChoices = this.CurrentValue(configuration).ToList();
+        var wasUpdated = false;
 
         for (var index = 0; index < selectedChoices.Count; index++)
         {
@@ -113,7 +154,11 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
                     if (selectedChoices.Contains(item))
                     {
                         selectedChoices.Remove(item);
-                        this.UpdateFilterConfiguration(configuration, selectedChoices);
+                        if (this.AutoSave)
+                        {
+                            this.UpdateFilterConfiguration(configuration, selectedChoices);
+                        }
+                        wasUpdated = true;
                     }
                 }
             }
@@ -124,6 +169,8 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
                 ImGui.SameLine();
             }
         }
+
+        return wasUpdated;
     }
 
     public abstract Dictionary<T, string> GetChoices(TS configuration);
@@ -162,6 +209,10 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
     }
 
     public abstract bool HideAlreadyPicked { get; set; }
+
+    public virtual bool ShowAddAll { get; } = true;
+
+    public virtual bool ShowClear { get; } = false;
 
     public virtual int? ResultLimit { get; } = null;
 

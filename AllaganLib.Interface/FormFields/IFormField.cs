@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace AllaganLib.Interface.FormFields;
 
-public interface IFormField<T>
+public interface IFormField<TConfiguration>
 {
     public int LabelSize { get; set; }
 
@@ -24,13 +24,17 @@ public interface IFormField<T>
 
     public string Version { get; }
 
-    public bool HasValueSet(T configuration);
+    public bool HasValueSet(TConfiguration configuration);
 
-    public void Draw(T configuration, int? labelSize = null, int? inputSize = null);
+    public bool AutoSave { get; }
 
-    public void DrawInput(T configuration, int? inputSize = null);
+    public bool Draw(TConfiguration configuration, int? labelSize = null, int? inputSize = null);
 
-    public void DrawLabel(T configuration, int? labelSize = null);
+    public bool DrawInput(TConfiguration configuration, int? inputSize = null);
 
-    public void DrawHelp(T configuration);
+    public void DrawLabel(TConfiguration configuration, int? labelSize = null);
+
+    public void DrawHelp(TConfiguration configuration);
+
+    public void Reset(TConfiguration configuration);
 }
