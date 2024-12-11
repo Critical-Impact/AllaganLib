@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - AllaganLib.Interface
   - All fields now have a AutoSave property
-  - FormField's DrawInput now return a boolean indicating if the value changed like imgui does
+  - FormFields DrawInput now return a boolean indicating if the value changed like imgui does
   - The MultiChoice form field now renders a preview and shows which items are selected
   - Added FloatRangeFormField and UintRangeFormFIeld
 
