@@ -22,7 +22,19 @@ public class GilShopRow : ExtendedRow<GilShop, GilShopRow, GilShopSheet>, IShop
 
     public override string ToString()
     {
-        return this._name ??= this.Sheet.GetShopName(this.RowId) ?? this.Base.Name.ExtractText();
+        if (this._name == null)
+        {
+            this._name = this.Sheet.GetShopName(this.RowId) ?? this.Base.Name.ExtractText();
+            if (this._name == string.Empty)
+            {
+                if (this.ENpcs.Any())
+                {
+                    this._name = this.ENpcs.First().ENpcResidentRow.Base.Singular.ExtractText();
+                }
+            }
+        }
+
+        return this._name;
     }
 
     public List<GilShopItemRow> GilShopItems

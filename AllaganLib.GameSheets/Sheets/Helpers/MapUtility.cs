@@ -6,6 +6,21 @@ namespace AllaganLib.GameSheets.Sheets.Helpers;
 public static class MapUtility
 {
     /// <summary>
+    /// Helper method to convert a map marker coordinate to a map coordinate suitable for display to the player.
+    /// </summary>
+    /// <param name="coord">The coordinate to convert.</param>
+    /// <param name="scale">The scale of the map.</param>
+    /// <returns>The converted coordinate.</returns>
+    public static int MarkerToMap(double coord, double scale)
+        => (int)((2 * coord / (scale / 100.0)) + 100.9);
+
+    public static int NodeToMap(double coord, double scale)
+        => (int)((2 * coord) + (2048 / (scale / 100.0)) + 100.9);
+
+    public static int IntegerToInternal(int coord, double scale)
+        => (int)(coord - 100 - (2048 / (scale / 100.0))) / 2;
+
+    /// <summary>
     /// Helper method to convert one of the game's Vector3 X/Z provided by the game to a map coordinate suitable for
     /// display to the player.
     /// </summary>

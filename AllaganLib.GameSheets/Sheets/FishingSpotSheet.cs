@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
@@ -10,8 +11,17 @@ namespace AllaganLib.GameSheets.Sheets;
 public class FishingSpotSheet : ExtendedSheet<FishingSpot, FishingSpotRow, FishingSpotSheet>, IExtendedSheet
 {
     private ItemSheet? itemSheet;
+    private Dictionary<uint,List<FishingSpotRow>> fishingSpotsByItem;
+
     public FishingSpotSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache) : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
     {
+    }
+
+    public Dictionary<uint, List<FishingSpotRow>> FishingSpotsByItem => this.fishingSpotsByItem;
+
+    public List<FishingSpotRow> GetFishingSpots(uint itemId)
+    {
+        return this.FishingSpotsByItem.GetValueOrDefault(itemId) ?? new List<FishingSpotRow>();
     }
 
     public ItemSheet GetItemSheet()
@@ -21,5 +31,8 @@ public class FishingSpotSheet : ExtendedSheet<FishingSpot, FishingSpotRow, Fishi
 
     public override void CalculateLookups()
     {
+        this.fishingSpotsByItem = this.SheetIndexer.OneToMany<FishingSpot, FishingSpotRow, FishingSpotSheet, Item, ItemRow, ItemSheet>(
+            this,
+            row => row.Items);
     }
 }

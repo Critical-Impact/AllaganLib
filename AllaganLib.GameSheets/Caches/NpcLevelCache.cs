@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Model;
@@ -46,6 +47,12 @@ public class NpcLevelCache
         }
 
         var mapKey = (territoryTypeId, mapIndex);
+        if (this.mapIdByTerritoryTypeAndMapIndex.ContainsKey(mapKey))
+        {
+            return this.mapIdByTerritoryTypeAndMapIndex[mapKey];
+        }
+
+        mapKey = (territoryTypeId, 0);
         if (this.mapIdByTerritoryTypeAndMapIndex.ContainsKey(mapKey))
         {
             return this.mapIdByTerritoryTypeAndMapIndex[mapKey];
@@ -101,8 +108,8 @@ public class NpcLevelCache
                 continue;
             }
 
-            var lgbFileName = "bg/" + bg.Substring(0, bg.IndexOf("/level/") + 1) + "level/planevent.lgb";
-            var sLgbFile = this.gameData.GetFile<LgbFile>(lgbFileName);
+
+            var sLgbFile = this.gameData.GetFile<LgbFile>("bg/" + bg.Substring(0, bg.IndexOf("/level/", StringComparison.Ordinal) + 1) + $"level/planevent.lgb");
             if (sLgbFile == null)
             {
                 continue;
@@ -111,7 +118,23 @@ public class NpcLevelCache
             for (var index = 0u; index < sLgbFile.Layers.Length; index++)
             {
                 var sLgbGroup = sLgbFile.Layers[index];
-                var map = this.GetMapAtLayerIndex(sTerritoryType, index + 1);
+                RowRef<Map> map;
+                if (sTerritoryType.Map.RowId == 0)
+                {
+                    var layerIndex = sLgbGroup.LayerSetReferences.Length != 0
+                        ? sLgbGroup.LayerSetReferences[0].LayerSetId
+                        : index + 1;
+                    map = this.GetMapAtLayerIndex(sTerritoryType, layerIndex);
+                }
+                else
+                {
+                    map = sTerritoryType.Map;
+                }
+
+                if (map.RowId == 0)
+                {
+                    continue;
+                }
                 foreach (var instanceObject in sLgbGroup.InstanceObjects)
                 {
                     if (instanceObject.AssetType == LayerEntryType.EventNPC)
@@ -123,11 +146,6 @@ public class NpcLevelCache
                             if (!npcLevelLookup.ContainsKey(npcRowId))
                             {
                                 npcLevelLookup.Add(npcRowId, new HashSet<NpcLocation>());
-                            }
-
-                            if (map.RowId == 0)
-                            {
-                                continue;
                             }
 
                             var npcLocation = new NpcLocation(

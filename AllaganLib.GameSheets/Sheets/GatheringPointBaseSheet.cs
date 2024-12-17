@@ -18,6 +18,7 @@ public class GatheringPointBaseSheet : ExtendedSheet<GatheringPointBase, Gatheri
     private Dictionary<uint, HashSet<uint>> gatheringPointBaseIdsBySpearfishingItemIds;
     private GatheringItemSheet? gatheringItemSheet;
     private SpearfishingItemSheet? spearfishingItemSheet;
+    private SpearfishingNotebookSheet? spearfishingNotebookSheet;
 
     public GatheringPointBaseSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache)
         : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
@@ -36,6 +37,11 @@ public class GatheringPointBaseSheet : ExtendedSheet<GatheringPointBase, Gatheri
     public SpearfishingItemSheet GetSpearfishingItemSheet()
     {
         return this.spearfishingItemSheet ??= this.SheetManager.GetSheet<SpearfishingItemSheet>();
+    }
+
+    public SpearfishingNotebookSheet GetSpearfishingNotebookSheet()
+    {
+        return this.spearfishingNotebookSheet ??= this.SheetManager.GetSheet<SpearfishingNotebookSheet>();
     }
 
     public override void CalculateLookups()

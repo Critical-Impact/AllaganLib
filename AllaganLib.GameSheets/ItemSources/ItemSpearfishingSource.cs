@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Sheets.Rows;
 
@@ -20,5 +21,5 @@ public class ItemSpearfishingSource : ItemSource
 
     public SpearfishingItemRow SpearfishingItemRow => this.spearfishingItemRow;
 
-    public override HashSet<uint>? MapIds => this.SpearfishingItemRow.SpearfishingNotebook?.TerritoryType == null ? null : [this.SpearfishingItemRow.SpearfishingNotebook.TerritoryType.Base.Map.RowId];
+    public override HashSet<uint>? MapIds => this.SpearfishingItemRow.GatheringPoints.Select(c => c.SpearfishingNotebook?.TerritoryTypeRow?.Map?.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
 }

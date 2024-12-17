@@ -16,7 +16,7 @@ public class ENpcBaseSheet : ExtendedSheet<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
     private readonly NpcLevelCache levelCache;
     private readonly NpcShopCache shopCache;
     private readonly List<HouseVendor> houseVendors;
-    private Dictionary<uint, List<HouseVendor>> houseVendorsByNpcId;
+    private Dictionary<uint, HouseVendor> houseVendorsByNpcId;
     private ENpcResidentSheet? eNpcResidentSheet;
     private Dictionary<uint, List<IShop>> shopsByNpcId;
     private Dictionary<uint, List<ItemRow>> itemsByNpcId;
@@ -46,6 +46,11 @@ public class ENpcBaseSheet : ExtendedSheet<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
         return this.houseVendorsByNpcId.ContainsKey(npcId);
     }
 
+    public bool IsHouseVendorChild(uint npcId)
+    {
+        return this.houseVendorsByNpcId.TryGetValue(npcId, out var houseVendor) && houseVendor.ParentId != 0;
+    }
+
     public bool IsCalamitySalvager(uint npcId)
     {
         return HardcodedItems.CalamitySalvagers.Contains(npcId);
@@ -58,6 +63,6 @@ public class ENpcBaseSheet : ExtendedSheet<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
 
     public override void CalculateLookups()
     {
-        this.houseVendorsByNpcId = this.houseVendors.GroupBy(c => c.ENpcResidentId).ToDictionary(c => c.Key, c => c.ToList());
+        this.houseVendorsByNpcId = this.houseVendors.ToDictionary(c => c.ENpcResidentId, c => c);
     }
 }

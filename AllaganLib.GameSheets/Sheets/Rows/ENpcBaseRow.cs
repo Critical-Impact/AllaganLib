@@ -17,6 +17,8 @@ public class ENpcBaseRow : ExtendedRow<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
 
     public bool IsHouseVendor => this.Sheet.IsHouseVendor(this.RowId);
 
+    public bool IsHouseVendorChild => this.Sheet.IsHouseVendorChild(this.RowId);
+
     public bool IsCalamitySalvager => HardcodedItems.CalamitySalvagers.Contains(this.RowId);
 
     public RowRef<ENpcResident> Resident

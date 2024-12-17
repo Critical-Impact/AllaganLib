@@ -18,12 +18,14 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> npcIdToFccShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToGilShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToGcShopIdLookup;
+    private Dictionary<uint, HashSet<uint>> npcIdToInclusionShopIdLookup;
 
     private Dictionary<uint, HashSet<uint>> fateShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> specialShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> fccShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> gilShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> gcShopIdToNpcIdLookup;
+    private Dictionary<uint, HashSet<uint>> inclusionShopIdToNpcLookup;
 
     public NpcShopCache(GameData gameData)
     {
@@ -35,12 +37,14 @@ public class NpcShopCache
         this.npcIdToFccShopIdLookup = [];
         this.npcIdToGilShopIdLookup = [];
         this.npcIdToGcShopIdLookup = [];
+        this.npcIdToInclusionShopIdLookup = [];
 
         this.fateShopIdToNpcIdLookup = [];
         this.specialShopIdToNpcIdLookup = [];
         this.fccShopIdToNpcIdLookup = [];
         this.gilShopIdToNpcIdLookup = [];
         this.gcShopIdToNpcIdLookup = [];
+        this.inclusionShopIdToNpcLookup = [];
     }
 
     private static readonly List<(uint, uint)> ExtraSpecialShops = new()
@@ -192,6 +196,20 @@ public class NpcShopCache
                 this.npcIdToShopIdLookup.TryAdd(npcBase.RowId, []);
                 this.npcIdToShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
             }
+            else if (rowRef.Is<InclusionShop>())
+            {
+                this.inclusionShopIdToNpcLookup.TryAdd(rowRef.RowId, []);
+                this.inclusionShopIdToNpcLookup[rowRef.RowId].Add(npcBase.RowId);
+
+                this.shopIdToNpcIdLookup.TryAdd(rowRef.RowId, []);
+                this.shopIdToNpcIdLookup[rowRef.RowId].Add(npcBase.RowId);
+
+                this.npcIdToInclusionShopIdLookup.TryAdd(npcBase.RowId, []);
+                this.npcIdToInclusionShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
+
+                this.npcIdToShopIdLookup.TryAdd(npcBase.RowId, []);
+                this.npcIdToShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
+            }
             else if (rowRef.Is<CustomTalk>())
             {
                 var customTalk = customTalkSheet.GetRow(rowRef.RowId);
@@ -219,53 +237,68 @@ public class NpcShopCache
                     EvalulateRowRef(npcBase, topicShop, customTalkTypes);
                 }
             }
-            else if (rowRef.Is<PreHandler>())
+            //else if (rowRef.Is<PreHandler>()) TODO: Replace once exdschema gets updated
+            else if(rowRef.RowId is >= 3538944 and <= 3539076)
             {
-                var preHandler = preHandlerSheet.GetRow(rowRef.RowId);
-                EvalulateRowRef(npcBase, preHandler.Target, customTalkTypes);
+                var preHandler = preHandlerSheet.GetRowOrDefault(rowRef.RowId);
+                if (preHandler != null)
+                {
+                    EvalulateRowRef(npcBase, preHandler.Value.Target, customTalkTypes);
+                }
             }
         }
     }
 
     public HashSet<uint>? GetGcShopsByNpcId(uint npcId)
     {
-        return this.npcIdToGcShopIdLookup.TryGetValue(npcId, out var value) ? value : null;
+        return this.npcIdToGcShopIdLookup.GetValueOrDefault(npcId);
     }
 
     public HashSet<uint>? GetNpcsByGcShopId(uint gcShopId)
     {
-        return this.gcShopIdToNpcIdLookup.TryGetValue(gcShopId, out var value) ? value : null;
+        return this.gcShopIdToNpcIdLookup.GetValueOrDefault(gcShopId);
     }
 
     public HashSet<uint>? GetGilShopsByNpcId(uint npcId)
     {
-        return this.npcIdToGilShopIdLookup.TryGetValue(npcId, out var value) ? value : null;
+        return this.npcIdToGilShopIdLookup.GetValueOrDefault(npcId);
     }
 
     public HashSet<uint>? GetNpcsByGilShopId(uint gilShopId)
     {
-        return this.gilShopIdToNpcIdLookup.TryGetValue(gilShopId, out var value) ? value : null;
+        return this.gilShopIdToNpcIdLookup.GetValueOrDefault(gilShopId);
     }
 
     public HashSet<uint>? GetSpecialShopsByNpcId(uint npcId)
     {
-        return this.npcIdToSpecialShopIdLookup.TryGetValue(npcId, out var value) ? value : null;
+        return this.npcIdToSpecialShopIdLookup.GetValueOrDefault(npcId);
     }
 
     public HashSet<uint>? GetNpcsBySpecialShopId(uint specialShopId)
     {
-        return this.specialShopIdToNpcIdLookup.TryGetValue(specialShopId, out var value) ? value : null;
+        return this.specialShopIdToNpcIdLookup.GetValueOrDefault(specialShopId);
     }
 
 
     public HashSet<uint>? GetFccShopsByNpcId(uint npcId)
     {
-        return this.npcIdToFccShopIdLookup.TryGetValue(npcId, out var value) ? value : null;
+        return this.npcIdToFccShopIdLookup.GetValueOrDefault(npcId);
     }
 
     public HashSet<uint>? GetNpcsByFccShopId(uint fccShopId)
     {
-        return this.fccShopIdToNpcIdLookup.TryGetValue(fccShopId, out var value) ? value : null;
+        return this.fccShopIdToNpcIdLookup.GetValueOrDefault(fccShopId);
+    }
+
+
+    public HashSet<uint>? GetInclusionShopsByNpcId(uint npcId)
+    {
+        return this.npcIdToInclusionShopIdLookup.GetValueOrDefault(npcId);
+    }
+
+    public HashSet<uint>? GetNpcsByInclusionShopId(uint inclusionShopId)
+    {
+        return this.inclusionShopIdToNpcLookup.GetValueOrDefault(inclusionShopId);
     }
 
 

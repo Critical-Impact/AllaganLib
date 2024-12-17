@@ -1,24 +1,27 @@
 using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemFishingSource : ItemSource
 {
-    private readonly FishingSpotRow fishingSpotRow;
+    public FishParameterRow FishParameter { get; }
 
-    public ItemFishingSource(FishingSpotRow fishingSpotRow, ItemRow itemRow)
+    public List<FishingSpotRow> FishingSpots { get; }
+
+    public ItemFishingSource(FishParameterRow fishParameter, List<FishingSpotRow> fishingSpots, ItemRow itemRow)
         : base(ItemInfoType.Fishing)
     {
-        this.fishingSpotRow = fishingSpotRow;
+        this.FishParameter = fishParameter;
+        this.FishingSpots = fishingSpots;
         this.Item = itemRow!;
     }
 
     public override uint Quantity => 1;
 
 
-    public FishingSpotRow FishingSpotRow => this.fishingSpotRow;
-
-    public override HashSet<uint>? MapIds => [this.fishingSpotRow.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0];
+    public override HashSet<uint>? MapIds => this.FishingSpots.Select(c => c.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
 }

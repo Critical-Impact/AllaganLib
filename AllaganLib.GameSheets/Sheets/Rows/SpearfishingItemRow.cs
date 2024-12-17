@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Model;
 using Lumina.Excel.Sheets;
 
@@ -8,16 +10,20 @@ public class SpearfishingItemRow : ExtendedRow<SpearfishingItem, SpearfishingIte
 
     private ItemRow? itemRow;
     private SpearfishingNotebookRow? spearfishingNotebookRow;
+    private List<GatheringPointBaseRow>? gatheringPoints;
+
+    public string FishRecordType => this.Base.FishingRecordType.Value.Addon.Value.Text.ExtractText();
 
     public SpearfishingNotebookRow? SpearfishingNotebook
     {
         get
         {
-            return this.spearfishingNotebookRow ??= this.Base.TerritoryType.RowId != 0
-                ? this.Sheet.GetSpearfishingNoteBookSheet().GetRowOrDefault(this.Base.TerritoryType.RowId)
-                : null;
+            return this.spearfishingNotebookRow ??= this.GatheringPoints.FirstOrDefault()?.SpearfishingNotebook;
         }
     }
+
+    public List<GatheringPointBaseRow> GatheringPoints => this.gatheringPoints ??= this.Sheet.GetGatheringPointBaseSheet()
+        .GetGatheringPointBasesBySpearfishingItemId(this.RowId)?.ToList() ?? [];
 
 
     public ItemRow? ItemRow

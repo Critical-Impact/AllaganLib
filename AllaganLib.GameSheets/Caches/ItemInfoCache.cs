@@ -237,6 +237,7 @@ public class ItemInfoCache
         var gatheringItemSheet = this.sheetManager.GetSheet<GatheringItemSheet>();
         var bNpcNameSheet = this.sheetManager.GetSheet<BNpcNameSheet>();
         var fishingSpotSheet = this.sheetManager.GetSheet<FishingSpotSheet>();
+        var fishParameterSheet = this.sheetManager.GetSheet<FishParameterSheet>();
         var spearfishingSheet = this.sheetManager.GetSheet<SpearfishingItemSheet>();
         var fateSheet = this.sheetManager.GetSheet<FateSheet>();
         var retainerTaskSheet = this.sheetManager.GetSheet<RetainerTaskSheet>();
@@ -457,7 +458,7 @@ public class ItemInfoCache
             }
         }
 
-        Dictionary<uint, HashSet<uint>> setItems = new();
+        Dictionary<(uint, uint), HashSet<uint>> setItems = new();
 
         foreach (var mirageStoreSetItem in mirageStoreSetItemSheet)
         {
@@ -474,15 +475,22 @@ public class ItemInfoCache
             {
                 foreach (var secondaryItem in ids)
                 {
-                    setItems.TryAdd(mainItem, new HashSet<uint>());
-                    setItems[mainItem].Add(secondaryItem);
+                    setItems.TryAdd((mirageStoreSetItem.RowId, mainItem), new HashSet<uint>());
+                    setItems[(mirageStoreSetItem.RowId, mainItem)].Add(secondaryItem);
                 }
             }
         }
 
         foreach (var setItem in setItems)
         {
-            var source = new ItemGlamourReadySource(itemSheet.GetRow(setItem.Key), setItem.Value.Select(c => itemSheet.GetRow(c)).ToList());
+            var source = new ItemGlamourReadySetItemSource(itemSheet.GetRow(setItem.Key.Item2), itemSheet.GetRow(setItem.Key.Item1), setItem.Value.Select(c => itemSheet.GetRow(c)).ToList());
+            this.AddItemUse(source);
+        }
+
+
+        foreach (var setItem in setItems.DistinctBy(c => c.Key.Item1))
+        {
+            var source = new ItemGlamourReadySetSource(itemSheet.GetRow(setItem.Key.Item1), setItem.Value.Select(c => itemSheet.GetRow(c)).ToList());
             this.AddItemUse(source);
         }
 
@@ -714,14 +722,15 @@ public class ItemInfoCache
             }
         }
 
-        foreach (var fishingSpot in fishingSpotSheet)
+        foreach (var fishParameter in fishParameterSheet)
         {
-            var mapId = fishingSpot.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0;
-
-            foreach (var item in fishingSpot.Items)
+            var fishingSpots = fishParameter.FishingSpots;
+            var item = itemSheet.GetRowOrDefault(fishParameter.Base.Item.RowId);
+            if (item != null)
             {
-                this.AddItemSource(new ItemFishingSource(fishingSpot, item));
-                if (mapId != 0)
+                this.AddItemSource(new ItemFishingSource(fishParameter, fishingSpots, item));
+                var mapIds = fishingSpots.Select(c => c.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0).Where(c => c != 0).Distinct();
+                foreach (var mapId in mapIds)
                 {
                     this.AddItemSourceMapLocation(item.RowId, mapId, ItemInfoType.Fishing);
                 }
@@ -730,14 +739,16 @@ public class ItemInfoCache
 
         foreach (var spearfishing in spearfishingSheet)
         {
-            var mapId = spearfishing.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0;
-
             if (spearfishing.ItemRow != null)
             {
+                var gatheringPoints = spearfishing.GatheringPoints;
                 this.AddItemSource(new ItemSpearfishingSource(spearfishing));
-                if (mapId != 0)
+                foreach (var gatheringPoint in gatheringPoints)
                 {
-                    this.AddItemSourceMapLocation(spearfishing.ItemRow.RowId, mapId, ItemInfoType.Spearfishing);
+                    if (gatheringPoint.SpearfishingNotebook is { TerritoryTypeRow.Map: not null })
+                    {
+                        this.AddItemSourceMapLocation(spearfishing.ItemRow.RowId, gatheringPoint.SpearfishingNotebook.TerritoryTypeRow.Map.RowId, ItemInfoType.Spearfishing);
+                    }
                 }
             }
         }

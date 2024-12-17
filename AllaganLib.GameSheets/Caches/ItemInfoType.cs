@@ -70,5 +70,6 @@ public enum ItemInfoType
     HouseFlooring = 65,
     HouseLighting = 66,
     Stain = 67,
-    GlamourReady = 68
+    GlamourReadySet = 68,
+    GlamourReadySetItem = 69,
 }

@@ -1,0 +1,9 @@
+using AllaganLib.GameSheets.Model;
+using Lumina.Excel.Sheets;
+
+namespace AllaganLib.GameSheets.Sheets.Rows;
+
+public class GatheringPointNameRow : ExtendedRow<GatheringPointName, GatheringPointNameRow, GatheringPointNameSheet>
+{
+    
+}

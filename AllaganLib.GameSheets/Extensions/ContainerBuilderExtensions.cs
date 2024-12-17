@@ -38,6 +38,15 @@ public static class ContainerBuilderExtensions
             return sheet;
         })
         .As(typeof(ExcelSheet<>));
+        containerBuilder.RegisterGeneric((context, parameters) =>
+        {
+            var gameData = context.Resolve<GameData>();
+            var method = typeof(GameData).GetMethod(nameof(GameData.GetSubrowExcelSheet))
+                ?.MakeGenericMethod(parameters);
+            var sheet = method!.Invoke(gameData, [null, null])!;
+            return sheet;
+        })
+        .As(typeof(SubrowExcelSheet<>));
 
         Assembly assembly = typeof(SheetManager).Assembly;
 

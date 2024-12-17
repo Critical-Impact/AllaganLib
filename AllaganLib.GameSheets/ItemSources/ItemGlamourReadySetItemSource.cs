@@ -6,13 +6,16 @@ using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
-public class ItemGlamourReadySource : ItemSource
+public class ItemGlamourReadySetItemSource : ItemSource
 {
     public List<ItemRow> SetItems { get; }
 
-    public ItemGlamourReadySource(ItemRow itemRow, List<ItemRow> setItems)
-        : base(ItemInfoType.GlamourReady)
+    public ItemRow ConvertedItem { get; }
+
+    public ItemGlamourReadySetItemSource(ItemRow itemRow, ItemRow convertedItem, List<ItemRow> setItems)
+        : base(ItemInfoType.GlamourReadySetItem)
     {
+        this.ConvertedItem = convertedItem;
         this.SetItems = setItems;
         this.Item = itemRow;
     }

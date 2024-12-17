@@ -33,6 +33,32 @@ public class SheetIndexer
         return index;
     }
 
+    public Dictionary<uint, TExtendedRow> OneToOne<TBase, TExtendedRow, TExtendedSheet, TBase2, TExtendedRow2, TExtendedSheet2>(ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> baseSheet, ExtendedSheet<TBase2, TExtendedRow2, TExtendedSheet2> relatedSheet, Func<TExtendedRow, (uint,TExtendedRow?)> transformer)
+        where TBase : struct, IExcelRow<TBase>
+        where TExtendedRow : ExtendedRow<TBase, TExtendedRow, TExtendedSheet>, new()
+        where TExtendedSheet : ExtendedSheet<TBase, TExtendedRow, TExtendedSheet>, IExtendedSheet
+        where TBase2 : struct, IExcelRow<TBase2>
+        where TExtendedRow2 : ExtendedRow<TBase2, TExtendedRow2, TExtendedSheet2>, new()
+        where TExtendedSheet2 : ExtendedSheet<TBase2, TExtendedRow2, TExtendedSheet2>, IExtendedSheet
+    {
+        var index = new Dictionary<uint, TExtendedRow>();
+        foreach (var row in baseSheet)
+        {
+            var result = transformer.Invoke(row);
+            if (result.Item1 == 0 || result.Item2 == null || result.Item2.RowId == 0)
+            {
+                continue;
+            }
+
+            if (!index.TryAdd(result.Item1, result.Item2))
+            {
+                //do something here
+            }
+        }
+
+        return index;
+    }
+
     public Dictionary<uint, uint> OneToOneById<TBase, TExtendedRow, TExtendedSheet>(ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> baseSheet, Func<TExtendedRow, (uint,uint)> transformer)
         where TBase : struct, IExcelRow<TBase>
         where TExtendedRow : ExtendedRow<TBase, TExtendedRow, TExtendedSheet>, new()
