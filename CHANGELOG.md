@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Parse inclusion shop items
   - Subrow sheets can be requested directly via DI
   - Added Marker X/Y for FishingSpots, GatheringPoints, SpearfishingNotebook
-  - GilShops will defer to the first NPC's name if they have a blank name
+  - GilShops will defer to the first NPCs name if they have a blank name
 
 ## [1.1.12] - 2024-12-11
 
