@@ -260,6 +260,7 @@ public class ItemInfoCache
         var houseYardObjectSheet = this.gameData.GetExcelSheet<HousingYardObject>()!;
         var housingPresetSheet = this.gameData.GetExcelSheet<HousingPreset>()!;
         var mirageStoreSetItemSheet = this.gameData.GetExcelSheet<MirageStoreSetItem>()!;
+        var companyCraftDraftSheet = this.gameData.GetExcelSheet<CompanyCraftDraft>()!;
 
         var rewards = gcSupplyDutyRewardSheet.ToDictionary(c => c.RowId, c => c);
         var maxiLevel = rewards.Select(c => c.Key).Max();
@@ -574,6 +575,22 @@ public class ItemInfoCache
                 var use = new ItemCompanyCraftRequirementSource(item, costItem, requiredItem, companyCraftSequence);
                 this.AddItemUse(use);
                 this.AddItemSourceUseCombo(source, use);
+            }
+        }
+
+        foreach (var companyCraftDraft in companyCraftDraftSheet)
+        {
+            for (var index = 0; index < companyCraftDraft.RequiredItem.Count; index++)
+            {
+                var itemRef = companyCraftDraft.RequiredItem[index];
+                var requiredAmount = companyCraftDraft.RequiredItemCount[index];
+                if (itemRef.RowId == 0)
+                {
+                    continue;
+                }
+                var item = itemSheet.GetRow(itemRef.RowId);
+                var use = new ItemCompanyCraftDraftSource(item, new RowRef<CompanyCraftDraft>(this.gameData.Excel, companyCraftDraft.RowId, this.gameData.Options.DefaultExcelLanguage), requiredAmount);
+                this.AddItemUse(use);
             }
         }
 

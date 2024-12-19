@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.15] - 2024-12-19
+
+### Changes
+
+- AllaganLib.GameData
+  - Added the gathering points required for dark matter clusters to be listed
+  - Added company craft prototypes as uses on related items
+
+
+## [1.1.14] - 2024-12-17
+
+### Changes
+
+- AllaganLib.GameData
+  - Bump LuminaSupplmental
+
 ## [1.1.13] - 2024-12-17
 
 ### Changes

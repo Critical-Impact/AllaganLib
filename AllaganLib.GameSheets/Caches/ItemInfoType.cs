@@ -72,4 +72,5 @@ public enum ItemInfoType
     Stain = 67,
     GlamourReadySet = 68,
     GlamourReadySetItem = 69,
+    CompanyCraftDraft = 70,
 }
