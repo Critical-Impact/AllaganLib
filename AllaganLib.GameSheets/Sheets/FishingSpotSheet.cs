@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Service;
@@ -21,7 +22,7 @@ public class FishingSpotSheet : ExtendedSheet<FishingSpot, FishingSpotRow, Fishi
 
     public List<FishingSpotRow> GetFishingSpots(uint itemId)
     {
-        return this.FishingSpotsByItem.GetValueOrDefault(itemId) ?? new List<FishingSpotRow>();
+        return this.FishingSpotsByItem.GetValueOrDefault(itemId)?.Where(c => c.TerritoryType.RowId != 0).ToList() ?? new List<FishingSpotRow>();
     }
 
     public ItemSheet GetItemSheet()

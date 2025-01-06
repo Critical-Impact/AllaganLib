@@ -23,5 +23,5 @@ public class ItemFishingSource : ItemSource
     public override uint Quantity => 1;
 
 
-    public override HashSet<uint>? MapIds => this.FishingSpots.Select(c => c.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
+    public override HashSet<uint>? MapIds => this.FishingSpots.Where(c => c.TerritoryType.RowId != 0).Select(c => c.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
 }

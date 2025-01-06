@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Linq;
 using AllaganLib.Interface.Grid;
 using ImGuiNET;
 
@@ -16,7 +17,7 @@ public class GridQuickSearchWidget<TConfiguration, TData, TMessageBase>
 
     public void Draw(TConfiguration configuration, int? labelSize = null, int? inputSize = null)
     {
-        var columns = this.renderTable.Columns;
+        var columns = this.renderTable.Columns.Where(c => c.HideFilter != true).ToList();
         for (var index = 0; index < columns.Count; index++)
         {
             var column = columns[index];

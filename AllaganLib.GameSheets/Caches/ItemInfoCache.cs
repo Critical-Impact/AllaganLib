@@ -463,6 +463,11 @@ public class ItemInfoCache
 
         foreach (var mirageStoreSetItem in mirageStoreSetItemSheet)
         {
+            if (mirageStoreSetItem.RowId == 0)
+            {
+                // SE decided to put in a row 0 with an item with the ID = 1
+                continue;
+            }
             List<uint> ids = new List<uint>
                 {
                     mirageStoreSetItem.Unknown0, mirageStoreSetItem.Unknown1, mirageStoreSetItem.Unknown2,

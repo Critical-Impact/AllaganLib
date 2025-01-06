@@ -6,6 +6,7 @@ using AllaganLib.GameSheets.Service;
 using AllaganLib.GameSheets.Sheets.Helpers;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets;
@@ -19,6 +20,7 @@ public class GatheringPointBaseSheet : ExtendedSheet<GatheringPointBase, Gatheri
     private GatheringItemSheet? gatheringItemSheet;
     private SpearfishingItemSheet? spearfishingItemSheet;
     private SpearfishingNotebookSheet? spearfishingNotebookSheet;
+    private SubrowExcelSheet<GatheringItemPoint>? gatheringItemPointSheet;
 
     public GatheringPointBaseSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache)
         : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
@@ -32,6 +34,11 @@ public class GatheringPointBaseSheet : ExtendedSheet<GatheringPointBase, Gatheri
     public GatheringItemSheet GetGatheringItemSheet()
     {
         return this.gatheringItemSheet ??= this.SheetManager.GetSheet<GatheringItemSheet>();
+    }
+
+    public SubrowExcelSheet<GatheringItemPoint> GetGatheringItemPointSheet()
+    {
+        return this.gatheringItemPointSheet ??= this.GameData.GetSubrowExcelSheet<GatheringItemPoint>()!;
     }
 
     public SpearfishingItemSheet GetSpearfishingItemSheet()
@@ -70,6 +77,25 @@ public class GatheringPointBaseSheet : ExtendedSheet<GatheringPointBase, Gatheri
 
                     this.gatheringPointBaseIdsBySpearfishingItemIds.TryAdd(item.RowId, []);
                     this.gatheringPointBaseIdsBySpearfishingItemIds[item.RowId].Add(gatheringPointBase.RowId);
+                }
+            }
+        }
+
+        foreach (var gatheringItemPoint in this.GetGatheringItemPointSheet())
+        {
+            foreach (var subRow in gatheringItemPoint)
+            {
+                if (subRow.GatheringPoint.RowId != 0)
+                {
+                    var gatheringPointBase = subRow.GatheringPoint.Value.GatheringPointBase;
+                    if (gatheringPointBase.RowId != 0)
+                    {
+                        this.gatheringItemIdsByGatheringPointBaseId.TryAdd(gatheringPointBase.RowId, []);
+                        this.gatheringItemIdsByGatheringPointBaseId[gatheringPointBase.RowId].Add(gatheringItemPoint.RowId);
+
+                        this.gatheringPointBaseIdsByItemIds.TryAdd(gatheringItemPoint.RowId, []);
+                        this.gatheringPointBaseIdsByItemIds[gatheringItemPoint.RowId].Add(gatheringPointBase.RowId);
+                    }
                 }
             }
         }

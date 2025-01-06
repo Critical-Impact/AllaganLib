@@ -30,7 +30,7 @@ public class GCScripShopItemRow : ExtendedSubrow<GCScripShopItem, GCScripShopIte
 
     public ItemRow Item => this.item ??= this.Sheet.GetItemSheet().GetRow(this.Base.Item.RowId);
 
-    public uint Count => 1;
+    public uint Count => this.Base.CostGCSeals;
 
     public bool? IsHq => null;
 
