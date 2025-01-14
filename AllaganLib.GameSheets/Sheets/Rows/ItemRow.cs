@@ -51,6 +51,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         FashionAccessories = 20_086, // fashion accessories
         // missing: 2_894 (always false),
         FramersKits = 29_459,
+        Spectacles = 37_312,
     }
 
     private static readonly ActionType[] ValidActions = (ActionType[])Enum.GetValues(typeof(ActionType));

@@ -205,7 +205,7 @@ public class UniversalisApiService : BackgroundService
             else
             {
                 UniversalisRequestMulti? multiRequest = JsonConvert.DeserializeObject<UniversalisRequestMulti>(value);
-                if (multiRequest != null)
+                if (multiRequest?.items != null)
                 {
                     foreach (var item in multiRequest.items)
                     {

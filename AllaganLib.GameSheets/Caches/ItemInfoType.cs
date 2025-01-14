@@ -73,4 +73,5 @@ public enum ItemInfoType
     GlamourReadySet = 68,
     GlamourReadySetItem = 69,
     CompanyCraftDraft = 70,
+    GardeningCrossbreed = 71,
 }

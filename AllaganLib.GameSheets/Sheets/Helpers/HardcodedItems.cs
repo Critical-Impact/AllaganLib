@@ -4,7 +4,7 @@ namespace AllaganLib.GameSheets.Sheets.Helpers;
 
 public static class HardcodedItems
 {
-    public const int GlamourChestSize = 8000;
+    public const int GlamourChestSize = 800;
     public const uint FreeCompanyCreditItemId = 80;
     public const uint FreeCompanyCreditAddonId = 80;
     public const int StormSealId = 20;

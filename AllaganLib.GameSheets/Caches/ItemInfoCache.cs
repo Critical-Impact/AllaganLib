@@ -32,6 +32,7 @@ public class ItemInfoCache
     private readonly List<DungeonBossChest> dungeonBossChests;
     private readonly List<DungeonDrop> dungeonDrops;
     private readonly List<DungeonBossDrop> dungeonBossDrops;
+    private readonly List<GardeningCrossbreed> gardeningCrossbreeds;
 
     private Dictionary<uint, List<ItemSource>> itemSources;
     private Dictionary<uint, List<ItemSource>> itemUses;
@@ -64,7 +65,8 @@ public class ItemInfoCache
         List<DungeonBoss> dungeonBosses,
         List<DungeonBossChest> dungeonBossChests,
         List<DungeonDrop> dungeonDrops,
-        List<DungeonBossDrop> dungeonBossDrop)
+        List<DungeonBossDrop> dungeonBossDrop,
+        List<GardeningCrossbreed> gardeningCrossbreeds)
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
@@ -82,6 +84,7 @@ public class ItemInfoCache
         this.dungeonBossChests = dungeonBossChests;
         this.dungeonDrops = dungeonDrops;
         this.dungeonBossDrops = dungeonBossDrop;
+        this.gardeningCrossbreeds = gardeningCrossbreeds;
         this.itemSources = new Dictionary<uint, List<ItemSource>>();
         this.itemUses = new Dictionary<uint, List<ItemSource>>();
         this.itemSourceUseMap = new Dictionary<(uint, uint), List<ItemSource>>();
@@ -276,6 +279,23 @@ public class ItemInfoCache
                     this.AddItemUse(source);
                 }
             }
+        }
+
+        foreach (var gardeningCrossbreed in this.gardeningCrossbreeds)
+        {
+            var resultItem = itemSheet.GetRow(gardeningCrossbreed.ItemResultId);
+            var requirement1 = itemSheet.GetRow(gardeningCrossbreed.ItemRequirement1Id);
+            var requirement2 = itemSheet.GetRow(gardeningCrossbreed.ItemRequirement2Id);
+
+
+            var source = new ItemGardeningCrossbreedSource(resultItem, resultItem, requirement1, requirement2);
+            this.AddItemSource(source);
+
+            source = new ItemGardeningCrossbreedSource(requirement1, resultItem, requirement1, requirement2);
+            this.AddItemUse(source);
+
+            source = new ItemGardeningCrossbreedSource(requirement2, resultItem, requirement1, requirement2);
+            this.AddItemUse(source);
         }
 
         foreach (var stain in stainSheet)

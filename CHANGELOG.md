@@ -13,6 +13,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.17] - 2025-01-14
+
+### Changes
+
+- AllaganLib.GameData
+  - LuminaSupplemental.Excel updated to 2.1.8
+  - Fixed a bug with an empty item set being shown for glamour ready items
+  - Stopped certain fishing sources from being generated that have no map
+  - Added gathering points that were missing
+  - GC shop sources now have the correct seal cost
+  - Adjusted Glamour chest size
+  - Gardening crossbreeds added as a source/use
+  - Added spectacles as valid items that can be acquired
+
+## [1.1.16] - 2025-01-06
+
+### Changes
+
+- AllaganLib.GameData
+  - Added the gathering points required for dark matter clusters to be listed
+  - Added company craft prototypes as uses on related items
+
+
 ## [1.1.15] - 2024-12-19
 
 ### Changes

@@ -107,6 +107,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<FateItem>(CsvLoader.FateItemResourceName);
         containerBuilder.RegisterCsv<ItemPatch>(CsvLoader.ItemPatchResourceName);
         containerBuilder.RegisterCsv<ItemSupplement>(CsvLoader.ItemSupplementResourceName);
+        containerBuilder.RegisterCsv<GardeningCrossbreed>(CsvLoader.GardeningCrossbreedResourceName);
         if (startupOptions.ContainerBuilderHook != null)
         {
             startupOptions.ContainerBuilderHook.Invoke(containerBuilder);
