@@ -105,15 +105,15 @@ public static class ContainerBuilderExtensions
         }
     }
 
-    public static void RegisterCsv<T>(this ContainerBuilder builder, string resourceName)
+    public static void RegisterCsv<T>(this ContainerBuilder builder, string resourceName, bool includesHeaders = true)
         where T : ICsv, new()
     {
-        builder.Register(context => LoadCsvData<T>(context, resourceName))
+        builder.Register(context => LoadCsvData<T>(context, resourceName, includesHeaders))
             .As<List<T>>()
             .SingleInstance();
     }
 
-    private static List<T> LoadCsvData<T>(IComponentContext context, string resourceName)
+    private static List<T> LoadCsvData<T>(IComponentContext context, string resourceName, bool includesHeaders = true)
         where T : ICsv, new()
     {
         var gameData = context.Resolve<GameData>();
@@ -124,6 +124,7 @@ public static class ContainerBuilderExtensions
         {
             var lines = CsvLoader.LoadResource<T>(
                 resourceName,
+                includesHeaders,
                 out var failedLines,
                 out var exceptions,
                 gameData,
