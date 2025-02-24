@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.1.23] - 2025-02-24
+
+### Changes
+
+- AllaganLib.GameData
+  - Fix fishing spot map marker location
+  - Fix some currency related issues for special shops
+
 ## [1.1.22] - 2025-02-12
 
 ### Changes

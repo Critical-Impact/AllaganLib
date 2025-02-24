@@ -27,7 +27,8 @@ public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSp
             {
                 return MapUtility.IntegerToInternal(
                     MapUtility.MarkerToMap(this.Base.X, this.Map.Value.SizeFactor),
-                    this.Map.Value.SizeFactor);
+                    this.Map.Value.SizeFactor) - this.Map.Value.OffsetX;
+
             }
 
             return 0;
@@ -42,7 +43,7 @@ public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSp
             {
                 return MapUtility.IntegerToInternal(
                     MapUtility.MarkerToMap(this.Base.Z, this.Map.Value.SizeFactor),
-                    this.Map.Value.SizeFactor);
+                    this.Map.Value.SizeFactor) - this.Map.Value.OffsetY;
             }
 
             return 0;

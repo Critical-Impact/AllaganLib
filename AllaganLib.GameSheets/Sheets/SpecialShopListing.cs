@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel.Sheets;
@@ -38,13 +39,13 @@ public class SpecialShopListing : IShopListing
         { 27, 28188 },
         { 28, 30341 }
     };
-    
+
     private static Dictionary<uint, uint> tomeStones = new Dictionary<uint, uint>() {
         { 1, 28 },
         { 2, 46 },
         { 3, 47 },
     };
-    
+
     //No fucking idea why these 2 are special, make a PR if you know how square managed to make this system even stupider
     private static HashSet<uint> _currencyShops = new HashSet<uint>()
     {
@@ -52,7 +53,7 @@ public class SpecialShopListing : IShopListing
         1770638,
         1770699
     };
-    
+
     public SpecialShopListing(
         SpecialShopRow specialShopRow,
         ItemSheet itemSheet,
@@ -65,7 +66,7 @@ public class SpecialShopListing : IShopListing
             if (costItem.ItemCost.RowId != 0)
             {
                 var costItemId = costItem.ItemCost.RowId;
-                costItemId = ConvertCurrencyId(specialShopRow.RowId, costItemId, specialShopRow.Base.UseCurrencyType);
+                costItemId = this.ConvertCurrencyId(specialShopRow.RowId, costItemId, specialShopRow.Base.UseCurrencyType);
                 costListings.Add(
                     new ShopListingItem(
                         itemSheet,
@@ -76,7 +77,7 @@ public class SpecialShopListing : IShopListing
                         costItem.CollectabilityCost));
             }
         }
-        
+
         var rewardListings = new List<ShopListingItem>();
         foreach (var receiveItem in itemDataStruct.ReceiveItems)
         {
@@ -92,53 +93,62 @@ public class SpecialShopListing : IShopListing
                         receiveItem.ReceiveHq));
             }
         }
-        
+
         this.Rewards = rewardListings;
         this.Costs = costListings;
-        
-        uint ConvertCurrencyId(uint specialShopId, uint itemId, ushort useCurrencyType)
+    }
+
+    private uint ConvertCurrencyId(uint specialShopId, uint itemId, ushort useCurrencyType)
+    {
+        if (specialShopId == 1770446 || (specialShopId == 1770699 && itemId < 10))
         {
-            if (specialShopId == 1770637)
+            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
             {
-                if (currencies.TryGetValue(itemId, out var currencyValue))
-                {
-                    return currencyValue;
-                }
-                return itemId;
+                return currencyValue;
             }
-            
-            if (specialShopId == 1770446 || (specialShopId == 1770699 && itemId < 10))
-            {
-                if (currencies.TryGetValue(itemId, out var currencyValue) || tomeStones.TryGetValue(itemId, out currencyValue))
-                {
-                    return currencyValue;
-                }
-                return itemId;
-            }
-            
-            if (useCurrencyType == 2 && itemId < 10)
-            {
-                if (tomeStones.TryGetValue(itemId, out var tomestoneValue))
-                {
-                    return tomestoneValue;
-                }
-                return itemId;
-            }
-            
-            if ((useCurrencyType == 16 || useCurrencyType == 4) && itemId < 10)
-            {
-                if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
-                {
-                    return currencyValue;
-                }
-                return itemId;
-            }
-            
             return itemId;
         }
+
+        if (useCurrencyType == 16 && itemId != 25)
+        {
+            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
+            {
+                return currencyValue;
+            }
+            return itemId;
+        }
+
+        if (useCurrencyType == 2 && itemId < 10)
+        {
+            if (tomeStones.TryGetValue(itemId, out var tomestoneValue))
+            {
+                return tomestoneValue;
+            }
+            return itemId;
+        }
+
+        if (specialShopId == 1770637 && itemId < 10)
+        {
+            if (currencies.TryGetValue(itemId, out var currencyValue))
+            {
+                return currencyValue;
+            }
+            return itemId;
+        }
+
+        if ((useCurrencyType == 16 || useCurrencyType == 4) && itemId < 10 && specialShopId != 1770637)
+        {
+            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
+            {
+                return currencyValue;
+            }
+            return itemId;
+        }
+
+        return itemId;
     }
-    
+
     public IEnumerable<IShopListingItem> Rewards { get; set; }
-    
+
     public IEnumerable<IShopListingItem> Costs { get; set; }
 }
