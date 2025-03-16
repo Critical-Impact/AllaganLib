@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.1.24] - 2025-03-16
+
+### Changes
+
+- AllaganLib.GameData
+  - Fix certain shops having the wrong currency costs
+
 ## [1.1.23] - 2025-02-24
 
 ### Changes

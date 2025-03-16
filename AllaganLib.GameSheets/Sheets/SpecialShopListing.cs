@@ -46,14 +46,6 @@ public class SpecialShopListing : IShopListing
         { 3, 47 },
     };
 
-    //No fucking idea why these 2 are special, make a PR if you know how square managed to make this system even stupider
-    private static HashSet<uint> _currencyShops = new HashSet<uint>()
-    {
-        1770637,
-        1770638,
-        1770699
-    };
-
     public SpecialShopListing(
         SpecialShopRow specialShopRow,
         ItemSheet itemSheet,
@@ -100,49 +92,54 @@ public class SpecialShopListing : IShopListing
 
     private uint ConvertCurrencyId(uint specialShopId, uint itemId, ushort useCurrencyType)
     {
-        if (specialShopId == 1770446 || (specialShopId == 1770699 && itemId < 10))
+        if (specialShopId == 1770637)
         {
-            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
+            if (currencies.TryGetValue(itemId, out var currencyValue))
             {
                 return currencyValue;
             }
-            return itemId;
+        }
+
+        if (specialShopId == 1770446 || (specialShopId == 1770699 && itemId < 10) || (specialShopId == 1770803 && itemId < 10))
+        {
+            if (tomeStones.TryGetValue(itemId, out var currencyValue) ||
+                currencies.TryGetValue(itemId, out currencyValue))
+            {
+                return currencyValue;
+            }
         }
 
         if (useCurrencyType == 16 && itemId != 25)
         {
-            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
+            if (currencies.TryGetValue(itemId, out var currencyValue))
             {
-                return currencyValue;
+                itemId = currencyValue;
             }
-            return itemId;
         }
 
         if (useCurrencyType == 2 && itemId < 10)
         {
             if (tomeStones.TryGetValue(itemId, out var tomestoneValue))
             {
-                return tomestoneValue;
+                itemId = tomestoneValue;
             }
-            return itemId;
         }
 
         if (specialShopId == 1770637 && itemId < 10)
         {
             if (currencies.TryGetValue(itemId, out var currencyValue))
             {
-                return currencyValue;
+                itemId = currencyValue;
             }
-            return itemId;
         }
 
         if ((useCurrencyType == 16 || useCurrencyType == 4) && itemId < 10 && specialShopId != 1770637)
         {
-            if (tomeStones.TryGetValue(itemId, out var currencyValue) || currencies.TryGetValue(itemId, out currencyValue))
+            if (tomeStones.TryGetValue(itemId, out var currencyValue) ||
+                currencies.TryGetValue(itemId, out currencyValue))
             {
-                return currencyValue;
+                itemId = currencyValue;
             }
-            return itemId;
         }
 
         return itemId;
