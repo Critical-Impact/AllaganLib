@@ -17,8 +17,8 @@ public class EquipRaceCategoryRow : ExtendedRow<EquipRaceCategory, EquipRaceCate
             4 => this.Base.Miqote,
             5 => this.Base.Roegadyn,
             6 => this.Base.AuRa,
-            7 => this.Base.Unknown0, // Hrothgar
-            8 => this.Base.Unknown1, // Viera
+            7 => this.Base.Hrothgar,
+            8 => this.Base.Viera,
             99 => true,
             _ => false,
         };
@@ -44,8 +44,8 @@ public class EquipRaceCategoryRow : ExtendedRow<EquipRaceCategory, EquipRaceCate
                 4 => this.Base.Miqote,
                 5 => this.Base.Roegadyn,
                 6 => this.Base.AuRa,
-                7 => this.Base.Unknown0, // Hrothgar
-                8 => this.Base.Unknown1, // Viera
+                7 => this.Base.Hrothgar,
+                8 => this.Base.Viera,
                 99 => true,
                 _ => false,
             },
@@ -57,7 +57,7 @@ public class EquipRaceCategoryRow : ExtendedRow<EquipRaceCategory, EquipRaceCate
     {
         get
         {
-            if (this.Base is { Hyur: true, Elezen: true, Lalafell: true, Miqote: true, Roegadyn: true, AuRa: true, Unknown0: true, Unknown1: true })
+            if (this.Base is { Hyur: true, Elezen: true, Lalafell: true, Miqote: true, Roegadyn: true, AuRa: true, Hrothgar: true, Viera: true })
             {
                 return CharacterRace.Any;
             }
@@ -92,12 +92,12 @@ public class EquipRaceCategoryRow : ExtendedRow<EquipRaceCategory, EquipRaceCate
                 return CharacterRace.AuRa;
             }
 
-            if (this.Base.Unknown0)
+            if (this.Base.Hrothgar)
             {
                 return CharacterRace.Hrothgar;
             }
 
-            if (this.Base.Unknown1)
+            if (this.Base.Viera)
             {
                 return CharacterRace.Viera;
             }

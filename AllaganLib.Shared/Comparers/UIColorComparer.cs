@@ -7,16 +7,16 @@ public class UIColorComparer : IEqualityComparer<UIColor>
 {
     public bool Equals(UIColor? x, UIColor? y)
     {
-        return x?.UIForeground == y?.UIForeground; // based on variable i
+        return x?.Dark == y?.Dark; // based on variable i
     }
 
     public bool Equals(UIColor x, UIColor y)
     {
-        return x.UIForeground == y.UIForeground;
+        return x.Dark == y.Dark;
     }
 
     public int GetHashCode(UIColor obj)
     {
-        return obj.UIForeground.GetHashCode(); // hashcode of variable to compare
+        return obj.Dark.GetHashCode(); // hashcode of variable to compare
     }
 }

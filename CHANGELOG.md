@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.0] - 2025-03-26
+
+### Changes
+
+- Initial support for API12/Patch 7.2
+
 ## [1.1.24] - 2025-03-16
 
 ### Changes

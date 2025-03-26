@@ -76,7 +76,7 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
         foreach (var uiColor in this.uiColors)
         {
             var z = uiColor.Value;
-            if (z.UIForeground is 0 or 255)
+            if (z.Dark is 0 or 255)
             {
                 continue;
             }

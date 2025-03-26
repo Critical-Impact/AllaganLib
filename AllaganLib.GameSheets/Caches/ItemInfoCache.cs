@@ -490,10 +490,10 @@ public class ItemInfoCache
             }
             List<uint> ids = new List<uint>
                 {
-                    mirageStoreSetItem.Unknown0, mirageStoreSetItem.Unknown1, mirageStoreSetItem.Unknown2,
-                    mirageStoreSetItem.Unknown3, mirageStoreSetItem.Unknown4, mirageStoreSetItem.Unknown5,
-                    mirageStoreSetItem.Unknown6, mirageStoreSetItem.Unknown7, mirageStoreSetItem.Unknown8,
-                    mirageStoreSetItem.Unknown9, mirageStoreSetItem.Unknown10,
+                    mirageStoreSetItem.MainHand.RowId, mirageStoreSetItem.OffHand.RowId, mirageStoreSetItem.Head.RowId,
+                    mirageStoreSetItem.Body.RowId, mirageStoreSetItem.Hands.RowId, mirageStoreSetItem.Legs.RowId,
+                    mirageStoreSetItem.Feet.RowId, mirageStoreSetItem.Earrings.RowId,
+                    mirageStoreSetItem.Necklace.RowId, mirageStoreSetItem.Bracelets.RowId, mirageStoreSetItem.Ring.RowId,
                 };
             ids = ids.Where(c => c != 0).ToList();
 
