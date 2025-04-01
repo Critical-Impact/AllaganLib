@@ -8,6 +8,8 @@ namespace AllaganLib.GameSheets.Sheets;
 
 public class SpecialShopListing : IShopListing
 {
+    private readonly Dictionary<uint, uint> tomeStoneLookup;
+
     private static Dictionary<uint, uint> currencies = new Dictionary<uint, uint>()
     {
         { 1, 10309 },
@@ -40,18 +42,13 @@ public class SpecialShopListing : IShopListing
         { 28, 30341 }
     };
 
-    private static Dictionary<uint, uint> tomeStones = new Dictionary<uint, uint>() {
-        { 1, 28 },
-        { 2, 46 },
-        { 3, 47 },
-    };
-
     public SpecialShopListing(
         SpecialShopRow specialShopRow,
         ItemSheet itemSheet,
         Dictionary<uint, uint> tomeStoneLookup,
         SpecialShop.ItemStruct itemDataStruct)
     {
+        this.tomeStoneLookup = tomeStoneLookup;
         var costListings = new List<ShopListingItem>();
         foreach (var costItem in itemDataStruct.ItemCosts)
         {
@@ -102,7 +99,7 @@ public class SpecialShopListing : IShopListing
 
         if (specialShopId == 1770446 || (specialShopId == 1770699 && itemId < 10) || (specialShopId == 1770803 && itemId < 10))
         {
-            if (tomeStones.TryGetValue(itemId, out var currencyValue) ||
+            if (this.tomeStoneLookup.TryGetValue(itemId, out var currencyValue) ||
                 currencies.TryGetValue(itemId, out currencyValue))
             {
                 return currencyValue;
@@ -119,7 +116,7 @@ public class SpecialShopListing : IShopListing
 
         if (useCurrencyType == 2 && itemId < 10)
         {
-            if (tomeStones.TryGetValue(itemId, out var tomestoneValue))
+            if (this.tomeStoneLookup.TryGetValue(itemId, out var tomestoneValue))
             {
                 itemId = tomestoneValue;
             }
@@ -135,7 +132,7 @@ public class SpecialShopListing : IShopListing
 
         if ((useCurrencyType == 16 || useCurrencyType == 4) && itemId < 10 && specialShopId != 1770637)
         {
-            if (tomeStones.TryGetValue(itemId, out var currencyValue) ||
+            if (this.tomeStoneLookup.TryGetValue(itemId, out var currencyValue) ||
                 currencies.TryGetValue(itemId, out currencyValue))
             {
                 itemId = currencyValue;

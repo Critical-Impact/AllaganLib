@@ -50,16 +50,10 @@ public class SpecialShopSheet : ExtendedSheet<SpecialShop, SpecialShopRow, Speci
                 return this.tomeStonesLookup;
             }
 
-            var items = this.GameData.GetExcelSheet<TomestonesItem>()!
-                .Where(t => t.Tomestones.RowId > 0)
+            var tomeStones = this.GameData.GetExcelSheet<TomestonesItem>()!
+                .Where(t => t.Tomestones.RowId > 0 && t.Unknown0 > 0) // Unknown0 is the InventorySlot the Currency is stored in. When it's -1 it appears to reference a field directly in InventoryManager
                 .OrderBy(t => t.Tomestones.RowId)
-                .ToArray();
-
-            var tomeStones = new Dictionary<uint, uint>();
-
-            for (uint i = 0; i < items.Length; i++) {
-                tomeStones[i + 1] = items[i].Item.RowId;
-            }
+                .ToDictionary(c => c.Tomestones.RowId, c => c.Item.RowId);
 
             this.tomeStonesLookup = tomeStones;
             return this.tomeStonesLookup;

@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.1] - 2025-04-01
+
+### Changes
+
+- AllaganLib.GameData
+    - Use TomestonesItem sheet to determine tomestone costs instead of hardcoded dictionary
+
 ## [1.2.0] - 2025-03-26
 
 ### Changes
