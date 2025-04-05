@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using AllaganLib.Interface.FormFields;
 using Dalamud.Interface.Utility.Raii;
@@ -15,16 +16,17 @@ public class ChoiceColumnFilter
         this.Choices = choices;
     }
 
-    public void Setup<TConfiguration, TData, TMessageBase>(IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)
+    public void Setup<TConfiguration, TData, TMessageBase>(
+        IColumn<TConfiguration, TData, TMessageBase> column,
+        int columnIndex) where TConfiguration : INotifyPropertyChanged
     {
-        ImGui.TableSetupColumn(column.Key + "Filter", ImGuiTableColumnFlags.NoSort);
     }
 
     public bool Draw<TConfiguration, TData, TMessageBase>(
         TConfiguration configuration,
         IColumn<TConfiguration, TData, TMessageBase> column,
         int columnIndex)
-        where TConfiguration : IConfigurable<string?>
+        where TConfiguration : IConfigurable<string?>, INotifyPropertyChanged
     {
         var hasChanged = false;
         ImGui.TableSetColumnIndex(columnIndex);

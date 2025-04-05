@@ -130,14 +130,14 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                 if (table.Success)
                 {
                     var refresh = false;
-                    ImGui.TableSetupScrollFreeze(
-                        Math.Min(this.FreezeCols ?? 0, this.Columns.Count),
-                        this.FreezeRows ?? 0);
+
                     for (var index = 0; index < this.Columns.Count; index++)
                     {
                         var column = this.Columns[index];
-                        column.Setup(index);
+                        column.Setup(this, index);
                     }
+
+                    ImGui.TableSetupScrollFreeze(Math.Min(this.FreezeCols ?? 0, this.Columns.Count), this.FreezeRows ?? 0);
 
                     ImGui.TableHeadersRow();
 
@@ -217,7 +217,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                         var hoveredRow = -1;
                                         var available = ImGui.GetFrameHeightWithSpacing();
                                         ImGui.Selectable("", false, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowItemOverlap, new Vector2(0, available));
-                                        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled & ImGuiHoveredFlags.AllowWhenOverlapped & ImGuiHoveredFlags.AllowWhenBlockedByPopup & ImGuiHoveredFlags.AllowWhenBlockedByActiveItem & ImGuiHoveredFlags.AnyWindow) && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+                                        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled & ImGuiHoveredFlags.AllowWhenOverlapped & ImGuiHoveredFlags.AllowWhenBlockedByPopup & ImGuiHoveredFlags.AllowWhenBlockedByActiveItem) && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
                                         {
                                             ImGui.OpenPopup("RightClick" + index);
                                         }

@@ -133,7 +133,12 @@ public class UniversalisApiService : BackgroundService
             return;
         }
 
-        var itemIdList = itemIds.ToList();
+        var itemIdList = itemIds.Where(c => c != 0).ToList();
+        if (itemIdList.Count == 0)
+        {
+            return;
+        }
+
         if (attempt == this.MaxRetries)
         {
             this.queuedCount -= itemIdList.Count;

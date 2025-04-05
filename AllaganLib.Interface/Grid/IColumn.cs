@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using AllaganLib.Interface.FormFields;
 using AllaganLib.Shared.Extensions;
 using ImGuiNET;
@@ -7,6 +8,7 @@ using ImGuiNET;
 namespace AllaganLib.Interface.Grid;
 
 public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConfiguration>
+    where TConfiguration : INotifyPropertyChanged
 {
     public string Name { get; set; }
 
@@ -33,13 +35,22 @@ public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConf
 
     public string CsvExport(TData item);
 
-    public void Setup(int columnIndex)
+    public void Setup(IRenderTable<TConfiguration, TData, TMessageBase> renderTable, int columnIndex)
     {
-        ImGui.TableSetupColumn(this.RenderName ?? this.Name, this.ColumnFlags, this.Width, (uint)columnIndex);
+        if (renderTable.TableFlags.HasFlag(ImGuiTableFlags.SizingFixedFit) ||
+            renderTable.TableFlags.HasFlag(ImGuiTableFlags.SizingStretchProp))
+        {
+            ImGui.TableSetupColumn(this.RenderName ?? this.Name, this.ColumnFlags, this.Width, (uint)columnIndex);
+        }
+        else
+        {
+            ImGui.TableSetupColumn(this.RenderName ?? this.Name, this.ColumnFlags);
+        }
     }
 }
 
 public interface IValueColumn<TConfiguration, TData, TMessageBase, TValue> : IColumn<TConfiguration, TData, TMessageBase>
+    where TConfiguration : INotifyPropertyChanged
 {
     public TValue CurrentValue(TData item);
 }

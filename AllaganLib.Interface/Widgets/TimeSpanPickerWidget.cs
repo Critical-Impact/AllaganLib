@@ -33,6 +33,7 @@ public class TimeSpanPickerWidget
 
     public bool Draw(string id, ref TimeUnit? timeUnit, ref int? timeValue, int? inputSize = null)
     {
+        var result = false;
         var formattedTimeSpan = timeUnit.HasValue && timeValue.HasValue
             ? $"Since {timeValue} {timeUnit.Value.ToString().ToLower()} ago"
             : this.emptyMessage;
@@ -124,7 +125,7 @@ public class TimeSpanPickerWidget
                 timeUnit = this.tempSelectedUnit;
                 timeValue = this.tempTimeValue;
                 ImGui.CloseCurrentPopup();
-                return true;
+                result = true;
             }
 
             ImGui.SameLine();
@@ -132,7 +133,6 @@ public class TimeSpanPickerWidget
             if (ImGui.Button("Cancel", new Vector2(ColumnWidth * 0.75f * ImGui.GetIO().FontGlobalScale, 0)))
             {
                 ImGui.CloseCurrentPopup();
-                return false;
             }
 
             if (this.allowEmpty)
@@ -143,14 +143,13 @@ public class TimeSpanPickerWidget
                     timeUnit = null;
                     timeValue = null;
                     ImGui.CloseCurrentPopup();
-                    return false;
                 }
             }
 
             ImGui.EndPopup();
         }
 
-        return false;
+        return result;
     }
 
     private bool InputTextWithButton(string label, string buttonLabel, int? inputSize = null)

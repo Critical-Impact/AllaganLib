@@ -135,76 +135,79 @@ public class DateRangePickerWidget
 
     private void DrawDateSelector(string label, ref int year, ref int month, ref int day)
     {
-        using (ImRaii.Child(
+        using (var child = ImRaii.Child(
                    label,
                    new Vector2(ImGui.GetWindowWidth() / 2, 120) * ImGui.GetIO().FontGlobalScale,
                    false,
                    ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
         {
-            string[] months =
+            if (child)
             {
-                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
-                "November", "December"
-            };
-            int[] daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+                string[] months =
+                {
+                    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+                    "November", "December"
+                };
+                int[] daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-            ImGui.Text(label);
-            ImGui.Columns(2, null, false);
-            ImGui.SetColumnWidth(0, ColumnWidth * 0.5f);
-            ImGui.SetColumnWidth(1, ColumnWidth + 20);
+                ImGui.Text(label);
+                ImGui.Columns(2, null, false);
+                ImGui.SetColumnWidth(0, ColumnWidth * 0.5f);
+                ImGui.SetColumnWidth(1, ColumnWidth + 20);
 
-            ImGui.Text("Day");
-            ImGui.NextColumn();
-            ImGui.PushItemWidth(ColumnWidth * 0.9f);
-            ImGui.InputInt($"##{label}_Day", ref day);
-            ImGui.PopItemWidth();
-            ImGui.NextColumn();
+                ImGui.Text("Day");
+                ImGui.NextColumn();
+                ImGui.PushItemWidth(ColumnWidth * 0.9f);
+                ImGui.InputInt($"##{label}_Day", ref day);
+                ImGui.PopItemWidth();
+                ImGui.NextColumn();
 
-            ImGui.Text("Month");
-            ImGui.NextColumn();
-            ImGui.PushItemWidth(ColumnWidth * 0.9f);
-            ImGui.Combo($"##{label}_Month", ref month, months, months.Length);
-            ImGui.PopItemWidth();
-            ImGui.NextColumn();
+                ImGui.Text("Month");
+                ImGui.NextColumn();
+                ImGui.PushItemWidth(ColumnWidth * 0.9f);
+                ImGui.Combo($"##{label}_Month", ref month, months, months.Length);
+                ImGui.PopItemWidth();
+                ImGui.NextColumn();
 
-            ImGui.Text("Year");
-            ImGui.NextColumn();
-            ImGui.PushItemWidth(ColumnWidth * 0.9f);
-            ImGui.InputInt($"##{label}_Year", ref year);
-            ImGui.PopItemWidth();
-            ImGui.NextColumn();
+                ImGui.Text("Year");
+                ImGui.NextColumn();
+                ImGui.PushItemWidth(ColumnWidth * 0.9f);
+                ImGui.InputInt($"##{label}_Year", ref year);
+                ImGui.PopItemWidth();
+                ImGui.NextColumn();
 
-            ImGui.NextColumn();
-            ImGui.PushItemWidth(ColumnWidth * 0.9f);
-            if (ImGui.SmallButton($"Today##{label}_Today"))
-            {
-                var date = DateTime.Now;
-                year = date.Year;
-                month = date.Month - 1;
-                day = date.Day;
+                ImGui.NextColumn();
+                ImGui.PushItemWidth(ColumnWidth * 0.9f);
+                if (ImGui.SmallButton($"Today##{label}_Today"))
+                {
+                    var date = DateTime.Now;
+                    year = date.Year;
+                    month = date.Month - 1;
+                    day = date.Day;
+                }
+
+                ImGui.PopItemWidth();
+                ImGui.NextColumn();
+
+                var isLeapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
+                var maxDays = daysInMonth[month];
+                if (month == 1 && isLeapYear)
+                {
+                    maxDays = 29;
+                }
+
+                if (day < 1)
+                {
+                    day = 1;
+                }
+
+                if (day > maxDays)
+                {
+                    day = maxDays;
+                }
+
+                ImGui.Columns(1);
             }
-
-            ImGui.PopItemWidth();
-            ImGui.NextColumn();
-
-            var isLeapYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0;
-            var maxDays = daysInMonth[month];
-            if (month == 1 && isLeapYear)
-            {
-                maxDays = 29;
-            }
-
-            if (day < 1)
-            {
-                day = 1;
-            }
-
-            if (day > maxDays)
-            {
-                day = maxDays;
-            }
-
-            ImGui.Columns(1);
         }
     }
 
@@ -232,7 +235,7 @@ public class DateRangePickerWidget
         }
 
         ImGui.SameLine();
-        
+
         ImGui.SetCursorPosY(cursorPosY);
 
         if (ImGui.Button(buttonLabel))

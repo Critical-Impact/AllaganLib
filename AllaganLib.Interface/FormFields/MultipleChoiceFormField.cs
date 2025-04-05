@@ -98,32 +98,35 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
                 }
 
                 ImGui.Separator();
-                using (ImRaii.Child("searchBox", new Vector2(0, 250)))
+                using (var child = ImRaii.Child("searchBox", new Vector2(0, 250)))
                 {
-                    foreach (var item in activeChoices)
+                    if (child)
                     {
-                        if (item.Value == "")
+                        foreach (var item in activeChoices)
                         {
-                            continue;
-                        }
-
-                        if (ImGui.Selectable(
-                                item.Value.Replace("\u0002\u001F\u0001\u0003", "-"),
-                                selectedChoices.Contains(item.Key)))
-                        {
-                            if (!selectedChoices.Contains(item.Key))
+                            if (item.Value == "")
                             {
-                                selectedChoices.Add(item.Key);
-                                this.UpdateFilterConfiguration(configuration, selectedChoices);
-                                wasUpdated = true;
-                                this._cachedChoices = null;
+                                continue;
                             }
-                            else
+
+                            if (ImGui.Selectable(
+                                    item.Value.Replace("\u0002\u001F\u0001\u0003", "-"),
+                                    selectedChoices.Contains(item.Key)))
                             {
-                                selectedChoices.Remove(item.Key);
-                                this.UpdateFilterConfiguration(configuration, selectedChoices);
-                                wasUpdated = true;
-                                this._cachedChoices = null;
+                                if (!selectedChoices.Contains(item.Key))
+                                {
+                                    selectedChoices.Add(item.Key);
+                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                    wasUpdated = true;
+                                    this._cachedChoices = null;
+                                }
+                                else
+                                {
+                                    selectedChoices.Remove(item.Key);
+                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                    wasUpdated = true;
+                                    this._cachedChoices = null;
+                                }
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using AllaganLib.Interface.FormFields;
@@ -13,7 +14,7 @@ namespace AllaganLib.Interface.Grid;
 
 public abstract class DateTimeColumn<TConfiguration, TData, TMessageBase> : StringFormField<TConfiguration>,
     IValueColumn<TConfiguration, TData, TMessageBase, string?>
-    where TConfiguration : IConfigurable<string?>
+    where TConfiguration : IConfigurable<string?>, INotifyPropertyChanged
 {
     private readonly StringColumnFilter stringColumnFilter;
 
@@ -31,7 +32,7 @@ public abstract class DateTimeColumn<TConfiguration, TData, TMessageBase> : Stri
     public abstract bool HideFilter { get; set; }
 
     public abstract ImGuiTableColumnFlags ColumnFlags { get; set; }
-    
+
     public abstract string EmptyText { get; set; }
 
     public virtual IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)

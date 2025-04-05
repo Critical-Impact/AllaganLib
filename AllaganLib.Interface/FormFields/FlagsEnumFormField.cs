@@ -86,47 +86,51 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
                 }
 
                 ImGui.Separator();
-                using (ImRaii.Child("searchBox", new Vector2(0, 250)))
+                using (var child = ImRaii.Child("searchBox", new Vector2(0, 250)))
                 {
-                    foreach (var item in activeChoices)
+                    if (child)
                     {
-                        if (item.Value == string.Empty)
+                        foreach (var item in activeChoices)
                         {
-                            continue;
-                        }
-
-                        var isSelected = selectedChoices.HasFlag(item.Key);
-                        if (!this.FlagEmpty(selectedChoices) && this.FlagEmpty(item.Key))
-                        {
-                            isSelected = false;
-                        }
-                        if (ImGui.Selectable(
-                                item.Value.Replace("\u0002\u001F\u0001\u0003", "-"),
-                                isSelected))
-                        {
-                            if (isSelected)
+                            if (item.Value == string.Empty)
                             {
-                                wasUpdated = true;
-                                selectedChoices = this.RemoveFlag(selectedChoices, item.Key);
-                                if (this.AutoSave)
-                                {
-                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
-                                }
-
-                                this.comboLabel = null;
-                                this.cachedChoices = null;
+                                continue;
                             }
-                            else
-                            {
-                                wasUpdated = true;
-                                selectedChoices = this.AddFlag(selectedChoices, item.Key);
-                                if (this.AutoSave)
-                                {
-                                    this.UpdateFilterConfiguration(configuration, selectedChoices);
-                                }
 
-                                this.comboLabel = null;
-                                this.cachedChoices = null;
+                            var isSelected = selectedChoices.HasFlag(item.Key);
+                            if (!this.FlagEmpty(selectedChoices) && this.FlagEmpty(item.Key))
+                            {
+                                isSelected = false;
+                            }
+
+                            if (ImGui.Selectable(
+                                    item.Value.Replace("\u0002\u001F\u0001\u0003", "-"),
+                                    isSelected))
+                            {
+                                if (isSelected)
+                                {
+                                    wasUpdated = true;
+                                    selectedChoices = this.RemoveFlag(selectedChoices, item.Key);
+                                    if (this.AutoSave)
+                                    {
+                                        this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                    }
+
+                                    this.comboLabel = null;
+                                    this.cachedChoices = null;
+                                }
+                                else
+                                {
+                                    wasUpdated = true;
+                                    selectedChoices = this.AddFlag(selectedChoices, item.Key);
+                                    if (this.AutoSave)
+                                    {
+                                        this.UpdateFilterConfiguration(configuration, selectedChoices);
+                                    }
+
+                                    this.comboLabel = null;
+                                    this.cachedChoices = null;
+                                }
                             }
                         }
                     }

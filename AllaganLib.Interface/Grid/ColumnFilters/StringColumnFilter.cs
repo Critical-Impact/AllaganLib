@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Numerics;
 using AllaganLib.Interface.FormFields;
 using ImGuiNET;
@@ -13,15 +14,15 @@ public class StringColumnFilter
         this.maxFilterLength = maxFilterLength;
     }
     public void Setup<TConfiguration, TData, TMessageBase>(IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)
+        where TConfiguration : INotifyPropertyChanged
     {
-        ImGui.TableSetupColumn(column.Key + "Filter", ImGuiTableColumnFlags.NoSort);
     }
 
     public bool Draw<TConfiguration, TData, TMessageBase>(
         TConfiguration configuration,
         IColumn<TConfiguration, TData, TMessageBase> column,
         int columnIndex)
-        where TConfiguration : IConfigurable<string?>
+        where TConfiguration : IConfigurable<string?>, INotifyPropertyChanged
     {
         var filter = configuration.Get(column.Key) ?? string.Empty;
         var hasChanged = false;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using AllaganLib.Interface.FormFields;
@@ -12,7 +13,7 @@ using NaturalSort.Extension;
 namespace AllaganLib.Interface.Grid;
 
 public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : StringFormField<TConfiguration>, IValueColumn<TConfiguration, TData, TMessageBase, string?>
-    where TConfiguration : IConfigurable<string?>
+    where TConfiguration : IConfigurable<string?>, INotifyPropertyChanged
 {
     private readonly StringColumnFilter stringColumnFilter;
 

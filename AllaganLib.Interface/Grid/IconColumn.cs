@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 
 using AllaganLib.Interface.FormFields;
@@ -10,7 +11,7 @@ using ImGuiNET;
 namespace AllaganLib.Interface.Grid;
 
 public abstract class IconColumn<TConfiguration, TData, TMessageBase> : IntegerFormField<TConfiguration>, IValueColumn<TConfiguration, TData, TMessageBase, int?>
-    where TConfiguration : IConfigurable<int?>
+    where TConfiguration : IConfigurable<int?>, INotifyPropertyChanged
 {
     private readonly ITextureProvider textureProvider;
 

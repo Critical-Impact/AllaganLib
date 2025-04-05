@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
@@ -14,18 +15,26 @@ namespace AllaganLib.Universalis.Services;
 
 public class UniversalisWebsocketService : BackgroundService
 {
-    private readonly ClientWebSocket client;
+    private ClientWebSocket client;
+    private readonly Func<ClientWebSocket> websocketFactory;
     private readonly IPluginLog pluginLog;
     private readonly Uri uri = new("wss://universalis.app/api/ws");
-    private readonly Queue<(EventType, uint)> subscriptionChannelQueue = new();
-    private readonly Queue<(EventType, uint)> unsubscriptionChannelQueue = new();
+    private readonly ConcurrentQueue<(EventType, uint)> subscriptionChannelQueue = new();
+    private readonly ConcurrentQueue<(EventType, uint)> unsubscriptionChannelQueue = new();
     private readonly HashSet<(EventType, uint)> subscriptions = [];
 
-    public UniversalisWebsocketService(ClientWebSocket client, IPluginLog pluginLog)
+    public UniversalisWebsocketService(ClientWebSocket client, Func<ClientWebSocket> websocketFactory, IPluginLog pluginLog)
     {
         this.client = client;
+        this.websocketFactory = websocketFactory;
         this.pluginLog = pluginLog;
     }
+
+    private bool AutoResubscribe { get; set; } = true;
+
+    private bool Enabled { get; set; } = true;
+
+    public ClientWebSocket Client => this.client;
 
     public delegate void UniversalisEventDelegate(SubscriptionReceivedMessage subscriptionReceivedMessage);
 
@@ -45,6 +54,7 @@ public class UniversalisWebsocketService : BackgroundService
         var newSubscription = (subscriptionType: eventType, worldId);
         if (!this.subscriptions.Contains(newSubscription))
         {
+            this.pluginLog.Verbose($"Subscribing to {eventType} for world: {worldId}");
             this.subscriptionChannelQueue.Enqueue(newSubscription);
         }
     }
@@ -54,13 +64,14 @@ public class UniversalisWebsocketService : BackgroundService
         var newSubscription = (subscriptionType: eventType, worldId);
         if (this.subscriptions.Contains(newSubscription))
         {
+            this.pluginLog.Verbose($"Unsubscribing from {eventType} for world: {worldId}");
             this.unsubscriptionChannelQueue.Enqueue(newSubscription);
         }
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        return this.ProcessingLoop(cancellationToken);
+        return Task.WhenAny(this.SendingLoop(cancellationToken), this.ReceivingLoop(cancellationToken));
     }
 
     /// <summary>
@@ -68,7 +79,7 @@ public class UniversalisWebsocketService : BackgroundService
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
-    protected async Task ProcessingLoop(CancellationToken cancellationToken)
+    protected async Task SendingLoop(CancellationToken cancellationToken)
     {
         while (true)
         {
@@ -77,17 +88,42 @@ public class UniversalisWebsocketService : BackgroundService
                 break;
             }
 
-            if (this.client.State is WebSocketState.None or WebSocketState.Closed)
+            if (!this.Enabled && this.client.State == WebSocketState.Open)
+            {
+                await this.client.CloseAsync(WebSocketCloseStatus.NormalClosure, null, cancellationToken);
+            }
+
+            if (!this.Enabled)
+            {
+                await Task.Delay(1000, cancellationToken);
+                continue;
+            }
+
+            if (this.client.State == WebSocketState.Connecting)
+            {
+                await Task.Delay(100, cancellationToken);
+                continue;
+            }
+
+            if (this.Client.State is WebSocketState.None or WebSocketState.Closed)
             {
                 if (this.subscriptionChannelQueue.Count != 0)
                 {
+                    await this.ConnectWithRetryAsync(cancellationToken);
+                    await Task.Delay(1000, cancellationToken);
+                }
+                else if (this.subscriptions.Count != 0)
+                {
+                    this.pluginLog.Verbose($"Client was disconnected but subscriptions are present. Disconnect likely, waiting 5 seconds before reconnecting.");
+                    await Task.Delay(5000, cancellationToken);
                     await this.ConnectWithRetryAsync(cancellationToken);
                 }
                 else
                 {
                     await Task.Delay(500, cancellationToken);
-                    return;
                 }
+
+                continue;
             }
 
             if (cancellationToken.IsCancellationRequested)
@@ -121,6 +157,40 @@ public class UniversalisWebsocketService : BackgroundService
                 await Task.Delay(1000, cancellationToken);
             }
 
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Receives data
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    protected async Task ReceivingLoop(CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            if (this.Client.State is WebSocketState.None or WebSocketState.Closed or WebSocketState.Connecting or WebSocketState.CloseReceived or WebSocketState.CloseSent)
+            {
+                await Task.Delay(500, cancellationToken);
+                continue;
+            }
+
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
+            await Task.Delay(100, cancellationToken);
+
             await this.ReceiveMessages(cancellationToken);
 
             if (cancellationToken.IsCancellationRequested)
@@ -131,7 +201,7 @@ public class UniversalisWebsocketService : BackgroundService
     }
 
     private async Task SendMessages(
-        Queue<(EventType SubscriptionType, uint WorldId)> subscriptionQueue,
+        ConcurrentQueue<(EventType SubscriptionType, uint WorldId)> subscriptionQueue,
         string eventName,
         CancellationToken cancellationToken)
     {
@@ -145,7 +215,10 @@ public class UniversalisWebsocketService : BackgroundService
             return;
         }
 
-        var nextMessage = subscriptionQueue.Dequeue();
+        if (!subscriptionQueue.TryDequeue(out var nextMessage))
+        {
+            return;
+        }
         var worldId = nextMessage.WorldId;
         string channelType;
         switch (nextMessage.SubscriptionType)
@@ -174,7 +247,7 @@ public class UniversalisWebsocketService : BackgroundService
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                await this.client.SendAsync(segment, WebSocketMessageType.Binary, false, cancellationToken);
+                await this.Client.SendAsync(segment, WebSocketMessageType.Binary, false, cancellationToken);
                 if (eventName == "subscribe")
                 {
                     this.subscriptions.Add(nextMessage);
@@ -211,10 +284,15 @@ public class UniversalisWebsocketService : BackgroundService
             {
                 try
                 {
-                    result = await this.client.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                    result = await this.Client.ReceiveAsync(new ArraySegment<byte>(buffer), cancellationToken);
                 }
-                catch (TimeoutException ex)
+                catch (TimeoutException)
                 {
+                    return;
+                }
+                catch (InvalidOperationException)
+                {
+                    this.pluginLog.Info("WebSocket connection closed.");
                     return;
                 }
 
@@ -225,15 +303,13 @@ public class UniversalisWebsocketService : BackgroundService
             if (result.MessageType == WebSocketMessageType.Close)
             {
                 this.pluginLog.Info("WebSocket connection closed.");
-                await this.client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken);
+                await this.Client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken);
             }
             else
             {
                 var message = BsonSerializer.Deserialize<SubscriptionReceivedMessage>(messageBytes.ToArray());
                 this.OnUniversalisEvent?.Invoke(message);
             }
-
-            await this.ReceiveMessages(cancellationToken);
         }
     }
 
@@ -243,7 +319,23 @@ public class UniversalisWebsocketService : BackgroundService
         {
             if (!cancellationToken.IsCancellationRequested)
             {
-                await this.client.ConnectAsync(this.uri, cancellationToken);
+                // Websocket clients can only be used once so we need to request a new one.
+                if (this.Client.State == WebSocketState.Closed)
+                {
+                    this.client = this.websocketFactory.Invoke();
+                }
+
+                await this.Client.ConnectAsync(this.uri, cancellationToken);
+                if (this.AutoResubscribe && this.subscriptions.Count != 0)
+                {
+                    this.pluginLog.Info("Resubscribing to worlds.");
+                    var toSubscribe = this.subscriptions.ToHashSet();
+                    this.subscriptions.Clear();
+                    foreach (var subscription in toSubscribe)
+                    {
+                        this.SubscribeToChannel(subscription.Item1, subscription.Item2);
+                    }
+                }
                 this.subscriptions.Clear();
             }
 

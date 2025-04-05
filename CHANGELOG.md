@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.2] - 2025-04-05
+
+### Changes
+
+- AllaganLib.Interface
+  - Fix ImGui asserts
+
+- AllaganLib.Universalis
+  - Stop item ID 0 from being added
+  - Improvements to the UniversalisWebSocket service, now handles disconnects better, runs send/recieve in their own threads and can be enabled/disabled
+
+
 ## [1.2.1] - 2025-04-01
 
 ### Changes
