@@ -161,6 +161,9 @@ public class UniversalisWebsocketService : BackgroundService
             {
                 break;
             }
+
+            // Nothing to do
+            await Task.Delay(100, cancellationToken);
         }
     }
 
