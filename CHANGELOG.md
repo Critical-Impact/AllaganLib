@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.4] - 2025-04-08
+
+### Changes
+
+- AllaganLib.Interface
+    - EnumFormField would not correctly display and would always think a value was set even if it was set to the default
+
+
 ## [1.2.3] - 2025-04-06
 
 ### Changes
