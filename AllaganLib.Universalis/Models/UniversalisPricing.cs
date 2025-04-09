@@ -76,7 +76,7 @@ public class UniversalisPricing
         response.ItemId = apiResponse.itemID;
         response.Available = apiResponse.listings?.Length ?? 0;
         response.WorldId = worldId;
-        response.LastUpdate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(apiResponse.lastUploadTime);
+        response.LastUpdate = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(apiResponse.lastUploadTime).ToLocalTime();
 
         response.listings = apiResponse.listings;
         response.recentHistory = apiResponse.recentHistory;

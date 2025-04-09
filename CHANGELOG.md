@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.5] - 2025-04-09
+
+### Changes
+
+- AllaganLib.Universalis
+    - Universalis dates were not being converted into local time
+
 ## [1.2.4] - 2025-04-08
 
 ### Changes
