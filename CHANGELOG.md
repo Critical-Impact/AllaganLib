@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.6] - 2025-04-14
+
+### Changes
+
+- AllaganLib.GameSheets
+  - Special shop costs were not being collated properly
+
 ## [1.2.5] - 2025-04-09
 
 ### Changes

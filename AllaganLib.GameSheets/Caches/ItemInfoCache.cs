@@ -707,7 +707,7 @@ public class ItemInfoCache
 
                         foreach (var cost in specialShopListing.Costs)
                         {
-                            var use = new ItemSpecialShopSource(shopListingItem.Item, cost.Item, shopListingItem, specialShopListing, specialShop);
+                            var use = new ItemSpecialShopSource(cost.Item, cost.Item, shopListingItem, specialShopListing, specialShop);
                             this.AddItemUse(use);
                             this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.SpecialShop);
                             this.AddItemSourceUseCombo(source, use);
