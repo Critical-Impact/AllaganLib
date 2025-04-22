@@ -13,6 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.7] - 2025-04-14
+
+### Changes
+
+- AllaganLib.GameSheets
+  - Updated LuminaSupplemental to 2.3.1
+
+- AllaganLib.Interface
+  - DateTime columns will now order correctly
+
+- All packages
+  - Update nugets 
+
 ## [1.2.6] - 2025-04-14
 
 ### Changes

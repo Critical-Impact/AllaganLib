@@ -6,7 +6,6 @@ using System.Reflection;
 
 using AllaganLib.Data.Interfaces;
 using CSVFile;
-using CsvHelper;
 using Lumina;
 using Lumina.Data;
 

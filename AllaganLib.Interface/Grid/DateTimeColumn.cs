@@ -70,7 +70,7 @@ public abstract class DateTimeColumn<TConfiguration, TData, TMessageBase> : Stri
         IEnumerable<TData> items,
         ImGuiSortDirection direction)
     {
-        return direction == ImGuiSortDirection.Ascending ? items.OrderBy(this.CurrentValue) : items.OrderByDescending(this.CurrentValue);
+        return direction == ImGuiSortDirection.Ascending ? items.OrderBy(this.CurrentDateValue) : items.OrderByDescending(this.CurrentDateValue);
     }
 
     public virtual IEnumerable<TData> Filter(TConfiguration config, IEnumerable<TData> items)
@@ -98,5 +98,10 @@ public abstract class DateTimeColumn<TConfiguration, TData, TMessageBase> : Stri
         return this.CurrentValue(item)?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
     }
 
-    public abstract string? CurrentValue(TData item);
+    public virtual string? CurrentValue(TData item)
+    {
+        return this.CurrentDateValue(item)?.ToString(CultureInfo.CurrentCulture) ?? null;
+    }
+
+    public abstract DateTime? CurrentDateValue(TData item);
 }
