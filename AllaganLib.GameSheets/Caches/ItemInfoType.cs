@@ -74,4 +74,6 @@ public enum ItemInfoType
     GlamourReadySetItem = 69,
     CompanyCraftDraft = 70,
     GardeningCrossbreed = 71,
+    StellarMission = 72,
+    Quest = 73,
 }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Sheets.Rows;
 
@@ -12,6 +14,14 @@ public class ItemCraftResultSource : ItemSource
     {
         this.Item = item;
         this.Recipe = recipe;
+    }
+
+    public override List<ItemRow> CostItems
+    {
+        get
+        {
+            return this.Recipe.IngredientCounts.Select(c => this.Item.Sheet.GetRow(c.Key)).ToList();
+        }
     }
 
     public override uint Quantity => this.Recipe.Base.AmountResult;

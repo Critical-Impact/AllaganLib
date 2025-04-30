@@ -264,6 +264,113 @@ public class ItemInfoCache
         var housingPresetSheet = this.gameData.GetExcelSheet<HousingPreset>()!;
         var mirageStoreSetItemSheet = this.gameData.GetExcelSheet<MirageStoreSetItem>()!;
         var companyCraftDraftSheet = this.gameData.GetExcelSheet<CompanyCraftDraft>()!;
+        var questSheet = this.gameData.GetExcelSheet<Quest>()!;
+
+        foreach (var quest in questSheet)
+        {
+            foreach (var reward in quest.Reward)
+            {
+                if (reward.Is<Item>())
+                {
+                    if (reward.TryGetValue(out Item rewardItem))
+                    {
+                        var itemRow = itemSheet.GetRowOrDefault(rewardItem.RowId);
+                        if (itemRow != null)
+                        {
+                            var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                            this.AddItemSource(source);
+                        }
+                    }
+                }
+
+                if (reward.IsSubrow<QuestClassJobReward>())
+                {
+                    if (reward.TryGetValueSubrow<QuestClassJobReward>(out var rewardJob))
+                    {
+                        for (var index = 0; index < rewardJob.Count; index++)
+                        {
+                            var rewardJobSubrow = rewardJob[index];
+                            for (var i = 0; i < rewardJobSubrow.RewardItem.Count; i++)
+                            {
+                                var rewardSubrowItem = rewardJobSubrow.RewardItem[i];
+                                if (rewardSubrowItem.RowId == 0)
+                                {
+                                    continue;
+                                }
+                                var itemRow = itemSheet.GetRowOrDefault(rewardSubrowItem.RowId);
+                                if (itemRow != null)
+                                {
+                                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
+                                    this.AddItemSource(source);
+                                }
+                            }
+                            for (var i = 0; i < rewardJobSubrow.RequiredItem.Count; i++)
+                            {
+                                var requiredItemSubrow = rewardJobSubrow.RequiredItem[i];
+                                if (requiredItemSubrow.RowId == 0)
+                                {
+                                    continue;
+                                }
+                                var itemRow = itemSheet.GetRowOrDefault(requiredItemSubrow.RowId);
+                                if (itemRow != null)
+                                {
+                                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
+                                    this.AddItemUse(source);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (var catalyst in quest.ItemCatalyst)
+            {
+                if (catalyst.RowId == 0)
+                {
+                    continue;
+                }
+                var itemRow = itemSheet.GetRowOrDefault(catalyst.RowId);
+                if (itemRow != null)
+                {
+                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                    this.AddItemSource(source);
+                }
+            }
+
+            foreach (var optionalReward in quest.OptionalItemReward)
+            {
+                if (optionalReward.RowId == 0)
+                {
+                    continue;
+                }
+                var itemRow = itemSheet.GetRowOrDefault(optionalReward.RowId);
+                if (itemRow != null)
+                {
+                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                    this.AddItemSource(source);
+                }
+            }
+
+            if (quest.QuestClassJobSupply.RowId != 0)
+            {
+                for (var index = 0; index < quest.QuestClassJobSupply.Value.Count; index++)
+                {
+                    var questClassJobSupplyRef = quest.QuestClassJobSupply.Value[index];
+                    if (questClassJobSupplyRef.Item.RowId != 0)
+                    {
+                        var itemRow = itemSheet.GetRowOrDefault(questClassJobSupplyRef.Item.RowId);
+                        if (itemRow != null)
+                        {
+                            var source = new ItemQuestSource(
+                                itemRow,
+                                new RowRef<Quest>(this.gameData.Excel, quest.RowId),
+                                new SubrowRef<QuestClassJobSupply>(this.gameData.Excel, questClassJobSupplyRef.RowId)
+                                ,index);
+                            this.AddItemUse(source);
+                        }
+                    }
+                }
+            }
+        }
 
         var rewards = gcSupplyDutyRewardSheet.ToDictionary(c => c.RowId, c => c);
         var maxiLevel = rewards.Select(c => c.Key).Max();

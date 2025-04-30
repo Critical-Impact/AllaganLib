@@ -16,7 +16,8 @@ namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 {
-    private string? _searchString;
+    private string? searchString;
+    private string? nameString;
     private GatheringItemRow? gatheringItem;
     private EquipSlotCategoryRow? equipSlotCategory;
     private List<GatheringTypeRow>? gatheringTypes;
@@ -62,12 +63,12 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     {
         get
         {
-            if (this._searchString == null)
+            if (this.searchString == null)
             {
-                this._searchString = this.NameString.ToParseable();
+                this.searchString = this.NameString.ToParseable();
             }
 
-            return this._searchString;
+            return this.searchString;
         }
     }
 
@@ -538,10 +539,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         {
             if (this.RowId == HardcodedItems.FreeCompanyCreditItemId)
             {
-                return this.Sheet.GetAddonSheet().GetRow(102233).Base.Text.ExtractText().Replace("\u00AD", string.Empty);
+                return this.nameString ??= this.Sheet.GetAddonSheet().GetRow(102233).Base.Text.ToImGuiString();
             }
 
-            return this.Base.Name.ExtractText().Replace("\u00AD", string.Empty);
+            return this.nameString ??=this.Base.Name.ToImGuiString().Replace("\u00AD", string.Empty);
         }
     }
 

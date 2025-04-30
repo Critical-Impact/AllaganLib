@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Sheets.Rows;
 
@@ -18,6 +20,8 @@ public class ItemGardeningCrossbreedSource : ItemSource
         this.Seed1 = seed1;
         this.Seed2 = seed2;
     }
+
+    public override List<ItemRow> Items => [this.Item, this.SeedResult, this.Seed1, this.Seed2];
 
     public override uint Quantity => 1;
 }

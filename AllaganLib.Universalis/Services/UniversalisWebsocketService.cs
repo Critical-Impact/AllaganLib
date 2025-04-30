@@ -265,7 +265,7 @@ public class UniversalisWebsocketService : BackgroundService
         }
         catch (Exception ex)
         {
-            this.pluginLog.Verbose($"Failed to subscribe to world {worldId}'s {channelType}.");
+            this.pluginLog.Verbose($"Failed to subscribe to world {worldId}'s {channelType}.", ex);
             subscriptionQueue.Enqueue(nextMessage);
         }
 
