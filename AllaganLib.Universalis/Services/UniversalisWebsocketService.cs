@@ -15,6 +15,9 @@ namespace AllaganLib.Universalis.Services;
 
 public class UniversalisWebsocketService : BackgroundService
 {
+    public const uint BackoffLimit = 10;
+    public const uint BackoffSeconds = 20;
+
     private ClientWebSocket client;
     private readonly Func<ClientWebSocket> websocketFactory;
     private readonly IPluginLog pluginLog;
@@ -22,6 +25,7 @@ public class UniversalisWebsocketService : BackgroundService
     private readonly ConcurrentQueue<(EventType, uint)> subscriptionChannelQueue = new();
     private readonly ConcurrentQueue<(EventType, uint)> unsubscriptionChannelQueue = new();
     private readonly HashSet<(EventType, uint)> subscriptions = [];
+    private readonly Dictionary<uint, uint> backoffCounts = new();
 
     public UniversalisWebsocketService(ClientWebSocket client, Func<ClientWebSocket> websocketFactory, IPluginLog pluginLog)
     {
@@ -265,8 +269,31 @@ public class UniversalisWebsocketService : BackgroundService
         }
         catch (Exception ex)
         {
-            this.pluginLog.Verbose($"Failed to subscribe to world {worldId}'s {channelType}.", ex);
-            subscriptionQueue.Enqueue(nextMessage);
+            if (this.backoffCounts.TryGetValue(worldId, out var count))
+            {
+                count++;
+            }
+            else
+            {
+                count = 1;
+            }
+
+            this.pluginLog.Verbose($"Failed to subscribe to world {worldId}'s {channelType}. This has occured {count} times. Backing off for {BackoffSeconds} seconds", ex);
+            if (count >= BackoffLimit)
+            {
+                this.pluginLog.Verbose($"Reached back-off limit for world {worldId}. Will no longer attempt to subscribe to this world.", ex);
+                this.backoffCounts[worldId] = 0;
+            }
+            else
+            {
+                await Task.Delay((int)(BackoffSeconds * 1000), cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                subscriptionQueue.Enqueue(nextMessage);
+            }
         }
 
         if (cancellationToken.IsCancellationRequested)
