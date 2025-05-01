@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.8] - 2025-05-01
+
+### Changes
+
+- AllaganLib.GameSheets
+  - Updated LuminaSupplemental to 2.3.2
+  - Added quest source/uses
+  - Added map ids to duty sources
+
+- AllaganLib.Universalis
+  - Added back-off functionality to websocket service
+
 ## [1.2.7] - 2025-04-14
 
 ### Changes
