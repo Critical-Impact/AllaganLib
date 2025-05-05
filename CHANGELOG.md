@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.9] - 2025-05-05
+
+### Changes
+
+- AllaganLib.Universalis
+  - User-Agent is now sent with requests for both Universalis clients.
+
 ## [1.2.8] - 2025-05-01
 
 ### Changes

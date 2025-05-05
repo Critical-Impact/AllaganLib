@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+
+using AllaganLib.Universalis.Models;
 using AllaganLib.Universalis.Models.Bson;
 using Dalamud.Plugin.Services;
 using Microsoft.Extensions.Hosting;
@@ -27,9 +29,10 @@ public class UniversalisWebsocketService : BackgroundService
     private readonly HashSet<(EventType, uint)> subscriptions = [];
     private readonly Dictionary<uint, uint> backoffCounts = new();
 
-    public UniversalisWebsocketService(ClientWebSocket client, Func<ClientWebSocket> websocketFactory, IPluginLog pluginLog)
+    public UniversalisWebsocketService(ClientWebSocket client, UniversalisUserAgent userAgent, Func<ClientWebSocket> websocketFactory, IPluginLog pluginLog)
     {
         this.client = client;
+        this.client.Options.SetRequestHeader("User-Agent", $"{userAgent.PluginName}/{userAgent.PluginVersion}");
         this.websocketFactory = websocketFactory;
         this.pluginLog = pluginLog;
     }

@@ -48,6 +48,7 @@ public class UniversalisApiService : BackgroundService
 
     public UniversalisApiService(
         IPluginLog pluginLog,
+        UniversalisUserAgent userAgent,
         HttpClient httpClient,
         IFramework framework,
         IDataManager dataManager)
@@ -56,6 +57,7 @@ public class UniversalisApiService : BackgroundService
         this.framework = framework;
         this.dataManager = dataManager;
         this.HttpClient = httpClient;
+        this.HttpClient.DefaultRequestHeaders.Add("User-Agent", $"{userAgent.PluginName}/{userAgent.PluginVersion}");
         this.UniversalisQueue = new BackgroundTaskQueue(1);
         this.framework.Update += this.FrameworkOnUpdate;
     }
@@ -68,8 +70,7 @@ public class UniversalisApiService : BackgroundService
             {
                 this.queueWorldItemIds.Remove(world.Key, out var fullList);
                 this.queuedCount += fullList.Item2.Count;
-                this.UniversalisQueue.QueueBackgroundWorkItemAsync(
-                    token => this.RetrieveMarketBoardPrices(fullList.Item2, world.Key, token));
+                this.UniversalisQueue.QueueBackgroundWorkItemAsync(token => this.RetrieveMarketBoardPrices(fullList.Item2, world.Key, token));
                 break;
             }
         }
@@ -196,9 +197,7 @@ public class UniversalisApiService : BackgroundService
                     var listing = UniversalisPricing.FromApi(
                         apiListing,
                         worldId);
-                    await this.framework.RunOnFrameworkThread(
-                        () =>
-                            this.PriceRetrieved?.Invoke(apiListing.itemID, worldId, listing));
+                    await this.framework.RunOnFrameworkThread(() => this.PriceRetrieved?.Invoke(apiListing.itemID, worldId, listing));
                 }
                 else
                 {
@@ -217,9 +216,7 @@ public class UniversalisApiService : BackgroundService
                         var listing = UniversalisPricing.FromApi(
                             item.Value,
                             worldId);
-                        await this.framework.RunOnFrameworkThread(
-                            () =>
-                                this.PriceRetrieved?.Invoke(item.Value.itemID, worldId, listing));
+                        await this.framework.RunOnFrameworkThread(() => this.PriceRetrieved?.Invoke(item.Value.itemID, worldId, listing));
                     }
                 }
                 else
