@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.10] - 2025-05-06
+
+### Added
+
+- AllaganLib.GameData
+  - Triple Triad sheets added
+  - Triple Triad sources
+  - Battle/Company/Craft/Gathering leve sources
+  - NPC Shop cache now includes triple triad lookups
+
+### Changes
+
+- AllaganLib.GameData
+  - Extra sources contain links to their items/cost items
+
 ## [1.2.9] - 2025-05-05
 
 ### Changes

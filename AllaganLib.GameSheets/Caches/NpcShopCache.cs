@@ -13,6 +13,9 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> npcIdToShopIdLookup;
     private Dictionary<uint, HashSet<uint>> shopIdToNpcIdLookup;
 
+    private Dictionary<uint, HashSet<uint>> npcIdToTripleTriadLookup;
+    private Dictionary<uint, HashSet<uint>> tripleTriadToNpcIdLookup;
+
     private Dictionary<uint, HashSet<uint>> npcIdToFateShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToSpecialShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToFccShopIdLookup;
@@ -26,6 +29,7 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> gilShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> gcShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> inclusionShopIdToNpcLookup;
+
 
     public NpcShopCache(GameData gameData)
     {
@@ -45,6 +49,9 @@ public class NpcShopCache
         this.gilShopIdToNpcIdLookup = [];
         this.gcShopIdToNpcIdLookup = [];
         this.inclusionShopIdToNpcLookup = [];
+
+        this.npcIdToTripleTriadLookup = [];
+        this.tripleTriadToNpcIdLookup = [];
     }
 
     private static readonly List<(uint, uint)> ExtraSpecialShops = new()
@@ -237,14 +244,21 @@ public class NpcShopCache
                     EvalulateRowRef(npcBase, topicShop, customTalkTypes);
                 }
             }
-            //else if (rowRef.Is<PreHandler>()) TODO: Replace once exdschema gets updated
-            else if(rowRef.RowId is >= 3538944 and <= 3539076)
+            else if(rowRef.Is<PreHandler>())
             {
                 var preHandler = preHandlerSheet.GetRowOrDefault(rowRef.RowId);
                 if (preHandler != null)
                 {
                     EvalulateRowRef(npcBase, preHandler.Value.Target, customTalkTypes);
                 }
+            }
+            else if(rowRef.Is<TripleTriad>())
+            {
+                this.tripleTriadToNpcIdLookup.TryAdd(rowRef.RowId, []);
+                this.tripleTriadToNpcIdLookup[rowRef.RowId].Add(npcBase.RowId);
+
+                this.npcIdToTripleTriadLookup.TryAdd(rowRef.RowId, []);
+                this.npcIdToTripleTriadLookup[rowRef.RowId].Add(npcBase.RowId);
             }
         }
     }
@@ -299,6 +313,16 @@ public class NpcShopCache
     public HashSet<uint>? GetNpcsByInclusionShopId(uint inclusionShopId)
     {
         return this.inclusionShopIdToNpcLookup.GetValueOrDefault(inclusionShopId);
+    }
+
+    public HashSet<uint>? GetTripleTriadsByNpcId(uint npcId)
+    {
+        return this.npcIdToTripleTriadLookup.GetValueOrDefault(npcId);
+    }
+
+    public HashSet<uint>? GetNpcsByTripleTriadId(uint tripleTriadId)
+    {
+        return this.tripleTriadToNpcIdLookup.GetValueOrDefault(tripleTriadId);
     }
 
 

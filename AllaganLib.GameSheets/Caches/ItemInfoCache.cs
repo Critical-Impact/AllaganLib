@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Extensions;
@@ -18,6 +19,7 @@ public class ItemInfoCache
 {
     private readonly SheetManager sheetManager;
     private readonly SheetIndexer sheetIndexer;
+    private readonly NpcShopCache npcShopCache;
     private readonly GameData gameData;
     private readonly List<StoreItem> storeItems;
     private readonly List<MobDrop> mobDrops;
@@ -52,6 +54,7 @@ public class ItemInfoCache
     public ItemInfoCache(
         SheetManager sheetManager,
         SheetIndexer sheetIndexer,
+        NpcShopCache npcShopCache,
         GameData gameData,
         List<StoreItem> storeItems,
         List<MobDrop> mobDrops,
@@ -70,6 +73,7 @@ public class ItemInfoCache
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
+        this.npcShopCache = npcShopCache;
         this.gameData = gameData;
         this.storeItems = storeItems;
         this.mobDrops = mobDrops;
@@ -265,6 +269,26 @@ public class ItemInfoCache
         var mirageStoreSetItemSheet = this.gameData.GetExcelSheet<MirageStoreSetItem>()!;
         var companyCraftDraftSheet = this.gameData.GetExcelSheet<CompanyCraftDraft>()!;
         var questSheet = this.gameData.GetExcelSheet<Quest>()!;
+        var leveSheet = this.gameData.GetExcelSheet<Leve>()!;
+        var tripleTriadSheet = this.sheetManager.GetSheet<TripleTriadSheet>()!;
+        var enpcBaseSheet = this.sheetManager.GetSheet<ENpcBaseSheet>();
+
+        foreach (var tripleTriad in tripleTriadSheet)
+        {
+            foreach (var reward in tripleTriad.Base.ItemPossibleReward)
+            {
+                if (reward.RowId == 0 || !reward.IsValid)
+                {
+                    continue;
+                }
+                var itemRow = itemSheet.GetRowOrDefault(reward.RowId);
+                if (itemRow != null)
+                {
+                    var source = new ItemTripleTriadSource(tripleTriad, itemRow);
+                    this.AddItemSource(source);
+                }
+            }
+        }
 
         foreach (var quest in questSheet)
         {
@@ -645,6 +669,10 @@ public class ItemInfoCache
 
         foreach (var cabinet in cabinetSheet)
         {
+            if (cabinet.Base.Item.RowId == 0)
+            {
+                continue;
+            }
             var item = itemSheet.GetRowOrDefault(cabinet.Base.Item.RowId);
 
             if (item != null)
@@ -654,27 +682,165 @@ public class ItemInfoCache
             }
         }
 
-        foreach (var craftLeve in craftLeveSheet)
+        foreach (var leve in leveSheet)
         {
-            for (var index = 0; index < craftLeve.Base.Item.Count; index++)
+            if (leve.DataId.Is<CraftLeve>())
             {
-                var item = itemSheet.GetRowOrDefault(craftLeve.Base.Item[index].RowId);
-
-                if (item != null)
+                if (leve.DataId.TryGetValue(out CraftLeve craftLeve))
                 {
-                    var use = new ItemCraftLeveSource(craftLeve, index, item);
-                    this.AddItemUse(use);
+                    for (var index = 0; index < craftLeve.Item.Count; index++)
+                    {
+                        if (craftLeve.Item[index].RowId == 0)
+                        {
+                            continue;
+                        }
+                        var item = itemSheet.GetRowOrDefault(craftLeve.Item[index].RowId);
+
+                        if (item != null)
+                        {
+                            var use = new ItemCraftLeveUse(new RowRef<CraftLeve>(this.gameData.Excel, craftLeve.RowId), new RowRef<Leve>(this.gameData.Excel, leve.RowId), item, index);
+                            this.AddItemUse(use);
+                        }
+                    }
+                    var rewardItem = leve.LeveRewardItem.ValueNullable;
+                    if (rewardItem != null)
+                    {
+                        var rewardGroup = rewardItem.Value.LeveRewardItemGroup;
+                        for (var rewardItemIndex = 0; rewardItemIndex < rewardGroup.Count; rewardItemIndex++)
+                        {
+                            var c = rewardGroup[rewardItemIndex];
+                            if (c.ValueNullable != null)
+                            {
+                                var reward = c.Value;
+                                for (var groupIndex = 0; groupIndex < reward.Item.Count; groupIndex++)
+                                {
+                                    var item = reward.Item[groupIndex];
+                                    var itemRow = itemSheet.GetRowOrDefault(item.RowId);
+                                    if (itemRow != null)
+                                    {
+                                        var source = new ItemCraftLeveSource(
+                                            new RowRef<CraftLeve>(this.gameData.Excel, craftLeve.RowId),
+                                            new RowRef<Leve>(this.gameData.Excel, leve.RowId),
+                                            new RowRef<LeveRewardItem>(this.gameData.Excel, rewardItem.Value.RowId),
+                                            rewardItemIndex,
+                                            new RowRef<LeveRewardItemGroup>(this.gameData.Excel, reward.RowId),
+                                            groupIndex,
+                                            itemRow);
+                                        this.AddItemSource(source);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (leve.DataId.Is<GatheringLeve>())
+            {
+                if (leve.DataId.TryGetValue(out GatheringLeve gatheringLeve))
+                {
+                    var rewardItem = leve.LeveRewardItem.ValueNullable;
+                    if (rewardItem != null)
+                    {
+                        var rewardGroup = rewardItem.Value.LeveRewardItemGroup;
+                        for (var rewardItemIndex = 0; rewardItemIndex < rewardGroup.Count; rewardItemIndex++)
+                        {
+                            var c = rewardGroup[rewardItemIndex];
+                            if (c.ValueNullable != null)
+                            {
+                                var reward = c.Value;
+                                for (var groupIndex = 0; groupIndex < reward.Item.Count; groupIndex++)
+                                {
+                                    var item = reward.Item[groupIndex];
+                                    var itemRow = itemSheet.GetRowOrDefault(item.RowId);
+                                    if (itemRow != null)
+                                    {
+                                        var source = new ItemGatheringLeveSource(
+                                            new RowRef<GatheringLeve>(this.gameData.Excel, gatheringLeve.RowId),
+                                            new RowRef<Leve>(this.gameData.Excel, leve.RowId),
+                                            new RowRef<LeveRewardItem>(this.gameData.Excel, rewardItem.Value.RowId),
+                                            rewardItemIndex,
+                                            new RowRef<LeveRewardItemGroup>(this.gameData.Excel, reward.RowId),
+                                            groupIndex,
+                                            itemRow);
+                                        this.AddItemSource(source);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (leve.DataId.Is<CompanyLeve>())
+            {
+                if (leve.DataId.TryGetValue(out CompanyLeve companyLeve))
+                {
+                    var stormSeal = itemSheet.GetRowOrDefault(20)!;
+                    var serpentSeal = itemSheet.GetRowOrDefault(21)!;
+                    var flameSeal = itemSheet.GetRowOrDefault(22)!;
+
+                    var source = new ItemCompanyLeveSource(new RowRef<CompanyLeve>(this.gameData.Excel, companyLeve.RowId), new RowRef<Leve>(this.gameData.Excel, leve.RowId), stormSeal);
+                    this.AddItemSource(source);
+
+                    source = new ItemCompanyLeveSource(new RowRef<CompanyLeve>(this.gameData.Excel, companyLeve.RowId), new RowRef<Leve>(this.gameData.Excel, leve.RowId), serpentSeal);
+                    this.AddItemSource(source);
+
+                    source = new ItemCompanyLeveSource(new RowRef<CompanyLeve>(this.gameData.Excel, companyLeve.RowId), new RowRef<Leve>(this.gameData.Excel, leve.RowId), flameSeal);
+                    this.AddItemSource(source);
+                }
+            }
+            else if (leve.DataId.Is<BattleLeve>())
+            {
+                if (leve.DataId.TryGetValue(out BattleLeve battleLeve))
+                {
+                    var rewardItem = leve.LeveRewardItem.ValueNullable;
+                    if (rewardItem != null)
+                    {
+                        var rewardGroup = rewardItem.Value.LeveRewardItemGroup;
+                        for (var rewardItemIndex = 0; rewardItemIndex < rewardGroup.Count; rewardItemIndex++)
+                        {
+                            var c = rewardGroup[rewardItemIndex];
+                            if (c.ValueNullable != null)
+                            {
+                                var reward = c.Value;
+                                for (var groupIndex = 0; groupIndex < reward.Item.Count; groupIndex++)
+                                {
+                                    var item = reward.Item[groupIndex];
+                                    var itemRow = itemSheet.GetRowOrDefault(item.RowId);
+                                    if (itemRow != null)
+                                    {
+                                        var source = new ItemBattleLeveSource(
+                                            new RowRef<BattleLeve>(this.gameData.Excel, battleLeve.RowId),
+                                            new RowRef<Leve>(this.gameData.Excel, leve.RowId),
+                                            new RowRef<LeveRewardItem>(this.gameData.Excel, rewardItem.Value.RowId),
+                                            rewardItemIndex,
+                                            new RowRef<LeveRewardItemGroup>(this.gameData.Excel, reward.RowId),
+                                            groupIndex,
+                                            itemRow);
+                                        this.AddItemSource(source);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
         foreach (var recipe in recipeSheet)
         {
+            if (recipe.Base.ItemResult.RowId == 0)
+            {
+                continue;
+            }
             var result = itemSheet.GetRow(recipe.Base.ItemResult.RowId);
             var source = new ItemCraftResultSource(result, recipe);
             this.AddItemSource(source);
             foreach (var ingredientCount in recipe.IngredientCounts)
             {
+                if (ingredientCount.Key == 0)
+                {
+                    continue;
+                }
                 var ingredientItem = itemSheet.GetRow(ingredientCount.Key);
                 var use = new ItemCraftRequirementSource(result, ingredientItem, recipe);
                 this.AddItemUse(use);
@@ -1140,6 +1306,10 @@ public class ItemInfoCache
 
         foreach (var satisfactionSupply in satisfactionSupplySheet)
         {
+            if (satisfactionSupply.Base.Item.RowId == 0)
+            {
+                continue;
+            }
             var item = itemSheet.GetRowOrDefault(satisfactionSupply.Base.Item.RowId);
             if (item == null)
             {
@@ -1154,6 +1324,10 @@ public class ItemInfoCache
             for (var index = 0; index < hwdCrafterSupplyRow.Base.HWDCrafterSupplyParams.Count; index++)
             {
                 var row = hwdCrafterSupplyRow.Base.HWDCrafterSupplyParams[index];
+                if (row.ItemTradeIn.RowId == 0)
+                {
+                    continue;
+                }
                 var item = itemSheet.GetRowOrDefault(row.ItemTradeIn.RowId);
                 if (item == null)
                 {
@@ -1305,6 +1479,10 @@ public class ItemInfoCache
 
         foreach (var aquariumRow in aquariumFishSheet)
         {
+            if (aquariumRow.Base.Item.RowId == 0)
+            {
+                continue;
+            }
             var item = itemSheet.GetRowOrDefault(aquariumRow.Base.Item.RowId);
             if (item == null)
             {
@@ -1322,6 +1500,10 @@ public class ItemInfoCache
                 for (var i = 0; i < supplyData.Item.Count; i++)
                 {
                     var rowRef = supplyData.Item[i];
+                    if (rowRef.RowId == 0)
+                    {
+                        continue;
+                    }
                     var count = supplyData.ItemCount[i];
                     var item = itemSheet.GetRowOrDefault(rowRef.RowId);
                     if (item == null)

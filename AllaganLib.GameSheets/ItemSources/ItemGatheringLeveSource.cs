@@ -7,16 +7,15 @@ using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
-public sealed class ItemCraftLeveSource : ItemSource
+public sealed class ItemGatheringLeveSource : ItemSource
 {
     private readonly HashSet<uint>? mapIds;
     private readonly List<ItemRow> items;
-    private readonly List<ItemRow> costItems;
 
-    public ItemCraftLeveSource(RowRef<CraftLeve> craftLeve, RowRef<Leve> leve, RowRef<LeveRewardItem> leveRewardItem, int rewardItemIndex, RowRef<LeveRewardItemGroup> leveRewardItemGroup, int rewardItemGroupIndex, ItemRow item)
-        : base(ItemInfoType.CraftLeve)
+    public ItemGatheringLeveSource(RowRef<GatheringLeve> gatheringLeve, RowRef<Leve> leve, RowRef<LeveRewardItem> leveRewardItem, int rewardItemIndex, RowRef<LeveRewardItemGroup> leveRewardItemGroup, int rewardItemGroupIndex, ItemRow item)
+        : base(ItemInfoType.GatheringLeve)
     {
-        this.CraftLeve = craftLeve;
+        this.GatheringLeve = gatheringLeve;
         this.Leve = leve;
         this.LeveRewardItem = leveRewardItem;
         this.RewardItemIndex = rewardItemIndex;
@@ -46,27 +45,9 @@ public sealed class ItemCraftLeveSource : ItemSource
                 this.items.Add(itemRow);
             }
         }
-
-        this.costItems = new List<ItemRow>();
-        for (var index = 0; index < this.CraftLeve.Value.Item.Count; index++)
-        {
-            var craftItem = this.CraftLeve.Value.Item[index];
-            if (craftItem.RowId == 0)
-            {
-                continue;
-            }
-
-            var itemRow = item.Sheet.GetRowOrDefault(craftItem.RowId);
-            if (itemRow != null)
-            {
-                this.costItems.Add(itemRow);
-            }
-        }
     }
 
     public override List<ItemRow> Items => this.items;
-
-    public override List<ItemRow> CostItems => this.costItems;
 
     public override HashSet<uint>? MapIds => this.mapIds;
 
@@ -91,9 +72,9 @@ public sealed class ItemCraftLeveSource : ItemSource
     public bool IsHq => this.LeveRewardItemGroup.Value.IsHQ[this.RewardItemGroupIndex];
 
     /// <summary>
-    /// Gets the related craft leve.
+    /// Gets the related gathering leve.
     /// </summary>
-    public RowRef<CraftLeve> CraftLeve { get; }
+    public RowRef<GatheringLeve> GatheringLeve { get; }
 
     /// <summary>
     /// Gets the related leve.

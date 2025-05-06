@@ -10,5 +10,5 @@ public enum ItemInfoCategory
     AllVentures,
     NormalVenture,
     ExplorationVenture,
-    Shop
+    Shop,
 }

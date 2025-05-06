@@ -7,9 +7,16 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemGilShopSource : ItemShopSource
 {
+    private readonly List<ItemRow> costItems;
+    private readonly List<ItemRow> items;
+
     public GilShopItemRow GilShopItem { get; }
 
     public GilShopRow GilShop { get; }
+
+    public override List<ItemRow> Items => items;
+
+    public override List<ItemRow> CostItems => costItems;
 
     public ItemGilShopSource(GilShopItemRow gilShopItem, GilShopRow gilShop, ItemInfoType shopType = ItemInfoType.GilShop)
         : base(gilShop, shopType)
@@ -18,6 +25,8 @@ public class ItemGilShopSource : ItemShopSource
         this.GilShop = gilShop;
         this.Item = gilShopItem.Item;
         this.CostItem = gilShopItem.Costs.First().Item;
+        this.costItems = gilShopItem.Costs.Select(c => c.Item).ToList();
+        this.items = gilShopItem.Rewards.Select(c => c.Item).ToList();
     }
 
     public uint Cost => this.Item.Base.PriceMid;

@@ -76,4 +76,9 @@ public enum ItemInfoType
     GardeningCrossbreed = 71,
     StellarMission = 72,
     Quest = 73,
+    GatheringLeve = 74,
+    CompanyLeve = 75,
+    BattleLeve = 76,
+    TripleTriad = 77,
+
 }
