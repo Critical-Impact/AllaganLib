@@ -501,6 +501,12 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool IsCompanyCraft => this.CompanyCraftSequence != null;
 
+    /// <summary>
+    /// Determines if the item is collectable. The base sheet does have a IsCollectable column but this no longer seems to match up with reality.
+    /// </summary>
+    public bool IsCollectable => this.Recipes.Any(c =>
+        c.Base.CollectableMetadata.RowId != 0 && c.Base.CollectableMetadata.RowId != 65535);
+
     public List<RecipeRow> Recipes => this.Sheet.SheetManager.GetSheet<RecipeSheet>().GetRecipesByItemId(this.RowId) ?? new List<RecipeRow>();
 
     public List<RecipeRow> RecipesAsRequirement => this.Sheet.SheetManager.GetSheet<RecipeSheet>().GetRecipesByIngredientItemId(this.RowId) ?? new List<RecipeRow>();

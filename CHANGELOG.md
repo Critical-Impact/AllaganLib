@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.11] - 2025-05-17
+
+### Added
+- AllaganLib.GameData
+  - IsCollectable added to ItemRow
+
 ## [1.2.10] - 2025-05-06
 
 ### Added
