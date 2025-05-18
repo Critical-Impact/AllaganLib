@@ -18,6 +18,8 @@ public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConf
 
     public bool HideFilter { get; set; }
 
+    public bool IsHidden { get; set; }
+
     public ImGuiTableColumnFlags ColumnFlags { get; set; }
 
     public IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex);
@@ -26,6 +28,8 @@ public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConf
         TConfiguration configuration,
         IColumn<TConfiguration, TData, TMessageBase> column,
         int columnIndex);
+
+    public List<TMessageBase> DrawFooter(TConfiguration config, List<TData> item, int columnIndex);
 
     public void SetupFilter(IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex);
 

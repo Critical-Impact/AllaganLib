@@ -31,7 +31,12 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
     public override bool Draw(TS configuration, int? labelSize = null, int? inputSize = null)
     {
         var wasUpdated = base.Draw(configuration, labelSize, inputSize);
-        var wasUpdated2 = this.DrawResults(configuration);
+        bool wasUpdated2 = false;
+        if (this.ShowResults)
+        {
+            wasUpdated2 = this.DrawResults(configuration);
+        }
+
         return wasUpdated || wasUpdated2;
     }
 
@@ -190,7 +195,7 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
         var choices = this.GetChoices(configuration);
         IEnumerable<KeyValuePair<T, string>> filteredChoices;
         var searchString = this.SearchString.ToParseable();
-        if (this.HideAlreadyPicked)
+        if (this.HideAlreadyPicked && this.ShowResults)
         {
             var currentChoices = this.CurrentValue(configuration);
             filteredChoices = choices.Where(
@@ -213,11 +218,13 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
 
     public abstract bool HideAlreadyPicked { get; set; }
 
-    public virtual bool ShowAddAll { get; } = true;
+    public virtual bool ShowAddAll { get; set; } = true;
 
-    public virtual bool ShowClear { get; } = false;
+    public virtual bool ShowClear { get; set; } = false;
 
-    public virtual int? ResultLimit { get; } = null;
+    public virtual int? ResultLimit { get; set; } = null;
+
+    public virtual bool ShowResults { get; set; } = true;
 
     private string _searchString = "";
 

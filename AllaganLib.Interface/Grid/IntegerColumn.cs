@@ -30,6 +30,8 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
 
     public abstract bool HideFilter { get; set; }
 
+    public virtual bool IsHidden { get; set; }
+
     public abstract ImGuiTableColumnFlags ColumnFlags { get; set; }
 
     public abstract string EmptyText { get; set; }
@@ -57,6 +59,12 @@ public abstract class IntegerColumn<TConfiguration, TData, TMessageBase> : Strin
     public bool DrawFilter(TConfiguration configuration, IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)
     {
         return this.stringColumnFilter.Draw(configuration, column, columnIndex);
+    }
+
+    public virtual List<TMessageBase> DrawFooter(TConfiguration config, List<TData> item, int columnIndex)
+    {
+        ImGui.TableNextColumn();
+        return new List<TMessageBase>();
     }
 
     public void SetupFilter(IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)

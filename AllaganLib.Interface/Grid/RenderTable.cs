@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 using AllaganLib.Data.Service;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
@@ -17,6 +19,8 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
     where TConfiguration : INotifyPropertyChanged
 {
     private readonly CsvLoaderService csvLoaderService;
+    private Task? currentLoadTask;
+    private CancellationTokenSource? cancellationTokenSource;
 
     public RenderTable(
         CsvLoaderService csvLoaderService,
@@ -58,6 +62,10 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public bool ShowFilterRow { get; set; }
 
+    public bool HasFooter { get; set; }
+
+    public bool UseClipper { get; set; } = true;
+
     public virtual Func<TData, List<TMessageBase>>? RightClickFunc { get; set; } = null;
 
     public ImGuiSortDirection? SortDirection { get; set; }
@@ -68,14 +76,24 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public abstract List<TData> GetItems();
 
-    public List<TData> GetFilteredItems(TConfiguration configuration)
+    public virtual Task<List<TData>> GetItemsAsync()
     {
-        if (this.isDirty)
+        // Default implementation wraps the synchronous method
+        return Task.FromResult(this.GetItems());
+    }
+
+    public List<TData> GetFilteredItems(TConfiguration configuration, bool isDirty = false)
+    {
+        if (this.isDirty || isDirty)
         {
             var newData = this.GetItems().AsEnumerable();
             for (var index = 0; index < this.Columns.Count; index++)
             {
                 var column = this.Columns[index];
+                if (column.IsHidden)
+                {
+                    continue;
+                }
                 newData = column.Filter(configuration, newData);
                 if (this.SortColumn == index)
                 {
@@ -84,10 +102,37 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
             }
 
             this.items = newData.ToList();
+            this.isDirty = false;
         }
 
         return this.items;
     }
+
+    public async Task<List<TData>> GetFilteredItemsAsync(TConfiguration configuration)
+    {
+        if (this.isDirty)
+        {
+            if (this.cancellationTokenSource != null)
+            {
+                await this.cancellationTokenSource.CancelAsync();
+            }
+
+            this.cancellationTokenSource = new CancellationTokenSource();
+            var token = this.cancellationTokenSource.Token;
+            this.isDirty = false;
+
+            var task = Task.Run(() => this.GetFilteredItems(configuration, true), token);
+            this.currentLoadTask = task;
+            await this.currentLoadTask;
+            if (!task.IsCanceled)
+            {
+                this.items = task.Result;
+            }
+        }
+
+        return this.items;
+    }
+
 
     public void SaveToCsv(TConfiguration configuration, RenderTableCsvExportOptions exportOptions)
     {
@@ -95,18 +140,20 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
         List<List<string>> rows = new();
         if (exportOptions.IncludeHeaders)
         {
-            var headers = this.Columns.Select(column => column.RenderName ?? column.Name).ToList();
+            var headers = this.Columns.Where(c => !c.IsHidden).Select(column => column.RenderName ?? column.Name).ToList();
             rows.Add(headers);
         }
 
         foreach (var line in lines)
         {
-            var newRow = this.Columns.Select(column => column.CsvExport(line)).ToList();
+            var newRow = this.Columns.Where(c => !c.IsHidden).Select(column => column.CsvExport(line)).ToList();
             rows.Add(newRow);
         }
 
         this.csvLoaderService.ToCsv(rows, exportOptions.ExportPath);
     }
+
+    private readonly Dictionary<int, float> ColumnWidths = new();
 
     public virtual unsafe List<TMessageBase> Draw(TConfiguration configuration, Vector2 size, bool shouldDraw = true)
     {
@@ -126,7 +173,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
         {
             if (filterTableChild.Success)
             {
-                using var table = ImRaii.Table(this.Key, this.Columns.Count, this.TableFlags);
+                using var table = ImRaii.Table(this.Key, this.Columns.Count(c => !c.IsHidden), this.TableFlags);
                 if (table.Success)
                 {
                     var refresh = false;
@@ -134,10 +181,14 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                     for (var index = 0; index < this.Columns.Count; index++)
                     {
                         var column = this.Columns[index];
+                        if (column.IsHidden)
+                        {
+                            continue;
+                        }
                         column.Setup(this, index);
                     }
 
-                    ImGui.TableSetupScrollFreeze(Math.Min(this.FreezeCols ?? 0, this.Columns.Count), this.FreezeRows ?? 0);
+                    ImGui.TableSetupScrollFreeze(Math.Min(this.FreezeCols ?? 0, this.Columns.Count(c => !c.IsHidden)), this.FreezeRows ?? 0);
 
                     ImGui.TableHeadersRow();
 
@@ -168,12 +219,20 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                         for (var index = 0; index < this.Columns.Count; index++)
                         {
                             var column = this.Columns[index];
+                            if (column.IsHidden)
+                            {
+                                continue;
+                            }
                             column.SetupFilter(column, index);
                         }
 
                         for (var index = 0; index < this.Columns.Count; index++)
                         {
                             var column = this.Columns[index];
+                            if (column.IsHidden)
+                            {
+                                continue;
+                            }
                             if (!column.HideFilter && column.DrawFilter(configuration, column, index))
                             {
                                 refresh = true;
@@ -181,31 +240,118 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                         }
                     }
 
-                    ImGuiListClipperPtr clipper;
-                    unsafe
+                    if (this.UseClipper)
                     {
-                        clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
-                        clipper.ItemsHeight = 32;
-                    }
-
-                    var filteredItems = this.GetFilteredItems(configuration);
-                    clipper.Begin(filteredItems.Count);
-                    while (clipper.Step())
-                    {
-                        for (var index = clipper.DisplayStart; index < clipper.DisplayEnd; index++)
+                        ImGuiListClipperPtr clipper;
+                        unsafe
                         {
+                            clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
+                            clipper.ItemsHeight = 32;
+                        }
+
+                        _ = this.GetFilteredItemsAsync(configuration);
+                        var filteredItems = this.items;
+                        clipper.Begin(filteredItems.Count);
+                        while (clipper.Step())
+                        {
+                            for (var index = clipper.DisplayStart; index < clipper.DisplayEnd; index++)
+                            {
+                                using var rowId = ImRaii.PushId(index);
+                                if (index >= 0 && index < filteredItems.Count)
+                                {
+                                    var item = filteredItems[index];
+                                    ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
+                                    for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
+                                    {
+                                        using var colId = ImRaii.PushId(columnIndex);
+                                        var column = this.Columns[columnIndex];
+                                        if (column.IsHidden)
+                                        {
+                                            continue;
+                                        }
+
+                                        var columnMessages = column.Draw(
+                                            configuration,
+                                            item,
+                                            index,
+                                            columnIndex);
+                                        if (this.HasFooter)
+                                        {
+                                            this.ColumnWidths[columnIndex] = ImGui.GetContentRegionAvail().X;
+                                        }
+
+                                        if (columnMessages != null)
+                                        {
+                                            messages.AddRange(columnMessages);
+                                        }
+
+                                        if (this.RightClickFunc != null && columnIndex == 0)
+                                        {
+                                            ImGui.SameLine();
+                                            var hoveredRow = -1;
+                                            var available = ImGui.GetFrameHeightWithSpacing();
+                                            ImGui.Selectable(
+                                                "",
+                                                false,
+                                                ImGuiSelectableFlags.SpanAllColumns |
+                                                ImGuiSelectableFlags.AllowItemOverlap,
+                                                new Vector2(0, available));
+                                            if (ImGui.IsItemHovered(
+                                                    ImGuiHoveredFlags.AllowWhenDisabled &
+                                                    ImGuiHoveredFlags.AllowWhenOverlapped &
+                                                    ImGuiHoveredFlags.AllowWhenBlockedByPopup &
+                                                    ImGuiHoveredFlags.AllowWhenBlockedByActiveItem) &&
+                                                ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+                                            {
+                                                ImGui.OpenPopup("RightClick" + index);
+                                            }
+
+                                            using (var popup = ImRaii.Popup("RightClick" + index))
+                                            {
+                                                if (popup.Success)
+                                                {
+                                                    messages.AddRange(this.RightClickFunc.Invoke(item));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        clipper.End();
+                        clipper.Destroy();
+                    }
+                    else
+                    {
+                        _ = this.GetFilteredItemsAsync(configuration);
+                        var filteredItems = this.items;
+                        for (var index = 0; index < filteredItems.Count; index++)
+                        {
+                            using var rowId = ImRaii.PushId(index);
                             if (index >= 0 && index < filteredItems.Count)
                             {
                                 var item = filteredItems[index];
                                 ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
                                 for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
                                 {
+                                    using var colId = ImRaii.PushId(columnIndex);
                                     var column = this.Columns[columnIndex];
+                                    if (column.IsHidden)
+                                    {
+                                        continue;
+                                    }
+
                                     var columnMessages = column.Draw(
                                         configuration,
                                         item,
                                         index,
                                         columnIndex);
+                                    if (this.HasFooter)
+                                    {
+                                        this.ColumnWidths[columnIndex] = ImGui.GetContentRegionAvail().X;
+                                    }
+
                                     if (columnMessages != null)
                                     {
                                         messages.AddRange(columnMessages);
@@ -216,8 +362,18 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                         ImGui.SameLine();
                                         var hoveredRow = -1;
                                         var available = ImGui.GetFrameHeightWithSpacing();
-                                        ImGui.Selectable("", false, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowItemOverlap, new Vector2(0, available));
-                                        if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled & ImGuiHoveredFlags.AllowWhenOverlapped & ImGuiHoveredFlags.AllowWhenBlockedByPopup & ImGuiHoveredFlags.AllowWhenBlockedByActiveItem) && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+                                        ImGui.Selectable(
+                                            "",
+                                            false,
+                                            ImGuiSelectableFlags.SpanAllColumns |
+                                            ImGuiSelectableFlags.AllowItemOverlap,
+                                            new Vector2(0, available));
+                                        if (ImGui.IsItemHovered(
+                                                ImGuiHoveredFlags.AllowWhenDisabled &
+                                                ImGuiHoveredFlags.AllowWhenOverlapped &
+                                                ImGuiHoveredFlags.AllowWhenBlockedByPopup &
+                                                ImGuiHoveredFlags.AllowWhenBlockedByActiveItem) &&
+                                            ImGui.IsMouseReleased(ImGuiMouseButton.Right))
                                         {
                                             ImGui.OpenPopup("RightClick" + index);
                                         }
@@ -230,27 +386,52 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                             }
                                         }
                                     }
-                                    //
-                                    // if (columnIndex == 0)
-                                    // {
-                                    //     ImGui.SameLine();
-                                    //     var menuMessages = DrawMenu(
-                                    //         FilterConfiguration,
-                                    //         column,
-                                    //         (ItemEx)item,
-                                    //         index);
-                                    //     if (menuMessages != null)
-                                    //     {
-                                    //         messages.AddRange(menuMessages);
-                                    //     }
-                                    // }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
 
-                    clipper.End();
-                    clipper.Destroy();
+        return messages;
+    }
+
+    public List<TMessageBase> DrawFooter(TConfiguration configuration, Vector2 size, bool shouldDraw = true)
+    {
+        var messages = new List<TMessageBase>();
+
+        if (this.Columns.Count == 0 || !shouldDraw)
+        {
+            return messages;
+        }
+
+        using (var filterTableChild = ImRaii.Child(
+                   "FilterTableFooter",
+                   size * ImGui.GetIO().FontGlobalScale,
+                   false,
+                   ImGuiWindowFlags.NoScrollbar))
+        {
+            if (filterTableChild.Success)
+            {
+                using var table = ImRaii.Table(this.Key, this.Columns.Count, this.TableFlags & ImGuiTableFlags.ScrollX & ImGuiTableFlags.ScrollY);
+                if (table.Success)
+                {
+                    var refresh = false;
+
+                    for (var index = 0; index < this.Columns.Count; index++)
+                    {
+                        var column = this.Columns[index];
+                        ImGui.TableSetupColumn(column.RenderName ?? this.Name, ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, this.ColumnWidths.TryGetValue(index, out var value) ? value : column.Width, (uint)index);
+                    }
+
+                    var filteredItems = this.GetFilteredItems(configuration);
+                    ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
+                    for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
+                    {
+                        var column = this.Columns[columnIndex];
+                        messages.AddRange(column.DrawFooter(configuration, filteredItems, columnIndex));
+                    }
                 }
             }
         }

@@ -22,7 +22,7 @@ public class ClassJobCategoryRow : ExtendedRow<ClassJobCategory, ClassJobCategor
             this.isGathering = true;
         }
 
-        if (baseRow.CRP || baseRow.WVR || baseRow.BLM || baseRow.ALC || baseRow.ARM || baseRow.BSM || baseRow.CUL ||
+        if (baseRow.CRP || baseRow.WVR || baseRow.ALC || baseRow.ARM || baseRow.BSM || baseRow.CUL ||
             baseRow.GSM || baseRow.LTW)
         {
             this.isCrafting = true;

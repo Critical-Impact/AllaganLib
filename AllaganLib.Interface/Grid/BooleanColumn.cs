@@ -32,6 +32,8 @@ public abstract class BooleanColumn<TConfiguration, TData, TMessageBase> : Strin
 
     public bool HideFilter { get; set; }
 
+    public virtual bool IsHidden { get; set; }
+
     public virtual ImGuiTableColumnFlags ColumnFlags { get; set; }
 
     public virtual IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
@@ -54,6 +56,12 @@ public abstract class BooleanColumn<TConfiguration, TData, TMessageBase> : Strin
     public bool DrawFilter(TConfiguration configuration, IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)
     {
         return this.choiceColumnFilter.Draw(configuration, column, columnIndex);
+    }
+
+    public virtual List<TMessageBase> DrawFooter(TConfiguration config, List<TData> item, int columnIndex)
+    {
+        ImGui.TableNextColumn();
+        return new List<TMessageBase>();
     }
 
     public void SetupFilter(IColumn<TConfiguration, TData, TMessageBase> column, int columnIndex)

@@ -14,6 +14,10 @@ public abstract class IntegerFormField<T> : FormField<int, T>
 
     public virtual string? Affix { get; }
 
+    public int? MinValue { get; set; }
+
+    public int? MaxValue { get; set; }
+
     public override int CurrentValue(T configurable)
     {
         return configurable.Get(this.Key) ?? this.DefaultValue;
@@ -37,7 +41,10 @@ public abstract class IntegerFormField<T> : FormField<int, T>
             {
                 if (this.AutoSave)
                 {
-                    this.UpdateFilterConfiguration(configuration, parsedNumber);
+                    if ((this.MinValue == null || this.MinValue.Value <= parsedNumber) && (this.MaxValue == null || this.MaxValue.Value >= parsedNumber))
+                    {
+                        this.UpdateFilterConfiguration(configuration, parsedNumber);
+                    }
                 }
 
                 wasUpdated = true;

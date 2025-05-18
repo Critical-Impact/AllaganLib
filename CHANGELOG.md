@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.12] - 2025-05-18
+
+### Fixed
+- AllaganLib.GameData
+  - Black Mage was being considered a crafting class in ClassJobCategoryRow
+  - RenderTables no longer request the items every frame
+
+### Added
+- AllaganLib.Interface
+  - IntegerFormField can now have a min and max value
+  - MultipleChoiceFormField can now have it's results hidden
+  - Columns can now be dynamically hidden
+  - RenderTables can now have footers that are tables that automatically align themselves with the main table
+  - RenderTables now get their item's via an async call
+  - RenderTables can have a clipper enabled/disabled
+
 ## [1.2.11] - 2025-05-17
 
 ### Added
