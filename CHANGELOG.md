@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.13] - 2025-05-21
+
+### Added
+- AllaganLib.Interface
+  - RenderTable's now provide a IsLoading flag
+
 ## [1.2.12] - 2025-05-18
 
 ### Fixed

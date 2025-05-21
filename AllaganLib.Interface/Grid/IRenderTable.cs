@@ -26,6 +26,8 @@ public interface IRenderTable<TConfiguration, TData, TMessageBase> where TConfig
     public bool ShowFilterRow { get; set; }
     public bool HasFooter { get; set; }
 
+    public bool IsLoading { get; }
+
     public Func<TData, List<TMessageBase>>? RightClickFunc { get; set; }
 
     public ImGuiSortDirection? SortDirection { get; set; }

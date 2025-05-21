@@ -82,6 +82,8 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
         return Task.FromResult(this.GetItems());
     }
 
+    public bool IsLoading => this.currentLoadTask is { IsCompleted: false };
+
     public List<TData> GetFilteredItems(TConfiguration configuration, bool isDirty = false)
     {
         if (this.isDirty || isDirty)
