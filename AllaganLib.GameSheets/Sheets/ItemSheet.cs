@@ -41,7 +41,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         this.itemPatchesList = itemPatches;
     }
 
-    private decimal currentPatch = new decimal(7.05);
+    private decimal currentPatch = new decimal(7.25);
 
     public decimal GetItemPatch(uint itemId)
     {

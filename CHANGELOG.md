@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.14] - 2025-05-27
+
+### Added
+- AllaganLib.GameSheets
+  - Updated LuminaSupplemental.Excel to 2.3.3
+
 ## [1.2.13] - 2025-05-21
 
 ### Added
