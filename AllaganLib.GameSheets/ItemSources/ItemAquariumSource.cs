@@ -15,5 +15,4 @@ public class ItemAquariumSource : ItemSource
     }
 
     public override uint Quantity => 1;
-
 }

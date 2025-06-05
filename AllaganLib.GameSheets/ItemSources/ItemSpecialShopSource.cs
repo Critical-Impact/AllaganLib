@@ -30,9 +30,17 @@ public class ItemSpecialShopSource : ItemShopSource
 
     public override uint Quantity => this.shopListingItem.Count;
 
-    public override List<ItemRow> Items => this.shopListing.Rewards.Select(c => c.Item).ToList();
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo> CreateCostItems()
+    {
+        return ItemInfo.FromShopListing(this.shopListing.Costs);
+    }
 
-    public override List<ItemRow> CostItems => this.shopListing.Costs.Select(c => c.Item).ToList();
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        return ItemInfo.FromShopListing(this.shopListing.Rewards);
+    }
 
     public override HashSet<uint>? MapIds => this.SpecialShop.MapIds;
 }

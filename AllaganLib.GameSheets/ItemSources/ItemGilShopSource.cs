@@ -1,22 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemGilShopSource : ItemShopSource
 {
-    private readonly List<ItemRow> costItems;
-    private readonly List<ItemRow> items;
-
     public GilShopItemRow GilShopItem { get; }
 
     public GilShopRow GilShop { get; }
-
-    public override List<ItemRow> Items => items;
-
-    public override List<ItemRow> CostItems => costItems;
 
     public ItemGilShopSource(GilShopItemRow gilShopItem, GilShopRow gilShop, ItemInfoType shopType = ItemInfoType.GilShop)
         : base(gilShop, shopType)
@@ -25,9 +19,20 @@ public class ItemGilShopSource : ItemShopSource
         this.GilShop = gilShop;
         this.Item = gilShopItem.Item;
         this.CostItem = gilShopItem.Costs.First().Item;
-        this.costItems = gilShopItem.Costs.Select(c => c.Item).ToList();
-        this.items = gilShopItem.Rewards.Select(c => c.Item).ToList();
     }
+
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo> CreateCostItems()
+    {
+        return ItemInfo.FromShopListing(this.GilShopItem.Costs);
+    }
+
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        return ItemInfo.FromShopListing(this.GilShopItem.Rewards);
+    }
+
 
     public uint Cost => this.Item.Base.PriceMid;
 

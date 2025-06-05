@@ -12,6 +12,7 @@ using Lumina;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
+using ItemSupplementSource = LuminaSupplemental.Excel.Model.ItemSupplementSource;
 
 namespace AllaganLib.GameSheets.Caches;
 
@@ -35,6 +36,7 @@ public class ItemInfoCache
     private readonly List<DungeonDrop> dungeonDrops;
     private readonly List<DungeonBossDrop> dungeonBossDrops;
     private readonly List<GardeningCrossbreed> gardeningCrossbreeds;
+    private readonly List<FieldOpCoffer> fieldOpCoffers;
 
     private Dictionary<uint, List<ItemSource>> itemSources;
     private Dictionary<uint, List<ItemSource>> itemUses;
@@ -50,6 +52,7 @@ public class ItemInfoCache
 
     private Dictionary<ItemInfoType, HashSet<uint>>? itemSourceIdsByType;
     private Dictionary<ItemInfoType, HashSet<uint>>? itemUseIdsByType;
+    private readonly Dictionary<uint, List<QuestRequiredItem>> questRequiredItems;
 
     public ItemInfoCache(
         SheetManager sheetManager,
@@ -69,7 +72,9 @@ public class ItemInfoCache
         List<DungeonBossChest> dungeonBossChests,
         List<DungeonDrop> dungeonDrops,
         List<DungeonBossDrop> dungeonBossDrop,
-        List<GardeningCrossbreed> gardeningCrossbreeds)
+        List<GardeningCrossbreed> gardeningCrossbreeds,
+        List<QuestRequiredItem> questRequiredItems,
+        List<FieldOpCoffer> fieldOpCoffers)
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
@@ -89,12 +94,14 @@ public class ItemInfoCache
         this.dungeonDrops = dungeonDrops;
         this.dungeonBossDrops = dungeonBossDrop;
         this.gardeningCrossbreeds = gardeningCrossbreeds;
+        this.fieldOpCoffers = fieldOpCoffers;
         this.itemSources = new Dictionary<uint, List<ItemSource>>();
         this.itemUses = new Dictionary<uint, List<ItemSource>>();
         this.itemSourceUseMap = new Dictionary<(uint, uint), List<ItemSource>>();
         this.eNpcIdToIShopLookup = new Dictionary<uint, List<IShop>>();
         this.itemSourceMapLocations = new();
         this.itemUseMapLocations = new();
+        this.questRequiredItems = questRequiredItems.GroupBy(c => c.QuestId).ToDictionary(c => c.Key, c => c.ToList());
     }
 
     public Dictionary<ItemInfoType, HashSet<uint>> GetItemSourceMapLocationsByItemId(uint itemId)
@@ -272,6 +279,84 @@ public class ItemInfoCache
         var leveSheet = this.gameData.GetExcelSheet<Leve>()!;
         var tripleTriadSheet = this.sheetManager.GetSheet<TripleTriadSheet>()!;
         var enpcBaseSheet = this.sheetManager.GetSheet<ENpcBaseSheet>();
+        var pvpSeriesSheet = this.gameData.GetExcelSheet<PvPSeries>()!;
+        var collectablesShopSheet = this.sheetManager.GetSheet<CollectablesShopSheet>();
+
+
+        // var wksMissionUnitSheet = this.gameData.GetExcelSheet<WKSMissionUnit>()!;
+        // var wksMissionTodoSheet = this.gameData.GetExcelSheet<WKSMissionToDo>()!;
+        // var wksMissionSupplyItemSheet = this.gameData.GetExcelSheet<WKSMissionSupplyItem>()!;
+        // var wKSMissionToDoEvalutionItemSheet = this.gameData.GetSubrowExcelSheet<WKSMissionToDoEvalutionItem>()!;
+        // var wksItemInfoSheet = this.gameData.GetExcelSheet<WKSItemInfo>()!;
+        //
+        // foreach (var missionUnit in wksMissionUnitSheet)
+        // {
+        //     if (missionUnit.RowId == 0)
+        //     {
+        //         continue;
+        //     }
+        //
+        //     var supplyItem = wksMissionSupplyItemSheet.GetRowOrDefault(missionUnit.WKSMissionSupplyItem);
+        //     if (supplyItem != null)
+        //     {
+        //         var items = new List<(ushort, ushort)>()
+        //         {
+        //             (todoRow.Value.Unknown3, todoRow.Value.Unknown6),
+        //             (todoRow.Value.Unknown4, todoRow.Value.Unknown7),
+        //             (todoRow.Value.Unknown5, todoRow.Value.Unknown8),
+        //         };
+        //         foreach (var item in items)
+        //         {
+        //             var evaluationItem = item.Item1;
+        //             var evaluationQty = item.Item2;
+        //             if (evaluationItem != 0)
+        //             {
+        //                 var itemInfo = wksItemInfoSheet.GetRowOrDefault(evaluationItem);
+        //                 if (itemInfo != null && itemInfo.Value.Unknown0 != 0)
+        //                 {
+        //                     var actualItem = itemSheet.GetRowOrDefault(itemInfo.Value.Unknown0);
+        //                     if (actualItem != null)
+        //                     {
+        //                         var source = new ItemStellarMissionSource(
+        //                             actualItem,
+        //                             evaluationQty,
+        //                             new RowRef<WKSMissionUnit>(this.gameData.Excel, missionUnit.RowId),
+        //                             new RowRef<WKSMissionToDo>(this.gameData.Excel, todoRow.Value.RowId),
+        //                             new RowRef<WKSItemInfo>(this.gameData.Excel, itemInfo.Value.RowId));
+        //                         this.AddItemUse(source);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+
+        foreach (var seriesReward in pvpSeriesSheet)
+        {
+            for (var levelIndex = 0; levelIndex < seriesReward.LevelRewards.Count; levelIndex++)
+            {
+                var reward = seriesReward.LevelRewards[levelIndex];
+                for (var index = 0; index < reward.LevelRewardItem.Count; index++)
+                {
+                    var rewardItem = reward.LevelRewardItem[index];
+                    if (rewardItem.RowId == 0)
+                    {
+                        continue;
+                    }
+
+                    var itemRow = itemSheet.GetRowOrDefault(rewardItem.RowId);
+                    if (itemRow != null)
+                    {
+                        var source = new ItemPVPSeriesSource(
+                            itemRow,
+                            new RowRef<PvPSeries>(this.gameData.Excel, seriesReward.RowId),
+                            levelIndex,
+                            index);
+                        this.AddItemSource(source);
+                    }
+                }
+            }
+        }
 
         foreach (var tripleTriad in tripleTriadSheet)
         {
@@ -292,6 +377,28 @@ public class ItemInfoCache
 
         foreach (var quest in questSheet)
         {
+            if (this.questRequiredItems.TryGetValue(quest.RowId, out var requiredItems))
+            {
+                foreach (var requiredItem in requiredItems)
+                {
+                    var itemId = requiredItem.ItemId;
+                    if (itemId != 0)
+                    {
+                        var itemRow = itemSheet.GetRowOrDefault(itemId);
+                        if (itemRow != null)
+                        {
+                            var source = new ItemQuestSource(
+                                itemRow,
+                                requiredItems,
+                                new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                            this.AddItemUse(source);
+                        }
+                    }
+                }
+            }
+
+            requiredItems ??= [];
+
             foreach (var reward in quest.Reward)
             {
                 if (reward.Is<Item>())
@@ -301,7 +408,7 @@ public class ItemInfoCache
                         var itemRow = itemSheet.GetRowOrDefault(rewardItem.RowId);
                         if (itemRow != null)
                         {
-                            var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                            var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
                             this.AddItemSource(source);
                         }
                     }
@@ -324,7 +431,7 @@ public class ItemInfoCache
                                 var itemRow = itemSheet.GetRowOrDefault(rewardSubrowItem.RowId);
                                 if (itemRow != null)
                                 {
-                                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
+                                    var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
                                     this.AddItemSource(source);
                                 }
                             }
@@ -338,7 +445,7 @@ public class ItemInfoCache
                                 var itemRow = itemSheet.GetRowOrDefault(requiredItemSubrow.RowId);
                                 if (itemRow != null)
                                 {
-                                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
+                                    var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
                                     this.AddItemUse(source);
                                 }
                             }
@@ -355,7 +462,7 @@ public class ItemInfoCache
                 var itemRow = itemSheet.GetRowOrDefault(catalyst.RowId);
                 if (itemRow != null)
                 {
-                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                    var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
                     this.AddItemSource(source);
                 }
             }
@@ -369,7 +476,7 @@ public class ItemInfoCache
                 var itemRow = itemSheet.GetRowOrDefault(optionalReward.RowId);
                 if (itemRow != null)
                 {
-                    var source = new ItemQuestSource(itemRow, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                    var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId));
                     this.AddItemSource(source);
                 }
             }
@@ -386,6 +493,7 @@ public class ItemInfoCache
                         {
                             var source = new ItemQuestSource(
                                 itemRow,
+                                requiredItems,
                                 new RowRef<Quest>(this.gameData.Excel, quest.RowId),
                                 new SubrowRef<QuestClassJobSupply>(this.gameData.Excel, questClassJobSupplyRef.RowId)
                                 ,index);
@@ -427,6 +535,36 @@ public class ItemInfoCache
 
             source = new ItemGardeningCrossbreedSource(requirement2, resultItem, requirement1, requirement2);
             this.AddItemUse(source);
+        }
+
+        foreach (var fieldOpCoffer in this.fieldOpCoffers)
+        {
+            var resultItem = itemSheet.GetRowOrDefault(fieldOpCoffer.ItemId);
+
+            if (resultItem != null)
+            {
+                switch (fieldOpCoffer.Type)
+                {
+                    case FieldOpType.Pagos:
+                        this.AddItemSource(new ItemPagosTreasureCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.Pyros:
+                        this.AddItemSource(new ItemPyrosTreasureCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.Hydatos:
+                        this.AddItemSource(new ItemHydatosTreasureCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.OccultTreasure:
+                        this.AddItemSource(new ItemOccultTreasureCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.OccultPot:
+                        this.AddItemSource(new ItemOccultPotSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.OccultGoldenCoffer:
+                        this.AddItemSource(new ItemOccultGoldenCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                }
+            }
         }
 
         foreach (var stain in stainSheet)
@@ -936,6 +1074,27 @@ public class ItemInfoCache
             }
         }
 
+        foreach (var collectableShop in collectablesShopSheet)
+        {
+            var mapIds = collectableShop.MapIds;
+
+            foreach (var npc in collectableShop.ENpcs)
+            {
+                this.AddShopNpcLookup(collectableShop, npc.RowId);
+            }
+
+            foreach (var collectableShopListing in collectableShop.CollectablesShopListings)
+            {
+                var source = new ItemCollectablesShopSource(collectableShopListing, collectableShop);
+                this.AddItemSource(source);
+                this.AddItemUse(source);
+                this.AddItemSourceUseCombo(source, source);
+
+                this.AddItemSourceMapLocation(collectableShopListing.Reward.Item.RowId, mapIds, ItemInfoType.CollectablesShop);
+                this.AddItemUseMapLocation(collectableShopListing.Costs.First().Item.RowId, mapIds, ItemInfoType.CollectablesShop);
+            }
+        }
+
         foreach (var specialShop in specialShops)
         {
             var mapIds = specialShop.MapIds;
@@ -1275,33 +1434,65 @@ public class ItemInfoCache
                 continue;
             }
 
+            ItemSources.ItemSupplementSource source;
             switch (supplementalItem.ItemSupplementSource)
             {
-                case LuminaSupplemental.Excel.Model.ItemSupplementSource.Desynth:
-                    var source1 = new ItemDesynthSource(item, sourceItem);
-                    this.AddItemSource(source1);
-                    this.AddItemUse(source1);
-                    this.AddItemSourceUseCombo(source1, source1);
+                case ItemSupplementSource.Desynth:
+                    source = new ItemDesynthSource(item, sourceItem, supplementalItem);
                     break;
-                case LuminaSupplemental.Excel.Model.ItemSupplementSource.Reduction:
-                    var source2 = new ItemReductionSource(item, sourceItem);
-                    this.AddItemSource(source2);
-                    this.AddItemUse(source2);
-                    this.AddItemSourceUseCombo(source2, source2);
+                case ItemSupplementSource.Reduction:
+                    source = new ItemReductionSource(item, sourceItem, supplementalItem);
                     break;
-                case LuminaSupplemental.Excel.Model.ItemSupplementSource.Loot:
-                    var source3 = new ItemLootSource(item, sourceItem);
-                    this.AddItemSource(source3);
-                    this.AddItemUse(source3);
-                    this.AddItemSourceUseCombo(source3, source3);
+                case ItemSupplementSource.Loot:
+                    source = new ItemLootSource(item, sourceItem, supplementalItem);
                     break;
-                case LuminaSupplemental.Excel.Model.ItemSupplementSource.Gardening:
-                    var source4 = new ItemGardeningSource(item, sourceItem);
-                    this.AddItemSource(source4);
-                    this.AddItemUse(source4);
-                    this.AddItemSourceUseCombo(source4, source4);
+                case ItemSupplementSource.Gardening:
+                    source = new ItemGardeningSource(item, sourceItem, supplementalItem);
                     break;
+                case ItemSupplementSource.CardPacks:
+                    source = new ItemCardPackSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Coffer:
+                    source = new ItemCofferSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.PalaceOfTheDead:
+                    source = new ItemPalaceOfTheDeadSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.HeavenOnHigh:
+                    source = new ItemHeavenOnHighSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.EurekaOrthos:
+                    source = new ItemEurekaOrthosSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Anemos:
+                    source = new ItemAnemosSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Pagos:
+                    source = new ItemPagosSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Pyros:
+                    source = new ItemPyrosSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Hydatos:
+                    source = new ItemHydatosSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Bozja:
+                    source = new ItemBozjaSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.Logogram:
+                    source = new ItemLogogramSource(item, sourceItem, supplementalItem);
+                    break;
+                case ItemSupplementSource.SkybuilderHandIn:
+                    continue;
+                case ItemSupplementSource.Unknown:
+                    continue;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
+            this.AddItemSource(source);
+            this.AddItemUse(source);
+            this.AddItemSourceUseCombo(source, source);
         }
 
         foreach (var satisfactionSupply in satisfactionSupplySheet)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-
+using System.Linq;
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -47,7 +48,32 @@ public sealed class ItemBattleLeveSource : ItemSource
         }
     }
 
-    public override List<ItemRow> Items => this.items;
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        List<ItemInfo> rewardItems = new List<ItemInfo>();
+        for (var index = 0; index < this.LeveRewardItemGroup.Value.Item.Count; index++)
+        {
+            var itemRowRef = this.LeveRewardItemGroup.Value.Item[index];
+
+
+            var itemId = itemRowRef.RowId;
+            if (itemId == 0)
+            {
+                continue;
+            }
+
+            var count = this.LeveRewardItemGroup.Value.Count[index];
+            var isHq = this.LeveRewardItemGroup.Value.IsHQ[index];
+
+            var itemRow = this.Item.Sheet.GetRowOrDefault(itemId);
+            if (itemRow != null)
+            {
+                rewardItems.Add(ItemInfo.Create(itemRow, count, isHq));
+            }
+        }
+        return rewardItems.ToArray();
+    }
 
     public override HashSet<uint>? MapIds => this.mapIds;
 

@@ -22,6 +22,7 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> npcIdToGilShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToGcShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToInclusionShopIdLookup;
+    private Dictionary<uint, HashSet<uint>> npcIdToCollectablesShopIdLookup;
 
     private Dictionary<uint, HashSet<uint>> fateShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> specialShopIdToNpcIdLookup;
@@ -29,6 +30,7 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> gilShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> gcShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> inclusionShopIdToNpcLookup;
+    private Dictionary<uint, HashSet<uint>> collectablesShopIdToNpcLookup;
 
 
     public NpcShopCache(GameData gameData)
@@ -42,6 +44,7 @@ public class NpcShopCache
         this.npcIdToGilShopIdLookup = [];
         this.npcIdToGcShopIdLookup = [];
         this.npcIdToInclusionShopIdLookup = [];
+        this.npcIdToCollectablesShopIdLookup = [];
 
         this.fateShopIdToNpcIdLookup = [];
         this.specialShopIdToNpcIdLookup = [];
@@ -49,6 +52,7 @@ public class NpcShopCache
         this.gilShopIdToNpcIdLookup = [];
         this.gcShopIdToNpcIdLookup = [];
         this.inclusionShopIdToNpcLookup = [];
+        this.collectablesShopIdToNpcLookup = [];
 
         this.npcIdToTripleTriadLookup = [];
         this.tripleTriadToNpcIdLookup = [];
@@ -217,6 +221,20 @@ public class NpcShopCache
                 this.npcIdToShopIdLookup.TryAdd(npcBase.RowId, []);
                 this.npcIdToShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
             }
+            else if (rowRef.Is<CollectablesShop>())
+            {
+                this.collectablesShopIdToNpcLookup.TryAdd(rowRef.RowId, []);
+                this.collectablesShopIdToNpcLookup[rowRef.RowId].Add(npcBase.RowId);
+
+                this.shopIdToNpcIdLookup.TryAdd(rowRef.RowId, []);
+                this.shopIdToNpcIdLookup[rowRef.RowId].Add(npcBase.RowId);
+
+                this.npcIdToCollectablesShopIdLookup.TryAdd(npcBase.RowId, []);
+                this.npcIdToCollectablesShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
+
+                this.npcIdToShopIdLookup.TryAdd(npcBase.RowId, []);
+                this.npcIdToShopIdLookup[npcBase.RowId].Add(rowRef.RowId);
+            }
             else if (rowRef.Is<CustomTalk>())
             {
                 var customTalk = customTalkSheet.GetRow(rowRef.RowId);
@@ -313,6 +331,16 @@ public class NpcShopCache
     public HashSet<uint>? GetNpcsByInclusionShopId(uint inclusionShopId)
     {
         return this.inclusionShopIdToNpcLookup.GetValueOrDefault(inclusionShopId);
+    }
+
+    public HashSet<uint>? GetCollectablesShopsByNpcId(uint npcId)
+    {
+        return this.npcIdToCollectablesShopIdLookup.GetValueOrDefault(npcId);
+    }
+
+    public HashSet<uint>? GetNpcsByCollectablesShopId(uint collectablesShopId)
+    {
+        return this.collectablesShopIdToNpcLookup.GetValueOrDefault(collectablesShopId);
     }
 
     public HashSet<uint>? GetTripleTriadsByNpcId(uint npcId)

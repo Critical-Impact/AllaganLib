@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -10,7 +11,6 @@ namespace AllaganLib.GameSheets.ItemSources;
 public sealed class ItemGatheringLeveSource : ItemSource
 {
     private readonly HashSet<uint>? mapIds;
-    private readonly List<ItemRow> items;
 
     public ItemGatheringLeveSource(RowRef<GatheringLeve> gatheringLeve, RowRef<Leve> leve, RowRef<LeveRewardItem> leveRewardItem, int rewardItemIndex, RowRef<LeveRewardItemGroup> leveRewardItemGroup, int rewardItemGroupIndex, ItemRow item)
         : base(ItemInfoType.GatheringLeve)
@@ -29,25 +29,29 @@ public sealed class ItemGatheringLeveSource : ItemSource
         {
             this.mapIds.Add(mapRowId.Value);
         }
+    }
 
-        this.items = new List<ItemRow>();
-        foreach (var itemRowRef in this.LeveRewardItemGroup.Value.Item)
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        var itemInfos = new List<ItemInfo>();
+        for (var index = 0; index < this.LeveRewardItemGroup.Value.Item.Count; index++)
         {
+            var itemRowRef = this.LeveRewardItemGroup.Value.Item[index];
             var itemId = itemRowRef.RowId;
             if (itemId == 0)
             {
                 continue;
             }
 
-            var itemRow = item.Sheet.GetRowOrDefault(itemId);
+            var itemRow = this.Item.Sheet.GetRowOrDefault(itemId);
             if (itemRow != null)
             {
-                this.items.Add(itemRow);
+                itemInfos.Add(ItemInfo.Create(itemRow, this.LeveRewardItemGroup.Value.Count[index], this.LeveRewardItemGroup.Value.IsHQ[index]));
             }
         }
-    }
 
-    public override List<ItemRow> Items => this.items;
+        return itemInfos;
+    }
 
     public override HashSet<uint>? MapIds => this.mapIds;
 

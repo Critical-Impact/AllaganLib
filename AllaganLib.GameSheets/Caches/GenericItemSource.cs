@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace AllaganLib.GameSheets.Caches;
 
-public abstract class ItemInfo
+public abstract class GenericItemSource
 {
     public ItemInfoType Type { get; protected set; }
 

@@ -33,6 +33,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     private List<GilShopRow>? calamitySalvagerShops;
     private List<GCShopRow>? gcShops;
     private List<FishingSpotRow>? fishingSpots;
+    private List<CollectablesShopRow>? collectablesShops;
     private Dictionary<ItemInfoType, HashSet<uint>>? sourceMapLocationsByType;
     private Dictionary<ItemInfoType, HashSet<uint>>? useMapLocationsByType;
     private ClassJobCategoryRow? classJobCategory;
@@ -409,6 +410,19 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
+    public List<CollectablesShopRow> CollectablesShops
+    {
+        get
+        {
+            if (this.collectablesShops == null)
+            {
+                this.CacheVendorLookup();
+            }
+
+            return this.collectablesShops!;
+        }
+    }
+
     public List<GilShopRow> GilShops
     {
         get
@@ -443,6 +457,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         this.gilShops = [];
         this.gcShops = [];
         this.calamitySalvagerShops = [];
+        this.collectablesShops = [];
 
         foreach (var use in this.Sources)
         {
@@ -484,6 +499,14 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
                 if (shopRow != null)
                 {
                     this.gcShops.Add(shopRow);
+                }
+            }
+            else if (use.Type == ItemInfoType.CollectablesShop)
+            {
+                var shopRow = (use as ItemCollectablesShopSource)?.CollectablesShop;
+                if (shopRow != null)
+                {
+                    this.collectablesShops.Add(shopRow);
                 }
             }
         }

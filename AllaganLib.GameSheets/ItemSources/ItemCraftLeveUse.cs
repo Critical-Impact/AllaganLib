@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
@@ -10,8 +11,6 @@ namespace AllaganLib.GameSheets.ItemSources;
 public sealed class ItemCraftLeveUse : ItemSource
 {
     private readonly HashSet<uint>? mapIds;
-    private readonly List<ItemRow> items;
-    private readonly List<ItemRow> costItems;
     private int rowIndex;
 
     public ItemCraftLeveUse(RowRef<CraftLeve> craftLeve, RowRef<Leve> leve, ItemRow item, int rowIndex)
@@ -28,10 +27,15 @@ public sealed class ItemCraftLeveUse : ItemSource
         {
             this.mapIds.Add(mapRowId.Value);
         }
+    }
 
-        this.items = new();
-        foreach (var leveRewardItemGroup in this.Leve.Value.LeveRewardItem.Value.LeveRewardItemGroup)
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        var itemInfos = new List<ItemInfo>();
+
+        for (var index = 0; index < this.Leve.Value.LeveRewardItem.Value.LeveRewardItemGroup.Count; index++)
         {
+            var leveRewardItemGroup = this.Leve.Value.LeveRewardItem.Value.LeveRewardItemGroup[index];
             foreach (var itemRowRef in leveRewardItemGroup.Value.Item)
             {
                 var itemId = itemRowRef.RowId;
@@ -40,16 +44,23 @@ public sealed class ItemCraftLeveUse : ItemSource
                     continue;
                 }
 
-                var itemRow = item.Sheet.GetRowOrDefault(itemId);
+                var itemRow = this.Item.Sheet.GetRowOrDefault(itemId);
                 if (itemRow != null)
                 {
-                    this.items.Add(itemRow);
+                    var count = leveRewardItemGroup.Value.Count[index];
+                    var isHq = leveRewardItemGroup.Value.IsHQ[index];
+                    itemInfos.Add(ItemInfo.Create(itemRow, count, isHq));
                 }
             }
         }
 
-        this.CostItem = item;
-        this.costItems = [item];
+        return itemInfos;
+    }
+
+    protected override IReadOnlyList<ItemInfo>? CreateCostItems()
+    {
+        var itemInfos = new List<ItemInfo>();
+
         for (var index = 0; index < this.CraftLeve.Value.Item.Count; index++)
         {
             var craftItem = this.CraftLeve.Value.Item[index];
@@ -58,15 +69,14 @@ public sealed class ItemCraftLeveUse : ItemSource
                 continue;
             }
 
-            var itemRow = item.Sheet.GetRowOrDefault(craftItem.RowId);
+            var itemRow = this.Item.Sheet.GetRowOrDefault(craftItem.RowId);
             if (itemRow != null)
             {
-                this.costItems.Add(itemRow);
+                itemInfos.Add(ItemInfo.Create(itemRow, this.CraftLeve.Value.ItemCount[index]));
             }
         }
+        return itemInfos;
     }
-
-    public override List<ItemRow> Items => this.items;
 
     public override HashSet<uint>? MapIds => this.mapIds;
 

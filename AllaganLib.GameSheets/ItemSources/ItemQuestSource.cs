@@ -1,86 +1,69 @@
 using System.Collections.Generic;
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using LuminaSupplemental.Excel.Model;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemQuestSource : ItemSource
 {
-    private List<ItemRow> items;
-    private List<ItemRow> costItems;
     public RowRef<Quest> Quest { get; }
 
     public SubrowRef<QuestClassJobReward>? QuestClassJobReward { get; }
 
     public int? QuestClassJobRewardSubRowId { get; }
     public int? QuestClassJobSupplySubRowId { get; set; }
+
+    public List<QuestRequiredItem> RequiredItems { get; }
+
     public SubrowRef<QuestClassJobSupply>? QuestClassJobSupplyRef { get; set; }
 
     public ItemQuestSource(
         ItemRow itemRow,
+        List<QuestRequiredItem> requiredItems,
         RowRef<Quest> quest,
         SubrowRef<QuestClassJobReward>? questClassJobRewardRef = null,
         int? questClassJobRewardSubRowId = null)
-        : this(itemRow, quest)
+        : this(itemRow, requiredItems, quest)
     {
+        this.RequiredItems = requiredItems;
         this.QuestClassJobReward = questClassJobRewardRef;
         this.QuestClassJobRewardSubRowId = questClassJobRewardSubRowId;
-        if (questClassJobRewardRef.HasValue && questClassJobRewardSubRowId != null)
-        {
-            var questClassJobReward = questClassJobRewardRef.Value.Value[questClassJobRewardSubRowId.Value];
-            foreach (var rewardItem in questClassJobReward.RewardItem)
-            {
-                if (rewardItem.RowId == 0)
-                {
-                    continue;
-                }
-                this.items.Add(this.Item.Sheet.GetRow(rewardItem.RowId));
-            }
-
-
-            var questClassJobRequirement = questClassJobRewardRef.Value.Value[questClassJobRewardSubRowId.Value];
-            foreach (var requirementItem in questClassJobRequirement.RequiredItem)
-            {
-                if (requirementItem.RowId == 0)
-                {
-                    continue;
-                }
-
-                this.costItems.Add(this.Item.Sheet.GetRow(requirementItem.RowId));
-            }
-        }
     }
 
     public ItemQuestSource(
         ItemRow itemRow,
+        List<QuestRequiredItem> requiredItems,
         RowRef<Quest> quest,
         SubrowRef<QuestClassJobSupply>? questClassJobSupplyRef = null,
         int? questClassJobSupplySubRowId = null)
-        : this(itemRow, quest)
+        : this(itemRow, requiredItems, quest)
     {
+        this.RequiredItems = requiredItems;
         this.QuestClassJobSupplyRef = questClassJobSupplyRef;
         this.QuestClassJobSupplySubRowId = questClassJobSupplySubRowId;
-        if (questClassJobSupplyRef.HasValue && questClassJobSupplySubRowId != null)
-        {
-            var questClassJobSupplyRequirement = questClassJobSupplyRef.Value.Value[questClassJobSupplySubRowId.Value];
-            if (questClassJobSupplyRequirement.Item.RowId != 0)
-            {
-                this.costItems.Add(this.Item.Sheet.GetRow(questClassJobSupplyRequirement.Item.RowId));
-            }
-        }
     }
 
-    public ItemQuestSource(ItemRow itemRow, RowRef<Quest> quest) : base(ItemInfoType.Quest)
+    public ItemQuestSource(ItemRow itemRow, List<QuestRequiredItem> requiredItems, RowRef<Quest> quest) : base(ItemInfoType.Quest)
     {
+        this.RequiredItems = requiredItems;
         this.Quest = quest;
         this.Item = itemRow;
-        var rewardItems = new List<ItemRow>();
-        var requirementItems = new List<ItemRow>();
+    }
 
-        foreach (var reward in quest.Value.Reward)
+    public override uint Quantity => 1;
+
+    protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
+    {
+        var itemInfos = new List<ItemInfo>();
+        var itemSheet = this.Item.Sheet;
+
+        for (var index = 0; index < this.Quest.Value.Reward.Count; index++)
         {
+            var reward = this.Quest.Value.Reward[index];
             if (reward.Is<Item>())
             {
                 if (reward.RowId == 0)
@@ -88,46 +71,96 @@ public class ItemQuestSource : ItemSource
                     continue;
                 }
 
-                var item = itemRow.Sheet.GetRowOrDefault(reward.RowId);
+                var item = itemSheet.GetRowOrDefault(reward.RowId);
                 if (item is not null)
                 {
-                    rewardItems.Add(item);
+                    var count = this.Quest.Value.ItemCountReward[index];
+                    itemInfos.Add(ItemInfo.Create(item, count));
                 }
             }
         }
 
-        foreach (var catalyst in this.Quest.Value.ItemCatalyst)
+        if (this.QuestClassJobReward != null && this.QuestClassJobRewardSubRowId != null)
         {
+            var jobReward =  this.QuestClassJobReward.Value.Value[this.QuestClassJobRewardSubRowId.Value];
+            for (var index = 0; index < jobReward.RewardItem.Count; index++)
+            {
+                var rewardItem = jobReward.RewardItem[index];
+                if (rewardItem.RowId == 0)
+                {
+                    continue;
+                }
+
+                var item = itemSheet.GetRowOrDefault(rewardItem.RowId);
+                if (item is not null)
+                {
+                    var count = jobReward.RewardAmount[index];
+                    itemInfos.Add(ItemInfo.Create(item, count));
+                }
+            }
+        }
+
+        for (var index = 0; index < this.Quest.Value.ItemCatalyst.Count; index++)
+        {
+            var catalyst = this.Quest.Value.ItemCatalyst[index];
+            var catalystCount = this.Quest.Value.ItemCountCatalyst[index];
             if (catalyst.RowId == 0)
             {
                 continue;
             }
-            rewardItems.Add(this.Item.Sheet.GetRow(catalyst.RowId));
+            var item = itemSheet.GetRowOrDefault(catalyst.RowId);
+            if (item is not null)
+            {
+                var count = catalystCount;
+                itemInfos.Add(ItemInfo.Create(item, count));
+            }
         }
 
-        foreach (var optionalReward in this.Quest.Value.OptionalItemReward)
+        for (var index = 0; index < this.Quest.Value.OptionalItemReward.Count; index++)
         {
+            var optionalReward = this.Quest.Value.OptionalItemReward[index];
+            var optionalRewardCount = this.Quest.Value.OptionalItemCountReward[index];
             if (optionalReward.RowId == 0)
             {
                 continue;
             }
-            rewardItems.Add(this.Item.Sheet.GetRow(optionalReward.RowId));
+            var item = itemSheet.GetRowOrDefault(optionalReward.RowId);
+            if (item is not null)
+            {
+                var count = optionalRewardCount;
+                itemInfos.Add(ItemInfo.Create(item, count, null, true));
+            }
         }
-
-        if (this.Quest.Value.QuestClassJobSupply.RowId != 0)
-        {
-            var a = "";
-        }
-
-        this.items = rewardItems;
-        this.costItems = requirementItems;
+        return itemInfos;
     }
 
-    public override List<ItemRow> Items => this.items;
+    protected override IReadOnlyList<ItemInfo>? CreateCostItems()
+    {
+        var itemInfos = new List<ItemInfo>();
+        foreach (var requiredItem in this.RequiredItems)
+        {
+            var item = this.Item.Sheet.GetRowOrDefault(requiredItem.ItemId);
+            if (item != null)
+            {
+                itemInfos.Add(ItemInfo.Create(item, requiredItem.Quantity, requiredItem.IsHq));
+            }
+        }
 
-    public override List<ItemRow> CostItems => this.costItems;
-
-    public override uint Quantity => 1;
+        if (this.QuestClassJobSupplyRef != null && this.QuestClassJobSupplySubRowId != null)
+        {
+            var jobSupply = this.QuestClassJobSupplyRef.Value.Value[this.QuestClassJobSupplySubRowId.Value];
+            var requiredItem = jobSupply.Item;
+            if (requiredItem.RowId != 0)
+            {
+                var item = this.Item.Sheet.GetRowOrDefault(requiredItem.RowId);
+                if (item is not null)
+                {
+                    itemInfos.Add(ItemInfo.Create(item, jobSupply.AmountRequired, jobSupply.ItemHQ));
+                }
+            }
+        }
+        return itemInfos;
+    }
 
     public uint QuestIcon => this.Quest.Value.EventIconType.ValueNullable?.MapIconAvailable + 1 ?? 71021;
 }

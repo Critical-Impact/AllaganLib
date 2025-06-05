@@ -140,6 +140,7 @@ public static class ItemInfoTypeExtensions
             or ItemInfoType.GilShop
             or ItemInfoType.FCShop
             or ItemInfoType.GCShop
+            or ItemInfoType.CollectablesShop
             or ItemInfoType.CalamitySalvagerShop;
     }
 

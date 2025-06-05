@@ -11,7 +11,7 @@ namespace AllaganLib.Shared.Services;
 /// </summary>
 public class BackgroundTaskQueue : IBackgroundTaskQueue
 {
-    private readonly Channel<Func<CancellationToken, Task>> _queue;
+    private readonly Channel<Func<CancellationToken, Task>> queue;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BackgroundTaskQueue"/> class.
@@ -23,7 +23,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
         {
             FullMode = BoundedChannelFullMode.Wait,
         };
-        this._queue = Channel.CreateBounded<Func<CancellationToken, Task>>(options);
+        this.queue = Channel.CreateBounded<Func<CancellationToken, Task>>(options);
     }
 
     /// <inheritdoc/>
@@ -35,18 +35,18 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
             throw new ArgumentNullException(nameof(workItem));
         }
 
-        await this._queue.Writer.WriteAsync(workItem);
+        await this.queue.Writer.WriteAsync(workItem);
     }
 
     /// <inheritdoc/>
     public async Task<Func<CancellationToken, Task>> DequeueAsync(
         CancellationToken cancellationToken)
     {
-        var workItem = await this._queue.Reader.ReadAsync(cancellationToken);
+        var workItem = await this.queue.Reader.ReadAsync(cancellationToken);
 
         return workItem;
     }
 
     /// <inheritdoc/>
-    public int QueueCount => this._queue.Reader.Count;
+    public int QueueCount => this.queue.Reader.Count;
 }

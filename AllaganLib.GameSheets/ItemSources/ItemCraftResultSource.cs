@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Caches;
+using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
@@ -16,12 +17,24 @@ public class ItemCraftResultSource : ItemSource
         this.Recipe = recipe;
     }
 
-    public override List<ItemRow> CostItems
+    /// <inheritdoc/>
+    protected override IReadOnlyList<ItemInfo> CreateCostItems()
     {
-        get
+        List<ItemInfo> items = new List<ItemInfo>();
+        foreach (var (itemId, quantity) in this.Recipe.IngredientCounts)
         {
-            return this.Recipe.IngredientCounts.Select(c => this.Item.Sheet.GetRow(c.Key)).ToList();
+            if (itemId == 0)
+            {
+                continue;
+            }
+
+            var itemRow = this.Item.Sheet.GetRowOrDefault(itemId);
+            if (itemRow != null)
+            {
+                items.Add(ItemInfo.Create(itemRow, quantity));
+            }
         }
+        return items.ToArray();
     }
 
     public override uint Quantity => this.Recipe.Base.AmountResult;

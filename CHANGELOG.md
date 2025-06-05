@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.15] - 2025-06-05
+
+### Added
+- AllaganLib.GameSheets
+  - PVP Series source added
+  - Quests now pull in extra required items parsed from the lua in the game
+  - Field Op coffers/treasure sources added
+  - Collectable Shop source added
+  - Deep Dungeon sources added
+
+### Changed
+- AllaganLib.GameSheets
+  - Updated LuminaSupplemental.Excel to 2.3.7
+  - Reworked the Items/CostItems sources provide, they now include quantity, hq, probability, min and max if applicable
+  - Certain sources now provide more comprehensive requirement/reward information
+
 ## [1.2.14] - 2025-05-27
 
 ### Added
