@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.16] - 2025-06-12
+
+### Added
+- AllaganLib.Interface
+  - HotkeyService added
+  - HotkeyFormField added
+- AllaganLib.Shared
+  - HostedFrameworkService added 
+
 ## [1.2.15] - 2025-06-05
 
 ### Added
