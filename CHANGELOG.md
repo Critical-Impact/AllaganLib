@@ -13,6 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.2.17] - 2025-06-19
+
+### Changed
+- Bumped dependencies
+
+- AllaganLib.GameSheets
+  - LuminaSupplemental updated to 2.3.12
+
+### Fixed
+- AllaganLib.Interface
+  - RenderTables now provide access to IsDirty
+  - Sorting a RenderTable will now cause a refresh of the table's data
+
+
 ## [1.2.16] - 2025-06-12
 
 ### Added

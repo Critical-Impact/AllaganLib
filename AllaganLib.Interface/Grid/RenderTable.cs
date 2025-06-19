@@ -41,7 +41,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     private void SearchFilterModified(object? sender, PropertyChangedEventArgs e)
     {
-        this.isDirty = true;
+        this.IsDirty = true;
     }
 
     public TConfiguration SearchFilter { get; }
@@ -70,7 +70,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public ImGuiSortDirection? SortDirection { get; set; }
 
-    private bool isDirty = true;
+    public bool IsDirty { get; set; } = true;
 
     private List<TData> items = new();
 
@@ -86,7 +86,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public List<TData> GetFilteredItems(TConfiguration configuration, bool isDirty = false)
     {
-        if (this.isDirty || isDirty)
+        if (this.IsDirty || isDirty)
         {
             var newData = this.GetItems().AsEnumerable();
             for (var index = 0; index < this.Columns.Count; index++)
@@ -104,7 +104,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
             }
 
             this.items = newData.ToList();
-            this.isDirty = false;
+            this.IsDirty = false;
         }
 
         return this.items;
@@ -112,7 +112,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public async Task<List<TData>> GetFilteredItemsAsync(TConfiguration configuration)
     {
-        if (this.isDirty)
+        if (this.IsDirty)
         {
             if (this.cancellationTokenSource != null)
             {
@@ -121,7 +121,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
             this.cancellationTokenSource = new CancellationTokenSource();
             var token = this.cancellationTokenSource.Token;
-            this.isDirty = false;
+            this.IsDirty = false;
 
             var task = Task.Run(() => this.GetFilteredItems(configuration, true), token);
             this.currentLoadTask = task;
@@ -391,6 +391,11 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                 }
                             }
                         }
+                    }
+
+                    if (refresh)
+                    {
+                        this.IsDirty = true;
                     }
                 }
             }
