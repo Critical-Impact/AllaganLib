@@ -6,7 +6,7 @@ using AllaganLib.Shared.Extensions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Common.Math;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.FormFields;
 

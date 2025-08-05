@@ -1,6 +1,6 @@
 using System;
 using Dalamud.Game.ClientState.Keys;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Extensions;
 
@@ -8,7 +8,7 @@ public static class ImGuiKeyExtensions
 {
     public static VirtualKey ToVirtualKey(this ImGuiKey imGuiKey)
     {
-        if (imGuiKey == ImGuiKey.COUNT)
+        if (imGuiKey == ImGuiKey.Count)
         {
             return VirtualKey.NO_KEY;
         }
@@ -64,25 +64,25 @@ public static class ImGuiKeyExtensions
                 return VirtualKey.RWIN;
             case ImGuiKey.Menu:
                 return VirtualKey.MENU;
-            case ImGuiKey._0:
+            case ImGuiKey.Key0:
                 return VirtualKey.KEY_0;
-            case ImGuiKey._1:
+            case ImGuiKey.Key1:
                 return VirtualKey.KEY_1;
-            case ImGuiKey._2:
+            case ImGuiKey.Key2:
                 return VirtualKey.KEY_2;
-            case ImGuiKey._3:
+            case ImGuiKey.Key3:
                 return VirtualKey.KEY_3;
-            case ImGuiKey._4:
+            case ImGuiKey.Key4:
                 return VirtualKey.KEY_4;
-            case ImGuiKey._5:
+            case ImGuiKey.Key5:
                 return VirtualKey.KEY_5;
-            case ImGuiKey._6:
+            case ImGuiKey.Key6:
                 return VirtualKey.KEY_6;
-            case ImGuiKey._7:
+            case ImGuiKey.Key7:
                 return VirtualKey.KEY_7;
-            case ImGuiKey._8:
+            case ImGuiKey.Key8:
                 return VirtualKey.KEY_8;
-            case ImGuiKey._9:
+            case ImGuiKey.Key9:
                 return VirtualKey.KEY_9;
             case ImGuiKey.A:
                 return VirtualKey.A;

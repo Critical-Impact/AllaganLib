@@ -5,7 +5,7 @@ using System.Linq;
 using AllaganLib.Interface.Services;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.FormFields;
 

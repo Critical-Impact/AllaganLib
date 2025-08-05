@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Widgets;
 
@@ -51,11 +51,11 @@ public class VerticalSplitter
                 ImGui.Button("DraggerBtn", new Vector2(-1, -1));
                 if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEw);
                 }
                 if (ImGui.IsItemActive())
                 {
-                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEW);
+                    ImGui.SetMouseCursor(ImGuiMouseCursor.ResizeEw);
 
                     if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
                     {

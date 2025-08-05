@@ -7,7 +7,7 @@ using AllaganLib.Shared.Comparers;
 using AllaganLib.Shared.Extensions;
 using Dalamud.Interface.Colors;
 using Dalamud.Plugin.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.Interface.FormFields;
@@ -36,8 +36,14 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
             {
                 var colorA = a.ConvertUiColorToColor();
                 var colorB = b.ConvertUiColorToColor();
-                ImGui.ColorConvertRGBtoHSV(colorA.X, colorA.Y, colorA.Z, out var aH, out var aS, out var aV);
-                ImGui.ColorConvertRGBtoHSV(colorB.X, colorB.Y, colorB.Z, out var bH, out var bS, out var bV);
+                float aH = 0;
+                float aS = 0;
+                float aV = 0;
+                float bH = 0;
+                float bS = 0;
+                float bV = 0;
+                ImGui.ColorConvertRGBtoHSV(colorA.X, colorA.Y, colorA.Z, ref aH, ref aS, ref aV);
+                ImGui.ColorConvertRGBtoHSV(colorB.X, colorB.Y, colorB.Z, ref bH, ref bS, ref bV);
 
                 var hue = aH.CompareTo(bH);
                 if (hue != 0)

@@ -1,6 +1,6 @@
 using System.Numerics;
 using AllaganLib.Interface.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.FormFields;
 

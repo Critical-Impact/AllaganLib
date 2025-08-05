@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Linq;
 using AllaganLib.Interface.Grid;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Widgets;
 

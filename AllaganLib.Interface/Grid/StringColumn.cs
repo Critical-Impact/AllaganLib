@@ -6,7 +6,7 @@ using AllaganLib.Interface.FormFields;
 using AllaganLib.Interface.Grid.ColumnFilters;
 using AllaganLib.Interface.Services;
 using AllaganLib.Shared.Extensions;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using NaturalSort.Extension;
 
 namespace AllaganLib.Interface.Grid;

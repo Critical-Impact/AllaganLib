@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Numerics;
 using AllaganLib.Interface.FormFields;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Grid.ColumnFilters;
 

@@ -5,7 +5,7 @@ using AllaganLib.Interface.Services;
 using AllaganLib.Interface.Wizard;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Widgets;
 
@@ -110,7 +110,7 @@ public class WizardWidget<T>
                     {
                         ImGui.Separator();
                         ImGui.Image(
-                            this.imGuiService.LoadImage(this.widgetSettings.LogoPath).GetWrapOrEmpty().ImGuiHandle,
+                            this.imGuiService.LoadImage(this.widgetSettings.LogoPath).GetWrapOrEmpty().Handle,
                             new Vector2(190, 190));
                     }
                 }

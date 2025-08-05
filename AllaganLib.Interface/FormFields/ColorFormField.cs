@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using AllaganLib.Interface.Services;
 using Dalamud.Interface.Colors;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.FormFields;
 

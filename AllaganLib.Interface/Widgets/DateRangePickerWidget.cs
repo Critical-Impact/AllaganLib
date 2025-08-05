@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Widgets;
 
@@ -81,7 +81,7 @@ public class DateRangePickerWidget
 
         if (ImGui.BeginPopup(id))
         {
-            ImGui.Columns(2, null, false);
+            ImGui.Columns(2, false);
             ImGui.SetColumnWidth(0, ((ColumnWidth * 0.5f) + ColumnWidth + 20) * ImGui.GetIO().FontGlobalScale);
             ImGui.SetColumnWidth(1, ((ColumnWidth * 0.5f) + ColumnWidth + 20) * ImGui.GetIO().FontGlobalScale);
             ImGui.NextColumn();
@@ -151,7 +151,7 @@ public class DateRangePickerWidget
                 int[] daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
                 ImGui.Text(label);
-                ImGui.Columns(2, null, false);
+                ImGui.Columns(2, false);
                 ImGui.SetColumnWidth(0, ColumnWidth * 0.5f);
                 ImGui.SetColumnWidth(1, ColumnWidth + 20);
 

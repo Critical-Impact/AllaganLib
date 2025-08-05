@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Widgets;
 
@@ -65,7 +65,7 @@ public class TimeSpanPickerWidget
         if (ImGui.BeginPopup($"Time Span Picker##{id}"))
         {
             var tempSelectedUnitInt = (int)this.tempSelectedUnit;
-            ImGui.Columns(2, null, true);
+            ImGui.Columns(2, true);
             ImGui.SetColumnWidth(0, ColumnWidth * 0.6f * ImGui.GetIO().FontGlobalScale);
             ImGui.SetColumnWidth(1, ColumnWidth * ImGui.GetIO().FontGlobalScale);
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using AllaganLib.Interface.FormFields;
 using AllaganLib.Shared.Extensions;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Grid;
 

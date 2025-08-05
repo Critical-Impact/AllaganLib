@@ -1,10 +1,8 @@
 using System;
-using System.Globalization;
-
 using AllaganLib.Interface.Services;
 using AllaganLib.Interface.Widgets;
 using Dalamud.Interface.Colors;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.FormFields;
 

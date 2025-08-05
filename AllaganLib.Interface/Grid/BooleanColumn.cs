@@ -8,7 +8,7 @@ using AllaganLib.Interface.Grid.ColumnFilters;
 using AllaganLib.Interface.Services;
 using AllaganLib.Shared.Extensions;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using NaturalSort.Extension;
 
 namespace AllaganLib.Interface.Grid;

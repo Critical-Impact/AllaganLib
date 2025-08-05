@@ -10,7 +10,7 @@ using AllaganLib.Data.Service;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Data.Parsing.Scd;
 
 namespace AllaganLib.Interface.Grid;
@@ -197,7 +197,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
                     var currentSortSpecs = ImGui.TableGetSortSpecs();
 
-                    if (currentSortSpecs.NativePtr != null && currentSortSpecs.SpecsDirty)
+                    if (currentSortSpecs.Handle != null && currentSortSpecs.SpecsDirty)
                     {
                         var actualSpecs = currentSortSpecs.Specs;
                         if (this.SortColumn != actualSpecs.ColumnIndex)
@@ -247,7 +247,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                         ImGuiListClipperPtr clipper;
                         unsafe
                         {
-                            clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
+                            clipper = ImGui.ImGuiListClipper();
                             clipper.ItemsHeight = 32;
                         }
 

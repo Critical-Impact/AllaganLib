@@ -6,7 +6,7 @@ using AllaganLib.Interface.FormFields;
 using AllaganLib.Interface.Services;
 using Dalamud.Interface.Textures;
 using Dalamud.Plugin.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Grid;
 
@@ -49,7 +49,7 @@ public abstract class IconColumn<TConfiguration, TData, TMessageBase> : IntegerF
                 currentValue %= 500000;
 
                 ImGui.AlignTextToFramePadding();
-                ImGui.Image(this.textureProvider.GetFromGameIcon(new GameIconLookup((uint)currentValue, isHq)).GetWrapOrEmpty().ImGuiHandle, this.IconSize);
+                ImGui.Image(this.textureProvider.GetFromGameIcon(new GameIconLookup((uint)currentValue, isHq)).GetWrapOrEmpty().Handle, this.IconSize);
             }
             else
             {

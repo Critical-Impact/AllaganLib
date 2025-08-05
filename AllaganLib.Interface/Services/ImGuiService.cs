@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Dalamud.Interface.Textures;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AllaganLib.Interface.Services;
 
@@ -41,7 +41,7 @@ public class ImGuiService
             {
                 var sourceIcon = this.LoadImage(imagePath);
                 ImGui.Image(
-                    sourceIcon.GetWrapOrEmpty().ImGuiHandle,
+                    sourceIcon.GetWrapOrEmpty().Handle,
                     imageSize ??
                     new Vector2(200, 200) * ImGui.GetIO().FontGlobalScale);
             }
