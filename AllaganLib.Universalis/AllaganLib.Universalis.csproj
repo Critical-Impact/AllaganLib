@@ -5,7 +5,7 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>12.0</LangVersion>
-        <Version>1.2.17</Version>
+        <Version>1.3.0</Version>
         <PackageProjectUrl>https://github.com/Critical-Impact/AllaganLib</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Critical-Impact/AllaganLib</RepositoryUrl>
         <Authors>Critical-Impact</Authors>
@@ -28,10 +28,6 @@
             <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
             <Private>True</Private>
         </Reference>
-        <Reference Include="ImGui.NET">
-            <HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
-            <Private>True</Private>
-        </Reference>
         <Reference Include="Lumina">
             <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
             <Private>True</Private>
@@ -51,10 +47,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.6" />
-        <PackageReference Include="MongoDB.Bson" Version="3.4.0" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-preview.6.25358.103" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0-preview.6.25358.103" />
+        <PackageReference Include="MongoDB.Bson" Version="3.4.2" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

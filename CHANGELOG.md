@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.3.0] - 2025-08-07
+
+### Changed
+- Initial 7.3 support
+- Bumped dependencies
+
+- AllaganLib.GameSheets
+  - LuminaSupplemental updated to 3.0.0
+
+
 ## [1.2.17] - 2025-06-19
 
 ### Changed

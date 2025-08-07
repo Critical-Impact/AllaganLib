@@ -7,9 +7,9 @@ namespace AllaganLib.Interface.Grid.ColumnFilters;
 
 public class StringColumnFilter
 {
-    private readonly uint maxFilterLength;
+    private readonly int maxFilterLength;
 
-    public StringColumnFilter(uint maxFilterLength = 1000)
+    public StringColumnFilter(int maxFilterLength = 1000)
     {
         this.maxFilterLength = maxFilterLength;
     }

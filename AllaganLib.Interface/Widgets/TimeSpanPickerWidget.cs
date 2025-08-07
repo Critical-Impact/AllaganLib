@@ -65,7 +65,7 @@ public class TimeSpanPickerWidget
         if (ImGui.BeginPopup($"Time Span Picker##{id}"))
         {
             var tempSelectedUnitInt = (int)this.tempSelectedUnit;
-            ImGui.Columns(2, true);
+            ImGui.Columns(2, border: true);
             ImGui.SetColumnWidth(0, ColumnWidth * 0.6f * ImGui.GetIO().FontGlobalScale);
             ImGui.SetColumnWidth(1, ColumnWidth * ImGui.GetIO().FontGlobalScale);
 

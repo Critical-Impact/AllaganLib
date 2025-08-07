@@ -70,7 +70,7 @@ public class DatePickerWidget
                 };
                 int[] daysInMonth = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-                ImGui.Columns(2, true);
+                ImGui.Columns(2, border: true);
                 ImGui.SetColumnWidth(0, ColumnWidth * 0.5f);
                 ImGui.SetColumnWidth(1, ColumnWidth + 20);
 
