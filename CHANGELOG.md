@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.3.1] - 2025-08-09
+
+### Changed
+- Use correct dependencies
+- Update LuminaSupplemental to 3.0.1
+
 ## [1.3.0] - 2025-08-07
 
 ### Changed
