@@ -17,16 +17,6 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
 {
     private readonly Dictionary<uint, UIColor> uiColors;
 
-    public override uint CurrentValue(T configurable)
-    {
-        return configurable.Get(this.Key) ?? this.DefaultValue;
-    }
-
-    public override void UpdateFilterConfiguration(T configurable, uint newValue)
-    {
-        configurable.Set(this.Key, newValue);
-    }
-
     public GameColorFormField(ImGuiService imGuiService, IDataManager dataManager)
         : base(imGuiService)
     {
@@ -61,6 +51,16 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
                 return value != 0 ? value : 0;
             });
         this.uiColors = list.ToDictionary(c => c.RowId, c => c);
+    }
+
+    public override uint CurrentValue(T configurable)
+    {
+        return configurable.Get(this.Key) ?? this.DefaultValue;
+    }
+
+    public override void UpdateFilterConfiguration(T configurable, uint newValue)
+    {
+        configurable.Set(this.Key, newValue);
     }
 
     public override bool DrawInput(T configuration, int? inputSize = null)
@@ -114,4 +114,6 @@ public abstract class GameColorFormField<T> : FormField<uint, T>
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.GameColor;
 }

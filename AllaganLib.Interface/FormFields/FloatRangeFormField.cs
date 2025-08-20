@@ -55,4 +55,6 @@ public abstract class FloatRangeFormField<TConfiguration> : FormField<(float Min
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.FloatRange;
 }

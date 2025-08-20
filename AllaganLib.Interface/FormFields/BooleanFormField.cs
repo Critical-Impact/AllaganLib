@@ -7,8 +7,6 @@ namespace AllaganLib.Interface.FormFields;
 public abstract class BooleanFormField<T> : FormField<bool, T>
     where T : IConfigurable<bool?>
 {
-    private readonly string[] Choices = new[] { "N/A", "Yes", "No" };
-
     protected BooleanFormField(ImGuiService imGuiService)
         : base(imGuiService)
     {
@@ -44,4 +42,6 @@ public abstract class BooleanFormField<T> : FormField<bool, T>
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Boolean;
 }

@@ -159,4 +159,6 @@ public abstract class HotkeyFormField<T> : FormField<VirtualKey[], T>, IHotkey<T
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Hotkey;
 }

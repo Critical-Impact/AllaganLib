@@ -56,4 +56,6 @@ public abstract class UintRangeFormField<TConfiguration> : FormField<(uint Min, 
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.UintRange;
 }

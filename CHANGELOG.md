@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.3.3] - 2025-08-13
+
+### Added
+- Added AllaganLib.Monitors providing tracking of active shops and the acquisition monitor tracking new items in your inventory.
+- AllaganLib.GameSheets
+  - InclusionShops now implement IShop
+  - GameDataModule and GameSheetManagerModule were created allowing you to easily use this in a project with autofac
+- AllaganLib.Shared
+  - Created IDebugPane and AllaganDebugWindow, certain modules will provide a debug window
+### Changed
+- AllaganLib.Interface
+  - ChoiceFormField no longer requires the value to be comparable but instead requires a Equal method. This is to allow for nullable structs to be used for choices.
+  - Form fields now have a FieldType
+  - BaseConfiguration class added that plugins can inherit from
+
 ## [1.3.2] - 2025-08-09
 
 ### Changed

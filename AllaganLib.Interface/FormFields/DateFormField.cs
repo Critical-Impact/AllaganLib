@@ -16,7 +16,7 @@ public abstract class DateFormField<T> : FormField<DateTime?, T>
     {
         this.datePickerWidget = datePickerWidget;
     }
-
+    
     public override DateTime? CurrentValue(T configurable)
     {
         return configurable.Get(this.Key) ?? this.DefaultValue;
@@ -49,4 +49,6 @@ public abstract class DateFormField<T> : FormField<DateTime?, T>
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Date;
 }

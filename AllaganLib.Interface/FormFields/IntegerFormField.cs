@@ -59,4 +59,6 @@ public abstract class IntegerFormField<T> : FormField<int, T>
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Integer;
 }

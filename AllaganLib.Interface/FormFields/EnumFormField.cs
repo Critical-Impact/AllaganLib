@@ -1,17 +1,18 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using AllaganLib.Interface.Services;
 
 namespace AllaganLib.Interface.FormFields;
 
 public abstract class EnumFormField<TEnum, TConfigurable> : ChoiceFormField<Enum, TConfigurable>
-    where TEnum : Enum, IComparable
+    where TEnum : struct, Enum, IComparable
     where TConfigurable : IConfigurable<Enum?>
 {
     protected EnumFormField(ImGuiService imGuiService) : base(imGuiService)
     {
     }
-
+    
     public new TEnum CurrentValue(TConfigurable configurable)
     {
         return (TEnum)base.CurrentValue(configurable);
@@ -32,4 +33,6 @@ public abstract class EnumFormField<TEnum, TConfigurable> : ChoiceFormField<Enum
         var currentValue = this.CurrentValue(configuration);
         return !currentValue.Equals((TEnum)this.DefaultValue);
     }
+
+    public override FormFieldType FieldType => FormFieldType.Enum;
 }

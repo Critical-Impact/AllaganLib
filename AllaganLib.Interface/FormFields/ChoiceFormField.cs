@@ -10,7 +10,6 @@ using Dalamud.Bindings.ImGui;
 namespace AllaganLib.Interface.FormFields;
 
 public abstract class ChoiceFormField<TValue, TConfiguration> : FormField<TValue, TConfiguration>
-    where TValue : IComparable
     where TConfiguration : IConfigurable<TValue?>
 {
     public ChoiceFormField(ImGuiService imGuiService)
@@ -30,9 +29,11 @@ public abstract class ChoiceFormField<TValue, TConfiguration> : FormField<TValue
 
     public abstract Dictionary<TValue, string> Choices { get; }
 
+    public abstract bool Equal(TValue item1, TValue item2);
+
     public virtual string GetFormattedChoice(TValue choice)
     {
-        return this.Choices.SingleOrDefault(c => c.Key.Equals(choice)).Value;
+        return this.Choices.SingleOrDefault(c => this.Equal(c.Key, choice)).Value;
     }
 
     public override bool DrawInput(TConfiguration configuration, int? inputSize = null)
@@ -70,4 +71,6 @@ public abstract class ChoiceFormField<TValue, TConfiguration> : FormField<TValue
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Choice;
 }

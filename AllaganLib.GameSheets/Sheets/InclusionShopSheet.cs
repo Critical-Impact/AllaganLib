@@ -12,10 +12,14 @@ namespace AllaganLib.GameSheets.Sheets;
 public class InclusionShopSheet : ExtendedSheet<InclusionShop, InclusionShopRow, InclusionShopSheet>, IExtendedSheet
 {
     public Dictionary<uint, HashSet<InclusionShopRow>>? inclusionShopsByCategoryId = null;
+    private readonly NpcShopCache shopCache;
+    private ENpcBaseSheet? eNpcBaseSheet;
+    private SpecialShopSheet? specialShopSheet;
 
-    public InclusionShopSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache)
+    public InclusionShopSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, NpcShopCache shopCache, ItemInfoCache itemInfoCache)
         : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
     {
+        this.shopCache = shopCache;
     }
 
     public HashSet<InclusionShopRow>? GetInclusionShopsByCategoryId(uint categoryId)
@@ -39,6 +43,21 @@ public class InclusionShopSheet : ExtendedSheet<InclusionShop, InclusionShopRow,
         }
 
         return this.inclusionShopsByCategoryId.GetValueOrDefault(categoryId);
+    }
+
+    public ENpcBaseSheet GetENpcBaseSheet()
+    {
+        return this.eNpcBaseSheet ??= this.SheetManager.GetSheet<ENpcBaseSheet>();
+    }
+
+    public SpecialShopSheet GetSpecialShopSheet()
+    {
+        return this.specialShopSheet ??= this.SheetManager.GetSheet<SpecialShopSheet>();
+    }
+
+    public List<uint> GetShopIds(uint shopId)
+    {
+        return this.shopCache.GetNpcsByInclusionShopId(shopId)?.ToList() ?? [];
     }
 
     public override void CalculateLookups()

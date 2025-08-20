@@ -1,5 +1,4 @@
 using System;
-
 using AllaganLib.Interface.Services;
 using AllaganLib.Interface.Widgets;
 
@@ -14,7 +13,7 @@ public abstract class DateRangeFormField<T> : FormField<(DateTime, DateTime)?, T
     {
         this.dateRangePickerWidget = dateRangePickerWidget;
     }
-
+    
     public override (DateTime, DateTime)? CurrentValue(T configuration)
     {
         return configuration.Get(this.Key) ?? this.DefaultValue;
@@ -54,4 +53,6 @@ public abstract class DateRangeFormField<T> : FormField<(DateTime, DateTime)?, T
     {
         configuration.Set(this.Key, newValue);
     }
+
+    public override FormFieldType FieldType => FormFieldType.DateRange;
 }

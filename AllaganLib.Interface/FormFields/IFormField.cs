@@ -37,4 +37,6 @@ public interface IFormField<TConfiguration>
     public void DrawHelp(TConfiguration configuration);
 
     public void Reset(TConfiguration configuration);
+    
+    public FormFieldType FieldType { get; }
 }

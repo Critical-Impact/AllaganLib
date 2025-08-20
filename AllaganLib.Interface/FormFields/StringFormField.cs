@@ -45,4 +45,6 @@ public abstract class StringFormField<T> : FormField<string, T>
 
         return wasUpdated;
     }
+
+    public override FormFieldType FieldType => FormFieldType.String;
 }

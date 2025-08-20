@@ -258,4 +258,6 @@ public abstract class MultipleChoiceFormField<T, TS> : FormField<List<T>, TS>
     {
         base.Reset(configuration);
     }
+
+    public override FormFieldType FieldType => FormFieldType.MultipleChoice;
 }

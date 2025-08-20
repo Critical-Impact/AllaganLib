@@ -98,4 +98,6 @@ public abstract class FormField<TValue, TConfiguration> : IFormField<TConfigurat
     {
         this.UpdateFilterConfiguration(configuration, this.DefaultValue);
     }
+
+    public abstract FormFieldType FieldType { get; }
 }

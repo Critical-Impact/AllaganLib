@@ -22,7 +22,6 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
     {
     }
 
-
     public abstract T AddFlag(T currentFlags, T newFlag);
 
     public abstract T RemoveFlag(T currentFlags, T existingFlag);
@@ -265,4 +264,6 @@ public abstract class FlagsEnumFormField<T, TS> : FormField<T, TS>
     {
         base.Reset(configuration);
     }
+
+    public override FormFieldType FieldType => FormFieldType.FlagsEnum;
 }

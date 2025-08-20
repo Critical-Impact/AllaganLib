@@ -65,4 +65,6 @@ public abstract class ColorFormField<T> : FormField<Vector4, T>
 
         return result;
     }
+
+    public override FormFieldType FieldType => FormFieldType.Color;
 }

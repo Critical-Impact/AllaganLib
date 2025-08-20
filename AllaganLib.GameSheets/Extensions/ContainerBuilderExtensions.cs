@@ -61,6 +61,18 @@ public static class ContainerBuilderExtensions
             }).As(extendedSheetType).SingleInstance().ExternallyOwned();
         }
 
+        var extendedSubrowSheets = assembly.GetTypes()
+            .Where(t => !t.IsAbstract && !t.IsInterface && IsExtendedSubrowSheet(t));
+
+        foreach (var sheetType in extendedSubrowSheets)
+        {
+            var baseInterface = sheetType.BaseType;
+            if (baseInterface != null)
+            {
+                containerBuilder.RegisterType(sheetType).As(baseInterface).AsSelf().As<IExtendedSheet>().SingleInstance();
+            }
+        }
+
         Assembly luminaSupplemental = typeof(ICsv).Assembly;
 
         var csvs = luminaSupplemental.GetTypes()

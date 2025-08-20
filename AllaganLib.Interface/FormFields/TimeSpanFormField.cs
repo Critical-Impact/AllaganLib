@@ -13,7 +13,7 @@ public abstract class TimeSpanFormField<T> : FormField<(TimeUnit, int)?, T>
     {
         this.timeSpanPickerWidget = timeSpanPickerWidget;
     }
-
+    
     public override (TimeUnit, int)? CurrentValue(T configuration)
     {
         return configuration.Get(this.Key) ?? this.DefaultValue;
@@ -53,4 +53,6 @@ public abstract class TimeSpanFormField<T> : FormField<(TimeUnit, int)?, T>
     {
         configuration.Set(this.Key, newValue);
     }
+
+    public override FormFieldType FieldType => FormFieldType.TimeSpan;
 }

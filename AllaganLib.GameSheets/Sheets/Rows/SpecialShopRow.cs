@@ -21,7 +21,7 @@ public class SpecialShopRow : ExtendedRow<SpecialShop, SpecialShopRow, SpecialSh
 
     public IEnumerable<IShopListing> ShopListings => this.shopListings ??= this.BuildShopItems().ShopListings;
 
-    public IEnumerable<IShopListing> SpecialShopListings => this.specialShopListings ??= this.BuildShopItems().ShopListings;
+    public IEnumerable<SpecialShopListing> SpecialShopListings => this.specialShopListings ??= this.BuildShopItems().ShopListings;
 
     public HashSet<uint> MapIds => this.mapIds ??= this.ENpcs.SelectMany(c => c.Locations.Select(d => d.Map.RowId)).Distinct().ToHashSet();
 
