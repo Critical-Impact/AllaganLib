@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AllaganLib.GameSheets
   - InclusionShops now implement IShop
   - GameDataModule and GameSheetManagerModule were created allowing you to easily use this in a project with autofac
+  - Bumped LuminaSupplemental.Excel to 3.0.3
 - AllaganLib.Shared
   - Created IDebugPane and AllaganDebugWindow, certain modules will provide a debug window
 ### Changed
