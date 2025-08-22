@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed+
 
+## [1.3.4] - 2025-08-22
+
+### Fixed
+- AllaganLib.Data
+  - Fixed an issue in CsvLoaderService when loading a file with the wrong line separators
+
+- AllaganLib.Interface
+  - StringColumn's will now properly filter
+  - HelpMarkers can now be coloured
+
 ## [1.3.3] - 2025-08-13
 
 ### Added

@@ -58,10 +58,17 @@ public class CsvLoaderService
                 return items;
             }
 
+            // Correct line endings if a plugin loads on linux then gets loaded on windows or visa/versa
+            var content = reader.ReadToEnd()
+                .Replace("\r\n", "\n")
+                .Replace("\r", "\n");
+
             var csvReader = CSVFile.CSVReader.FromString(
-                reader.ReadToEnd(), new CSVSettings()
+                content,
+                new CSVSettings()
             {
-                HeaderRowIncluded = hasHeaders
+                HeaderRowIncluded = hasHeaders,
+                LineSeparator = "\n",
             });
             var headerSkipped = false;
             foreach (var line in csvReader.Lines())

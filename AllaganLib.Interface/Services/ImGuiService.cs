@@ -6,6 +6,8 @@ using Dalamud.Interface.Textures;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using Dalamud.Bindings.ImGui;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility.Raii;
 
 namespace AllaganLib.Interface.Services;
 
@@ -28,9 +30,20 @@ public class ImGuiService
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    public void HelpMarker(string helpText, string? imagePath = null, System.Numerics.Vector2? imageSize = null)
+    public void HelpMarker(string helpText, string? imagePath = null, System.Numerics.Vector2? imageSize = null, Vector4? textColor = null)
     {
-        ImGui.TextDisabled("(?)");
+        if (textColor != null)
+        {
+            using (ImRaii.PushColor(ImGuiCol.Text, textColor.Value))
+            {
+                ImGui.Text("(?)");
+            }
+        }
+        else
+        {
+            ImGui.TextDisabled("(?)");
+        }
+
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();

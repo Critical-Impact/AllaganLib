@@ -90,7 +90,7 @@ public abstract class StringColumn<TConfiguration, TData, TMessageBase> : String
                 return false;
             }
 
-            return currentValue.ToLower().PassesFilter(filterComparisonText);
+            return currentValue.ToLower().PassesFilter(filterComparisonText.ToLower());
         });
     }
 
