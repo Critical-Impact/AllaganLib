@@ -7,12 +7,15 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemFurnitureSource : ItemSource
 {
-    public RowRef<FurnitureCatalogItemList> FurnitureCatalogItem { get; }
+    public RowRef<HousingFurniture> HousingFurniture { get; }
 
-    public ItemFurnitureSource(ItemRow item, RowRef<FurnitureCatalogItemList> furnitureCatalogItem)
+    public RowRef<FurnitureCatalogItemList> FurnitureCatalogItemList { get; }
+
+    public ItemFurnitureSource(ItemRow item, RowRef<HousingFurniture> housingFurniture, RowRef<FurnitureCatalogItemList> furnitureCatalogItem)
         : base(ItemInfoType.FurnitureItem)
     {
-        this.FurnitureCatalogItem = furnitureCatalogItem;
+        this.HousingFurniture = housingFurniture;
+        this.FurnitureCatalogItemList = furnitureCatalogItem;
         this.Item = item;
     }
 

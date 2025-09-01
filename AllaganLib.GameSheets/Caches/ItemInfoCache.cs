@@ -270,6 +270,7 @@ public class ItemInfoCache
         var stainTransientSheet = this.gameData.GetExcelSheet<StainTransient>()!;
         var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
         var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
+        var housingFurnitureSheet = this.gameData.GetExcelSheet<HousingFurniture>()!;
         var furnitureCatalogSheet = this.gameData.GetExcelSheet<FurnitureCatalogItemList>()!;
         var houseYardObjectSheet = this.gameData.GetExcelSheet<HousingYardObject>()!;
         var housingPresetSheet = this.gameData.GetExcelSheet<HousingPreset>()!;
@@ -599,18 +600,24 @@ public class ItemInfoCache
             }
         }
 
-        foreach (var furnitureCatalogItem in furnitureCatalogSheet)
+        var furnitureCatalogByItemId = furnitureCatalogSheet.Where(c => c.Item.RowId != 0).DistinctBy(c => c.Item.RowId).ToDictionary(c => c.Item.RowId, c => c.RowId);
+
+        foreach (var housingFurniture in housingFurnitureSheet)
         {
-            if (!furnitureCatalogItem.Item.IsValid || furnitureCatalogItem.Item.RowId == 0)
+            if (!housingFurniture.Item.IsValid || housingFurniture.Item.RowId == 0)
             {
                 continue;
             }
 
-            var item = itemSheet.GetRowOrDefault(furnitureCatalogItem.Item.RowId);
+            var item = itemSheet.GetRowOrDefault(housingFurniture.Item.RowId);
 
             if (item != null)
             {
-                var source = new ItemFurnitureSource(item, new RowRef<FurnitureCatalogItemList>(this.gameData.Excel, furnitureCatalogItem.RowId));
+                var catalogItem = new RowRef<FurnitureCatalogItemList>(
+                    this.gameData.Excel,
+                    furnitureCatalogByItemId.TryGetValue(item.RowId, out var rowId) ? rowId : 0);
+
+                var source = new ItemFurnitureSource(item, new RowRef<HousingFurniture>(this.gameData.Excel, housingFurniture.RowId), catalogItem);
                 this.AddItemUse(source);
             }
         }
