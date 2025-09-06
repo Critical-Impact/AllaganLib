@@ -34,7 +34,7 @@ public class UniversalisApiService : BackgroundService
 
     public HttpClient HttpClient { get; }
 
-    public IBackgroundTaskQueue UniversalisQueue { get; }
+    public BackgroundTaskQueue UniversalisQueue { get; }
 
     public uint QueueTime { get; } = 5;
 
@@ -47,6 +47,7 @@ public class UniversalisApiService : BackgroundService
     public int QueuedCount => this.queuedCount;
 
     public UniversalisApiService(
+        BackgroundTaskQueue.Factory backgroundTaskQueueFactory,
         IPluginLog pluginLog,
         UniversalisUserAgent userAgent,
         HttpClient httpClient,
@@ -58,7 +59,7 @@ public class UniversalisApiService : BackgroundService
         this.dataManager = dataManager;
         this.HttpClient = httpClient;
         this.HttpClient.DefaultRequestHeaders.Add("User-Agent", $"{userAgent.PluginName}/{userAgent.PluginVersion}");
-        this.UniversalisQueue = new BackgroundTaskQueue(1);
+        this.UniversalisQueue = backgroundTaskQueueFactory.Invoke("Universalis", 1);
         this.framework.Update += this.FrameworkOnUpdate;
     }
 
