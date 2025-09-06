@@ -13,17 +13,21 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
 {
     private readonly Channel<Func<CancellationToken, Task>> queue;
 
+    public delegate BackgroundTaskQueue Factory(string queueName, int capacity = 10);
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BackgroundTaskQueue"/> class.
     /// </summary>
     /// <param name="capacity">How many items should be processed at a time.</param>
-    public BackgroundTaskQueue(int capacity = 10)
+    public BackgroundTaskQueue(BackgroundTaskCollector backgroundTaskCollector, string queueName, int capacity = 10)
     {
+        this.QueueName = queueName;
         var options = new BoundedChannelOptions(capacity)
         {
             FullMode = BoundedChannelFullMode.Wait,
         };
         this.queue = Channel.CreateBounded<Func<CancellationToken, Task>>(options);
+        backgroundTaskCollector.RegisterBackgroundTaskQueue(this);
     }
 
     /// <inheritdoc/>
@@ -49,4 +53,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
 
     /// <inheritdoc/>
     public int QueueCount => this.queue.Reader.Count;
+
+    /// <inheritdoc/>
+    public string QueueName { get; }
 }

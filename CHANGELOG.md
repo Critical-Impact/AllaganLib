@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.3.7] - 2025-09-06
+
+### Added
+- AllaganLib.Shared
+  - Added NamedBackgroundTaskQueue for grouping and debouncing tasks based off a key
+  - Added BackgroundTaskCollector for seeing how many tasks are running in each queue
+  - TaskQueue's now require a name and provide a Factory method
+
 ## [1.3.6] - 2025-09-03
 
 ### Fixed
