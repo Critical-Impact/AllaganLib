@@ -99,4 +99,7 @@ public enum ItemInfoType
     OccultGoldenCoffer = 94,
     PVPSeries = 95,
     CollectablesShop = 96,
+    ZodiacWeapon = 97,
+    AnimaWeapon = 98,
+    AnimaShop = 99,
 }

@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.3.9] - 2025-10-07
+
+### Changed
+- AllaganLib.GameData
+  - Added Zodiac weapons as a source
+  - Added Anima weapons and Anima shops as a source
+  - Added zodiac quests to the related weapons
+  - Bumped LuminaSupplemental.Excel to 3.0.7
+
 ## [1.3.8] - 2025-10-07
 
 ### Changed

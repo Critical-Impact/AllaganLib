@@ -282,6 +282,10 @@ public class ItemInfoCache
         var enpcBaseSheet = this.sheetManager.GetSheet<ENpcBaseSheet>();
         var pvpSeriesSheet = this.gameData.GetExcelSheet<PvPSeries>()!;
         var collectablesShopSheet = this.sheetManager.GetSheet<CollectablesShopSheet>();
+        var zodiacItemSheet = this.gameData.GetExcelSheet<RelicItem>()!;
+        var animaItemSheet = this.gameData.GetExcelSheet<AnimaWeaponItem>()!;
+        var classJobSheet = this.sheetManager.GetSheet<ClassJobSheet>()!;
+        var animaTradeItemSheet = this.sheetManager.GetSheet<AnimaWeapon5TradeItemSheet>()!;
 
 
         // var wksMissionUnitSheet = this.gameData.GetExcelSheet<WKSMissionUnit>()!;
@@ -332,6 +336,88 @@ public class ItemInfoCache
         //     }
         // }
 
+        var classJobMap = classJobSheet.Where(c => c.ClassJobType != ClassJobType.Unknown).ToDictionary(c => c.ClassJobType, c => c);
+
+        var zodiacWeapons = new Dictionary<ClassJobType, List<ItemRow>>()
+        {
+            { ClassJobType.PLD, new List<ItemRow>() },
+            { ClassJobType.MNK, new List<ItemRow>() },
+            { ClassJobType.WAR, new List<ItemRow>() },
+            { ClassJobType.DRG, new List<ItemRow>() },
+            { ClassJobType.BRD, new List<ItemRow>() },
+            { ClassJobType.WHM, new List<ItemRow>() },
+            { ClassJobType.BLM, new List<ItemRow>() },
+            { ClassJobType.SMN, new List<ItemRow>() },
+            { ClassJobType.SCH, new List<ItemRow>() },
+            { ClassJobType.NIN, new List<ItemRow>() },
+        };
+
+        foreach (var zodiacItem in zodiacItemSheet)
+        {
+            zodiacWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(zodiacItem.GladiatorItem.RowId)!);
+            zodiacWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(zodiacItem.ShieldItem.RowId)!);
+            zodiacWeapons[ClassJobType.MNK].Add(itemSheet.GetRowOrDefault(zodiacItem.PugilistItem.RowId)!);
+            zodiacWeapons[ClassJobType.WAR].Add(itemSheet.GetRowOrDefault(zodiacItem.MarauderItem.RowId)!);
+            zodiacWeapons[ClassJobType.DRG].Add(itemSheet.GetRowOrDefault(zodiacItem.LancerItem.RowId)!);
+            zodiacWeapons[ClassJobType.BRD].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcherItem.RowId)!);
+            zodiacWeapons[ClassJobType.WHM].Add(itemSheet.GetRowOrDefault(zodiacItem.ConjurerItem.RowId)!);
+            zodiacWeapons[ClassJobType.BLM].Add(itemSheet.GetRowOrDefault(zodiacItem.ThaumaturgeItem.RowId)!);
+            zodiacWeapons[ClassJobType.SMN].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcanistSMNItem.RowId)!);
+            zodiacWeapons[ClassJobType.SCH].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcanistSCHItem.RowId)!);
+            zodiacWeapons[ClassJobType.NIN].Add(itemSheet.GetRowOrDefault(zodiacItem.RogueItem.RowId)!);
+        }
+
+        foreach (var zodiacWeaponSet in zodiacWeapons)
+        {
+            foreach (var item in zodiacWeaponSet.Value)
+            {
+                this.AddItemUse(new ItemZodiacWeaponSource(item, classJobMap[zodiacWeaponSet.Key], zodiacWeaponSet.Value));
+            }
+        }
+
+        var animaWeapons = new Dictionary<ClassJobType, List<ItemRow>>()
+        {
+            { ClassJobType.PLD, new List<ItemRow>() },
+            { ClassJobType.MNK, new List<ItemRow>() },
+            { ClassJobType.WAR, new List<ItemRow>() },
+            { ClassJobType.DRG, new List<ItemRow>() },
+            { ClassJobType.BRD, new List<ItemRow>() },
+            { ClassJobType.WHM, new List<ItemRow>() },
+            { ClassJobType.BLM, new List<ItemRow>() },
+            { ClassJobType.SMN, new List<ItemRow>() },
+            { ClassJobType.SCH, new List<ItemRow>() },
+            { ClassJobType.NIN, new List<ItemRow>() },
+            { ClassJobType.AST, new List<ItemRow>() },
+            { ClassJobType.MCH, new List<ItemRow>() },
+            { ClassJobType.DRK, new List<ItemRow>() },
+        };
+
+        foreach (var animaItem in animaItemSheet)
+        {
+            animaWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(animaItem.Item[0].RowId)!);
+            animaWeapons[ClassJobType.MNK].Add(itemSheet.GetRowOrDefault(animaItem.Item[1].RowId)!);
+            animaWeapons[ClassJobType.WAR].Add(itemSheet.GetRowOrDefault(animaItem.Item[2].RowId)!);
+            animaWeapons[ClassJobType.DRG].Add(itemSheet.GetRowOrDefault(animaItem.Item[3].RowId)!);
+            animaWeapons[ClassJobType.BRD].Add(itemSheet.GetRowOrDefault(animaItem.Item[4].RowId)!);
+            animaWeapons[ClassJobType.WHM].Add(itemSheet.GetRowOrDefault(animaItem.Item[5].RowId)!);
+            animaWeapons[ClassJobType.BLM].Add(itemSheet.GetRowOrDefault(animaItem.Item[6].RowId)!);
+            animaWeapons[ClassJobType.SMN].Add(itemSheet.GetRowOrDefault(animaItem.Item[7].RowId)!);
+            animaWeapons[ClassJobType.SCH].Add(itemSheet.GetRowOrDefault(animaItem.Item[8].RowId)!);
+            animaWeapons[ClassJobType.NIN].Add(itemSheet.GetRowOrDefault(animaItem.Item[9].RowId)!);
+            animaWeapons[ClassJobType.MCH].Add(itemSheet.GetRowOrDefault(animaItem.Item[10].RowId)!);
+            animaWeapons[ClassJobType.DRK].Add(itemSheet.GetRowOrDefault(animaItem.Item[11].RowId)!);
+            animaWeapons[ClassJobType.AST].Add(itemSheet.GetRowOrDefault(animaItem.Item[12].RowId)!);
+            animaWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(animaItem.Item[13].RowId)!);
+        }
+
+        foreach (var animaWeaponSet in animaWeapons)
+        {
+            foreach (var item in animaWeaponSet.Value)
+            {
+                this.AddItemUse(new ItemAnimaWeaponSource(item, classJobMap[animaWeaponSet.Key], animaWeaponSet.Value));
+            }
+        }
+
         foreach (var seriesReward in pvpSeriesSheet)
         {
             for (var levelIndex = 0; levelIndex < seriesReward.LevelRewards.Count; levelIndex++)
@@ -376,6 +462,8 @@ public class ItemInfoCache
             }
         }
 
+        var classesWithRelicQuests = classJobSheet.Where(c => c.Base.RelicQuest.RowId != 0).ToDictionary(c => c.Base.RelicQuest.RowId, c => c);
+
         foreach (var quest in questSheet)
         {
             if (this.questRequiredItems.TryGetValue(quest.RowId, out var requiredItems))
@@ -394,6 +482,20 @@ public class ItemInfoCache
                                 new RowRef<Quest>(this.gameData.Excel, quest.RowId));
                             this.AddItemUse(source);
                         }
+                    }
+                }
+
+                if (classesWithRelicQuests.ContainsKey(quest.RowId))
+                {
+                    var relatedClass = classesWithRelicQuests[quest.RowId];
+
+                    foreach (var relicItem in zodiacWeapons[relatedClass.ClassJobType])
+                    {
+                        var source = new ItemQuestSource(
+                            relicItem,
+                            requiredItems,
+                            new RowRef<Quest>(this.gameData.Excel, quest.RowId));
+                        this.AddItemSource(source);
                     }
                 }
             }
@@ -1099,6 +1201,42 @@ public class ItemInfoCache
 
                 this.AddItemSourceMapLocation(collectableShopListing.Reward.Item.RowId, mapIds, ItemInfoType.CollectablesShop);
                 this.AddItemUseMapLocation(collectableShopListing.Costs.First().Item.RowId, mapIds, ItemInfoType.CollectablesShop);
+            }
+        }
+
+        foreach (var animaShop in animaTradeItemSheet)
+        {
+            var mapIds = animaShop.MapIds;
+
+            foreach (var npc in animaShop.ENpcs)
+            {
+                this.AddShopNpcLookup(animaShop, npc.RowId);
+            }
+
+            foreach (var animaShopListing in animaShop.AnimaWeapon5TradeItemListings)
+            {
+                // Fix for blank items that SQ seems to have added
+                if (animaShopListing.Rewards.All(c => c.Item.Icon == 0))
+                {
+                    continue;
+                }
+
+                List<ItemSource> sources = new();
+                foreach (var shopListingItem in animaShopListing.Rewards)
+                {
+                    var source = new ItemAnimaShopSource(shopListingItem.Item, null, shopListingItem, animaShopListing, animaShop);
+                    this.AddItemSource(source);
+                    this.AddItemSourceMapLocation(shopListingItem.Item.RowId, mapIds, ItemInfoType.SpecialShop);
+                    sources.Add(source);
+
+                    foreach (var cost in animaShopListing.Costs)
+                    {
+                        var use = new ItemAnimaShopSource(cost.Item, cost.Item, shopListingItem, animaShopListing, animaShop);
+                        this.AddItemUse(use);
+                        this.AddItemUseMapLocation(cost.Item.RowId, mapIds, ItemInfoType.SpecialShop);
+                        this.AddItemSourceUseCombo(source, use);
+                    }
+                }
             }
         }
 

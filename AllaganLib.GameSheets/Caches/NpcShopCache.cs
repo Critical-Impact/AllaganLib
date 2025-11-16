@@ -23,6 +23,7 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> npcIdToGcShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToInclusionShopIdLookup;
     private Dictionary<uint, HashSet<uint>> npcIdToCollectablesShopIdLookup;
+    private Dictionary<uint, HashSet<uint>> npcIdToAnimaShopIdLookup;
 
     private Dictionary<uint, HashSet<uint>> fateShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> specialShopIdToNpcIdLookup;
@@ -31,6 +32,7 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> gcShopIdToNpcIdLookup;
     private Dictionary<uint, HashSet<uint>> inclusionShopIdToNpcLookup;
     private Dictionary<uint, HashSet<uint>> collectablesShopIdToNpcLookup;
+    private Dictionary<uint, HashSet<uint>> animaShopIdToNpcIdLookup;
 
 
     public NpcShopCache(GameData gameData)
@@ -45,6 +47,7 @@ public class NpcShopCache
         this.npcIdToGcShopIdLookup = [];
         this.npcIdToInclusionShopIdLookup = [];
         this.npcIdToCollectablesShopIdLookup = [];
+        this.npcIdToAnimaShopIdLookup = [];
 
         this.fateShopIdToNpcIdLookup = [];
         this.specialShopIdToNpcIdLookup = [];
@@ -53,6 +56,7 @@ public class NpcShopCache
         this.gcShopIdToNpcIdLookup = [];
         this.inclusionShopIdToNpcLookup = [];
         this.collectablesShopIdToNpcLookup = [];
+        this.animaShopIdToNpcIdLookup = [];
 
         this.npcIdToTripleTriadLookup = [];
         this.tripleTriadToNpcIdLookup = [];
@@ -108,6 +112,24 @@ public class NpcShopCache
         var topicSelectSheet = this.gameData.GetExcelSheet<TopicSelect>()!;
         var preHandlerSheet = this.gameData.GetExcelSheet<PreHandler>()!;
         var customTalkSheet = this.gameData.GetExcelSheet<CustomTalk>()!;
+        var animaTradeItems = this.gameData.GetExcelSheet<AnimaWeapon5TradeItem>()!;
+
+        foreach (var animaTradeItem in animaTradeItems)
+        {
+            var ulanId = 1017108u;
+            this.animaShopIdToNpcIdLookup.TryAdd(animaTradeItem.RowId, []);
+            this.animaShopIdToNpcIdLookup[animaTradeItem.RowId].Add(ulanId);
+
+            this.shopIdToNpcIdLookup.TryAdd(animaTradeItem.RowId, []);
+            this.shopIdToNpcIdLookup[animaTradeItem.RowId].Add(ulanId);
+
+            this.npcIdToAnimaShopIdLookup.TryAdd(ulanId, []);
+            this.npcIdToAnimaShopIdLookup[ulanId].Add(animaTradeItem.RowId);
+
+            this.npcIdToShopIdLookup.TryAdd(ulanId, []);
+            this.npcIdToShopIdLookup[ulanId].Add(animaTradeItem.RowId);
+        }
+
         var fateShopLookup = fateShopSheet.Select(c => c.RowId).ToHashSet();
 
         ReadOnlySpan<Type> customTalkTypes = [typeof(FateShop), typeof(FccShop), typeof(SpecialShop)];
@@ -353,6 +375,15 @@ public class NpcShopCache
         return this.tripleTriadToNpcIdLookup.GetValueOrDefault(tripleTriadId);
     }
 
+    public HashSet<uint>? GetAnimaShopsByNpcId(uint npcId)
+    {
+        return this.npcIdToAnimaShopIdLookup.GetValueOrDefault(npcId);
+    }
+
+    public HashSet<uint>? GetNpcsByAnimaShopId(uint animaShopId)
+    {
+        return this.animaShopIdToNpcIdLookup.GetValueOrDefault(animaShopId);
+    }
 
     public HashSet<uint>? GetShops(uint npcId)
     {

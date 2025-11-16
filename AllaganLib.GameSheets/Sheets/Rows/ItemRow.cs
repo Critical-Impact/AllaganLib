@@ -32,6 +32,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     private List<GilShopRow>? gilShops;
     private List<GilShopRow>? calamitySalvagerShops;
     private List<GCShopRow>? gcShops;
+    private List<AnimaWeapon5TradeItemRow>? animaShops;
     private List<FishingSpotRow>? fishingSpots;
     private List<CollectablesShopRow>? collectablesShops;
     private Dictionary<ItemInfoType, HashSet<uint>>? sourceMapLocationsByType;
@@ -436,7 +437,6 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
-
     public List<GilShopRow> CalamitySalvagerShops
     {
         get
@@ -450,6 +450,19 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
+    public List<AnimaWeapon5TradeItemRow> AnimaShops
+    {
+        get
+        {
+            if (this.animaShops == null)
+            {
+                this.CacheVendorLookup();
+            }
+
+            return this.animaShops!;
+        }
+    }
+
     private void CacheVendorLookup()
     {
         this.specialShops = [];
@@ -458,6 +471,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         this.gcShops = [];
         this.calamitySalvagerShops = [];
         this.collectablesShops = [];
+        this.animaShops = [];
 
         foreach (var use in this.Sources)
         {
@@ -507,6 +521,14 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
                 if (shopRow != null)
                 {
                     this.collectablesShops.Add(shopRow);
+                }
+            }
+            else if (use.Type == ItemInfoType.AnimaShop)
+            {
+                var shopRow = (use as ItemAnimaShopSource)?.AnimaWeaponTradeItem;
+                if (shopRow != null)
+                {
+                    this.animaShops.Add(shopRow);
                 }
             }
         }

@@ -141,7 +141,8 @@ public static class ItemInfoTypeExtensions
             or ItemInfoType.FCShop
             or ItemInfoType.GCShop
             or ItemInfoType.CollectablesShop
-            or ItemInfoType.CalamitySalvagerShop;
+            or ItemInfoType.CalamitySalvagerShop
+            or ItemInfoType.AnimaShop;
     }
 
     public static bool IsDungeon(this ItemInfoType itemInfoType)
