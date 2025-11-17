@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.3.11] - 2025-11-17
+
+### Fixed
+- AllaganLib.GameData
+  - Fix crash when GameData is loaded in a non-english language
+
 ## [1.3.10] - 2025-11-07
 
 ### Changed
