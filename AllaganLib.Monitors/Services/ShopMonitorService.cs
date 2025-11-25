@@ -9,6 +9,7 @@ using AllaganLib.GameSheets.Sheets;
 using AllaganLib.GameSheets.Sheets.Rows;
 using AllaganLib.Monitors.Enums;
 using AllaganLib.Monitors.Interfaces;
+using AllaganLib.Shared.Extensions;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Objects;
@@ -524,6 +525,13 @@ public class ShopMonitorService : IHostedService, IDisposable, IShopMonitorServi
 
             if (npcId != null)
             {
+                var npcRow = this.enpcBaseSheet.GetRowOrDefault(npcId.Value);
+                if (npcRow != null)
+                {
+                    var correctOrder = npcRow.Base.ENpcData.Select(c => c.RowId);
+                    shops = shops.OrderBySequence(correctOrder, tuple => tuple.Item2).ToList();
+                }
+
                 return (npcId.Value, shops, shopId);
             }
         }

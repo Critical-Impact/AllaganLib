@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.3.12] - 2025-11-25
+
+### Fixed
+- AllaganLib.Monitors
+  - Provide the correct order of the shops
+
 ## [1.3.11] - 2025-11-17
 
 ### Fixed
