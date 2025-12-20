@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.0.0] - 2025-12-20
+
+### Changed
+- Support for API14
+- AllaganLib.GameSheets
+  - LuminaSupplemental updated to 4.0.0
+  - Added Pilgrims Traverse as a source
+
 ## [1.3.12] - 2025-11-25
 
 ### Fixed

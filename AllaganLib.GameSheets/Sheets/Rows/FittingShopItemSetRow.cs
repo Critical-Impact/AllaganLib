@@ -16,8 +16,8 @@ public class FittingShopItemSetRow : ExtendedRow<FittingShopItemSet, FittingShop
             if (this.items == null)
             {
                 var itemSheet = this.Sheet.SheetManager.GetSheet<ItemSheet>();
-                int[] itemIds = [this.Base.Unknown0, this.Base.Unknown1, this.Base.Unknown2, this.Base.Unknown3, this.Base.Unknown4, this.Base.Unknown5];
-                this.items = itemIds.Where(c => c != 0).Select(c => itemSheet.GetRowOrDefault((uint)c)).Where(c => c != null)
+                uint[] itemIds = this.Base.Item.Select(c => c.RowId).ToArray();
+                this.items = itemIds.Where(c => c != 0).Select(c => itemSheet.GetRowOrDefault(c)).Where(c => c != null)
                     .Select(c => c!).ToList();
             }
 

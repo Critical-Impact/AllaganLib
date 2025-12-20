@@ -5,6 +5,7 @@ using AllaganLib.Shared.Interfaces;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.Interface.Windowing;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.Event;
 
 namespace AllaganLib.Monitors.Debuggers;

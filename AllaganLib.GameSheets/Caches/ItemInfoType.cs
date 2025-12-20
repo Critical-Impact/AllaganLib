@@ -102,4 +102,5 @@ public enum ItemInfoType
     ZodiacWeapon = 97,
     AnimaWeapon = 98,
     AnimaShop = 99,
+    PilgrimsTraverse = 100,
 }

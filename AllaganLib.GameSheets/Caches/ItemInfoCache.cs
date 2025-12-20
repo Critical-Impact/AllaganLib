@@ -1627,6 +1627,9 @@ public class ItemInfoCache
                 case ItemSupplementSource.Logogram:
                     source = new ItemLogogramSource(item, sourceItem, supplementalItem);
                     break;
+                case ItemSupplementSource.PilgrimsTraverse:
+                    source = new ItemPilgrimsTraverseSource(item, sourceItem, supplementalItem);
+                    break;
                 case ItemSupplementSource.SkybuilderHandIn:
                     continue;
                 case ItemSupplementSource.Unknown:

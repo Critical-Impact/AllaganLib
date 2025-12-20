@@ -137,7 +137,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
             return false;
         }
 
-        var type = (ActionType)action.Value.Type;
+        var type = (ActionType)action.Value.Action.RowId;
         return ValidActions.Contains(type);
     }
 

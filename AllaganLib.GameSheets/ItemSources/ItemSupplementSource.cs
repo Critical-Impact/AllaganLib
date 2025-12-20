@@ -70,6 +70,9 @@ public class ItemPyrosSource(ItemRow item, ItemRow costItem, ItemSupplement supp
 public class ItemHydatosSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
     : ItemSupplementSource(item, costItem, supplement, ItemInfoType.Hydatos);
 
+public class ItemPilgrimsTraverseSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
+    : ItemSupplementSource(item, costItem, supplement, ItemInfoType.PilgrimsTraverse);
+
 public class ItemBozjaSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
     : ItemSupplementSource(item, costItem, supplement, ItemInfoType.Bozja);
 
