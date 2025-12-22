@@ -1,3 +1,4 @@
+#pragma warning disable PendingExcelSchema
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
 using ItemSupplementSource = LuminaSupplemental.Excel.Model.ItemSupplementSource;
+
+using Quest = Lumina.Excel.Sheets.Experimental.Quest;
 
 namespace AllaganLib.GameSheets.Caches;
 
