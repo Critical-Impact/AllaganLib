@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Numerics;
+using Dalamud.Bindings.ImGui;
 using FFXIVClientStructs.FFXIV.Client.Graphics;
 using Lumina.Excel.Sheets;
 
@@ -52,5 +53,10 @@ public static class ColorUtils
     public static ByteColor ColorFromVector4(Vector4 hexString)
     {
         return new () {R = (byte) (hexString.X * 0xFF), B = (byte) (hexString.Z * 0xFF), G = (byte) (hexString.Y * 0xFF), A = (byte) (hexString.W * 0xFF)};
+    }
+
+    public static uint ToUint(this Vector4 vectorColor)
+    {
+        return ImGui.ColorConvertFloat4ToU32(vectorColor);
     }
 }
