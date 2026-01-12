@@ -22,4 +22,6 @@ public class ItemSpearfishingSource : ItemSource
     public SpearfishingItemRow SpearfishingItemRow => this.spearfishingItemRow;
 
     public override HashSet<uint>? MapIds => this.SpearfishingItemRow.GatheringPoints.Select(c => c.SpearfishingNotebook?.TerritoryTypeRow?.Map?.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
+
+    public override RelationshipType RelationshipType => RelationshipType.CollectedFrom;
 }

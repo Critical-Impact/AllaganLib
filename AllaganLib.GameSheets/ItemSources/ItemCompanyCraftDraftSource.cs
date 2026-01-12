@@ -19,6 +19,8 @@ public class ItemCompanyCraftDraftSource : ItemSource
         this.Quantity = quantityRequired;
     }
 
+    public override RelationshipType RelationshipType => RelationshipType.UsedIn;
+
     protected override IReadOnlyList<ItemInfo>? CreateCostItems()
     {
         var items = new List<ItemInfo>();

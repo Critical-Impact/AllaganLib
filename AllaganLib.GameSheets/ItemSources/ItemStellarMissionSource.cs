@@ -24,4 +24,6 @@ public class ItemStellarMissionSource : ItemSource
     public RowRef<WKSMissionToDo> Todo { get; }
 
     public RowRef<WKSItemInfo> ItemInfo { get; }
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

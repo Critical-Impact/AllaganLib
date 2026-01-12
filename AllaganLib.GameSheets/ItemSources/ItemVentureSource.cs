@@ -19,4 +19,7 @@ public abstract class ItemVentureSource : ItemSource
 
     public override uint Quantity => this.retainerTaskRow.Quantity;
 
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.Required;
 }

@@ -15,4 +15,5 @@ public class ItemCustomDeliverySource : ItemSource
 
     public override uint Quantity => 1;
 
+    public override RelationshipType RelationshipType => RelationshipType.UsedIn;
 }

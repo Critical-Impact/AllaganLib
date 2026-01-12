@@ -21,4 +21,6 @@ public class ItemGlamourReadySetItemSource : ItemSource
     }
 
     public override uint Quantity => 0;
+
+    public override RelationshipType RelationshipType => RelationshipType.UsedIn;
 }

@@ -10,6 +10,24 @@ using Quest = Lumina.Excel.Sheets.Experimental.Quest;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
+public class ItemQuestUse : ItemQuestSource
+{
+    public ItemQuestUse(ItemRow itemRow, List<QuestRequiredItem> requiredItems, RowRef<Quest> quest, SubrowRef<QuestClassJobReward>? questClassJobRewardRef = null, int? questClassJobRewardSubRowId = null) : base(itemRow, requiredItems, quest, questClassJobRewardRef, questClassJobRewardSubRowId)
+    {
+    }
+
+    public ItemQuestUse(ItemRow itemRow, List<QuestRequiredItem> requiredItems, RowRef<Quest> quest, SubrowRef<QuestClassJobSupply>? questClassJobSupplyRef = null, int? questClassJobSupplySubRowId = null) : base(itemRow, requiredItems, quest, questClassJobSupplyRef, questClassJobSupplySubRowId)
+    {
+    }
+
+    public ItemQuestUse(ItemRow itemRow, List<QuestRequiredItem> requiredItems, RowRef<Quest> quest) : base(itemRow, requiredItems, quest)
+    {
+    }
+
+    public override RelationshipType RelationshipType => RelationshipType.Required;
+    public override RelationshipType? CostRelationshipType => RelationshipType.Rewards;
+}
+
 public class ItemQuestSource : ItemSource
 {
     public RowRef<Quest> Quest { get; }
@@ -165,4 +183,7 @@ public class ItemQuestSource : ItemSource
     }
 
     public uint QuestIcon => this.Quest.Value.EventIconType.ValueNullable?.MapIconAvailable + 1 ?? 71021;
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
+    public override RelationshipType? CostRelationshipType => RelationshipType.Required;
 }

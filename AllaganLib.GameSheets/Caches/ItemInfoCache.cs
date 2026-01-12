@@ -479,7 +479,7 @@ public class ItemInfoCache
                         var itemRow = itemSheet.GetRowOrDefault(itemId);
                         if (itemRow != null)
                         {
-                            var source = new ItemQuestSource(
+                            var source = new ItemQuestUse(
                                 itemRow,
                                 requiredItems,
                                 new RowRef<Quest>(this.gameData.Excel, quest.RowId));
@@ -551,7 +551,7 @@ public class ItemInfoCache
                                 var itemRow = itemSheet.GetRowOrDefault(requiredItemSubrow.RowId);
                                 if (itemRow != null)
                                 {
-                                    var source = new ItemQuestSource(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
+                                    var source = new ItemQuestUse(itemRow, requiredItems, new RowRef<Quest>(this.gameData.Excel, quest.RowId), new SubrowRef<QuestClassJobReward>(this.gameData.Excel, rewardJobSubrow.RowId), index);
                                     this.AddItemUse(source);
                                 }
                             }
@@ -597,7 +597,7 @@ public class ItemInfoCache
                         var itemRow = itemSheet.GetRowOrDefault(questClassJobSupplyRef.Item.RowId);
                         if (itemRow != null)
                         {
-                            var source = new ItemQuestSource(
+                            var source = new ItemQuestUse(
                                 itemRow,
                                 requiredItems,
                                 new RowRef<Quest>(this.gameData.Excel, quest.RowId),

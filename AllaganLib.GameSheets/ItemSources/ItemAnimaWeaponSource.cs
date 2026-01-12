@@ -38,6 +38,8 @@ public class ItemAnimaWeaponSource : ItemSource
         this.Lux = relatedItems[7];
     }
 
+    public override RelationshipType RelationshipType => RelationshipType.RelatedTo;
+
     protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
     {
         return this.Items.Select(c => ItemInfo.Create(c)).ToList();

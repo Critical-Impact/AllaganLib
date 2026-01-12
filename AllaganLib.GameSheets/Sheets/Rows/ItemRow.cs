@@ -625,6 +625,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     // Shared Models
 
+    public ushort ModelBase => (ushort)this.Base.ModelMain;
+
+    public ushort ModelVariant => (ushort)(this.Base.ModelMain >> 16);
+
     public List<ItemRow> GetSharedModels()
     {
         if (this.GetPrimaryModelKeyString() == string.Empty)

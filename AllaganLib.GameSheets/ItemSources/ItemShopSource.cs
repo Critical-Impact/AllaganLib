@@ -11,4 +11,8 @@ public abstract class ItemShopSource : ItemSource
     {
         this.Shop = shop;
     }
+
+    public override RelationshipType RelationshipType => RelationshipType.Purchaseable;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.PurchasedWith;
 }

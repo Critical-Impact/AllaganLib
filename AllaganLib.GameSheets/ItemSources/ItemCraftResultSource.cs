@@ -38,4 +38,8 @@ public class ItemCraftResultSource : ItemSource
     }
 
     public override uint Quantity => this.Recipe.Base.AmountResult;
+
+    public override RelationshipType RelationshipType => RelationshipType.CraftedInto;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.CraftedFrom;
 }

@@ -21,4 +21,6 @@ public abstract class ItemDungeonSource : ItemSource
     }
 
     public override HashSet<uint>? MapIds => this.mapIds;
+
+    public override RelationshipType RelationshipType => RelationshipType.DropsFrom;
 }

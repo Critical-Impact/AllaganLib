@@ -24,4 +24,6 @@ public class ItemFishingSource : ItemSource
 
 
     public override HashSet<uint>? MapIds => this.FishingSpots.Where(c => c.TerritoryType.RowId != 0).Select(c => c.Base.TerritoryType.ValueNullable?.Map.RowId ?? 0).Where(c => c != 0).Distinct().ToHashSet();
+
+    public override RelationshipType RelationshipType => RelationshipType.CollectedFrom;
 }

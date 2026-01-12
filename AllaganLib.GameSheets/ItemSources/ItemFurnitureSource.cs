@@ -20,4 +20,6 @@ public class ItemFurnitureSource : ItemSource
     }
 
     public override uint Quantity => 0;
+
+    public override RelationshipType RelationshipType => RelationshipType.UsedIn;
 }

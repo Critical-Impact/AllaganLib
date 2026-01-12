@@ -24,4 +24,5 @@ public class ItemGCSupplyDutySource : ItemSource
 
     public byte RecipeLevel => (byte)this.GCSupplyDutyRow.RowId;
 
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

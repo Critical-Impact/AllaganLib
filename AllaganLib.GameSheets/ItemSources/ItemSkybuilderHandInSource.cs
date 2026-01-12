@@ -25,4 +25,6 @@ public class ItemSkybuilderHandInSource : ItemSource
     public byte LevelMax => this.CrafterSupplyRow.Base.HWDCrafterSupplyParams[this.rowIndex].LevelMax;
 
     public override uint Quantity => 1;
+
+    public override RelationshipType RelationshipType => RelationshipType.Required;
 }

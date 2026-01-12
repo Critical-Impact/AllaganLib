@@ -17,4 +17,6 @@ public class ItemGCExpertDeliverySource : ItemSource
     public uint SealsRewarded => this.RewardRow.Base.SealsExpertDelivery;
 
     public override uint Quantity => 1;
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

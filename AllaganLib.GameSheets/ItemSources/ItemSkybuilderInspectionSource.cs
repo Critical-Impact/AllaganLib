@@ -24,4 +24,6 @@ public class ItemSkybuilderInspectionSource : ItemSource
 
     public override uint Quantity => this.InspectionData.AmountRequired;
 
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
+    public override RelationshipType? CostRelationshipType => RelationshipType.Required;
 }

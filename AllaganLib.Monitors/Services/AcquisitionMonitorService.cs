@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AllaganLib.Monitors.Enums;
 using AllaganLib.Monitors.Interfaces;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Gui;
 using Dalamud.Game.Inventory;
 using Dalamud.Hooking;
 using Dalamud.Plugin.Services;
@@ -35,7 +36,6 @@ public class AcquisitionMonitorService : IAcquisitionMonitorService, IHostedServ
     private bool initialCheckPerformed;
     private bool pluginBootCheckPerformed;
     private DateTime? lastLoginTime;
-    private Hook<RaptureAtkModuleUpdateDelegate>? raptureAtkModuleUpdateHook;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AcquisitionMonitorService"/> class.
@@ -71,8 +71,6 @@ public class AcquisitionMonitorService : IAcquisitionMonitorService, IHostedServ
         this.gameInteropProvider = gameInteropProvider;
     }
 
-    private unsafe delegate void RaptureAtkModuleUpdateDelegate(RaptureAtkModule* ram, float f1);
-
     /// <inheritdoc/>
     public event IAcquisitionMonitorService.ItemAcquiredDelegate? ItemAcquired;
 
@@ -85,46 +83,40 @@ public class AcquisitionMonitorService : IAcquisitionMonitorService, IHostedServ
         this.clientState.Login += this.ClientLoggedIn;
         this.clientState.Logout += this.ClientStateOnLogout;
         this.framework.Update += this.FrameworkOnUpdate;
+        this.gameGui.AgentUpdate += this.GameGuiOnAgentUpdate;
         return Task.CompletedTask;
+    }
+
+    private void GameGuiOnAgentUpdate(AgentUpdateFlag agentUpdateFlag)
+    {
+        var actualFlags = Enum.GetValues(agentUpdateFlag.GetType()).Cast<Enum>().Where(agentUpdateFlag.HasFlag).Select(c => c.ToString());
+        this.logger.LogTrace("Agent update flag is {AgentUpdateFlag}, types are {Types}", (int)agentUpdateFlag, actualFlags);
+        try
+        {
+            if (this.initialCheckPerformed && this.pluginBootCheckPerformed && agentUpdateFlag.HasFlag(AgentUpdateFlag.InventoryUpdate))
+            {
+                this.CalculateItemCounts();
+            }
+        }
+        catch (Exception e)
+        {
+            this.logger.LogError(e, "Failed in RaptureAtkModuleUpdateDetour");
+        }
     }
 
     /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        this.raptureAtkModuleUpdateHook?.Disable();
         this.clientState.Login -= this.ClientLoggedIn;
         this.clientState.Logout -= this.ClientStateOnLogout;
         this.framework.Update -= this.FrameworkOnUpdate;
+        this.gameGui.AgentUpdate -= this.GameGuiOnAgentUpdate;
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.raptureAtkModuleUpdateHook?.Dispose();
-    }
-
-    private unsafe void RaptureAtkModuleUpdateDetour(RaptureAtkModule* ram, float f1)
-    {
-        var agentUpdateFlag = ram->AgentUpdateFlag;
-        if (agentUpdateFlag != 0)
-        {
-            var actualFlags = Enum.GetValues(agentUpdateFlag.GetType()).Cast<Enum>().Where(agentUpdateFlag.HasFlag).Select(c => c.ToString());
-            this.logger.LogTrace("Agent update flag is {AgentUpdateFlag}, types are {Types}", (int)agentUpdateFlag, actualFlags);
-            try
-            {
-                if (this.initialCheckPerformed && this.pluginBootCheckPerformed && agentUpdateFlag.HasFlag(RaptureAtkModule.AgentUpdateFlags.InventoryUpdate))
-                {
-                    this.CalculateItemCounts();
-                }
-            }
-            catch (Exception e)
-            {
-                this.logger.LogError(e, "Failed in RaptureAtkModuleUpdateDetour");
-            }
-        }
-
-        this.raptureAtkModuleUpdateHook!.Original(ram, f1);
     }
 
     private void CalculateItemCounts(bool notify = true)
@@ -193,18 +185,6 @@ public class AcquisitionMonitorService : IAcquisitionMonitorService, IHostedServ
 
     private void FrameworkOnUpdate(IFramework iFramework)
     {
-        if (this.raptureAtkModuleUpdateHook == null)
-        {
-            unsafe
-            {
-                this.raptureAtkModuleUpdateHook = this.gameInteropProvider.HookFromFunctionPointerVariable<RaptureAtkModuleUpdateDelegate>(
-                    new(&RaptureAtkModule.StaticVirtualTablePointer->Update),
-                    this.RaptureAtkModuleUpdateDetour);
-            }
-
-            this.raptureAtkModuleUpdateHook.Enable();
-        }
-
         // When the plugin first loads, check to see if they are already logged in, if so then their inventory is probably already loaded so we can scan once and mark it as checked
         // If they are not logged in we'll need to wait for them to login and then scan
         if (!this.pluginBootCheckPerformed)

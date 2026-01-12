@@ -7,7 +7,8 @@ public class ItemAirshipDropSource : ItemSource
 {
     private readonly AirshipExplorationPointRow airshipExplorationPoint;
 
-    public ItemAirshipDropSource(ItemRow item, AirshipExplorationPointRow airshipExplorationPoint) : base(ItemInfoType.Airship)
+    public ItemAirshipDropSource(ItemRow item, AirshipExplorationPointRow airshipExplorationPoint)
+        : base(ItemInfoType.Airship)
     {
         this.Item = item;
         this.airshipExplorationPoint = airshipExplorationPoint;
@@ -16,4 +17,6 @@ public class ItemAirshipDropSource : ItemSource
     public AirshipExplorationPointRow AirshipExplorationPoint => this.airshipExplorationPoint;
 
     public override uint Quantity => 1;
+
+    public override RelationshipType RelationshipType => RelationshipType.DropsFrom;
 }

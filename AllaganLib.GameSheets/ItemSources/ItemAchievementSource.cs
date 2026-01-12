@@ -17,4 +17,6 @@ public class ItemAchievementSource : ItemSource
     }
 
     public override uint Quantity => 0;
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

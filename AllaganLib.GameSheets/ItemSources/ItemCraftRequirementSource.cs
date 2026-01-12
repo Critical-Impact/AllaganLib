@@ -16,4 +16,8 @@ public class ItemCraftRequirementSource : ItemSource
     }
 
     public override uint Quantity => this.Recipe.GetIngredientCount(this.Item.RowId) ?? 0;
+
+    public override RelationshipType RelationshipType => RelationshipType.CraftedFrom;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.CraftedInto;
 }

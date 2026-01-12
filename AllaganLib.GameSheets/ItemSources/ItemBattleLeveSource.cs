@@ -48,6 +48,8 @@ public sealed class ItemBattleLeveSource : ItemSource
         }
     }
 
+    public override RelationshipType RelationshipType => RelationshipType.DropsFrom;
+
     /// <inheritdoc/>
     protected override IReadOnlyList<ItemInfo>? CreateRewardItems()
     {

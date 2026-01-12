@@ -26,6 +26,8 @@ public abstract class ItemFieldOpCofferSource : ItemSource
     public FieldOpCofferType CofferType { get; }
 
     public override uint Quantity { get; }
+
+    public override RelationshipType RelationshipType => RelationshipType.DropsFrom;
 }
 
 public class ItemPagosTreasureCofferSource : ItemFieldOpCofferSource

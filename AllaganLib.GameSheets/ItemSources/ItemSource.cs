@@ -6,16 +6,31 @@ using AllaganLib.GameSheets.Sheets.Rows;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
+public sealed record RelatedItemKey(string Key, string Name, RelationshipType RelationshipType)
+{
+    public static RelatedItemKey Of(string key, string name, RelationshipType relationshipType)
+        => new(key, name, relationshipType);
+
+    public override string ToString()
+        => $"{this.Name}";
+}
+
 public abstract class ItemSource : GenericItemSource
 {
     private IReadOnlyList<ItemInfo>? rewardItems;
     private IReadOnlyList<ItemInfo>? costItems;
+    private IReadOnlyDictionary<RelatedItemKey, IReadOnlyList<ItemInfo>>? relatedItems;
     private bool? hasRewardItems;
     private bool? hasCostItems;
+    private bool? hasRelatedItems;
 
     public ItemRow Item { get; protected init; }
 
     public ItemRow? CostItem { get; protected init; }
+
+    public abstract RelationshipType RelationshipType { get; }
+
+    public virtual RelationshipType? CostRelationshipType { get; } = null;
 
     /// <summary>
     /// Gets a list of reward items for the source.
@@ -80,6 +95,36 @@ public abstract class ItemSource : GenericItemSource
     }
 
     /// <summary>
+    /// Gets a list of related items for the source.
+    /// </summary>
+    public IReadOnlyDictionary<RelatedItemKey, IReadOnlyList<ItemInfo>> RelatedItems
+    {
+        get
+        {
+            if (this.hasRelatedItems == false)
+            {
+                return new Dictionary<RelatedItemKey, IReadOnlyList<ItemInfo>>();
+            }
+
+            if (this.relatedItems != null)
+            {
+                return this.relatedItems;
+            }
+
+            var calculated = this.CreateRelatedItems();
+            if (calculated == null || calculated.Count == 0)
+            {
+                this.hasRelatedItems = false;
+                return new Dictionary<RelatedItemKey, IReadOnlyList<ItemInfo>>();
+            }
+
+            this.relatedItems = calculated;
+            this.hasRelatedItems = true;
+            return this.relatedItems;
+        }
+    }
+
+    /// <summary>
     /// Creates the reward items for the source.
     /// </summary>
     /// <returns>A list of rewards.</returns>
@@ -96,6 +141,17 @@ public abstract class ItemSource : GenericItemSource
     {
         return null;
     }
+
+    /// <summary>
+    /// Creates the related items for the source.
+    /// </summary>
+    /// <returns>A list of related items.</returns>
+    protected virtual IReadOnlyDictionary<RelatedItemKey, IReadOnlyList<ItemInfo>>?
+        CreateRelatedItems()
+    {
+        return null;
+    }
+
 
     public override HashSet<uint>? MapIds => null;
 

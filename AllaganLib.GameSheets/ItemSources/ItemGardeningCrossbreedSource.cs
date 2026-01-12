@@ -33,4 +33,7 @@ public class ItemGardeningCrossbreedSource : ItemSource
     }
 
     public override uint Quantity => 1;
+
+    public override RelationshipType RelationshipType => RelationshipType.UsedIn;
+    public override RelationshipType? CostRelationshipType => RelationshipType.UsedIn;
 }

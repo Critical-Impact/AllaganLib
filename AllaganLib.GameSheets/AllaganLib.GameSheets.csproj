@@ -4,7 +4,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
     <PackageProjectUrl>https://github.com/Critical-Impact/AllaganLib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Critical-Impact/AllaganLib</RepositoryUrl>
     <Authors>Critical-Impact</Authors>
@@ -44,7 +44,7 @@
     <PackageReference Include="Autofac" Version="9.0.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
     <PackageReference Include="CSVFile" Version="3.2.1" />
-    <PackageReference Include="LuminaSupplemental.Excel" Version="4.1.0" />
+    <PackageReference Include="LuminaSupplemental.Excel" Version="4.1.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

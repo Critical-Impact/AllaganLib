@@ -29,6 +29,8 @@ public abstract class ItemSupplementSource : ItemSource
 
     public override uint Quantity => 1;
 
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
+    public override RelationshipType? CostRelationshipType => RelationshipType.DropsFrom;
 }
 
 public class ItemDesynthSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)

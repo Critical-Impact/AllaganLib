@@ -21,4 +21,6 @@ public abstract class ItemGatheringSource : ItemSource
     public GatheringItemRow GatheringItem => this.gatheringItem;
 
     public override HashSet<uint>? MapIds => this.gatheringItem.MapIds;
+
+    public override RelationshipType RelationshipType => RelationshipType.CollectedFrom;
 }

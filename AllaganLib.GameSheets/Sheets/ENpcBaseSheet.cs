@@ -18,6 +18,7 @@ public class ENpcBaseSheet : ExtendedSheet<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
     private readonly List<HouseVendor> houseVendors;
     private Dictionary<uint, HouseVendor> houseVendorsByNpcId;
     private ENpcResidentSheet? eNpcResidentSheet;
+    private ItemSheet? itemSheet;
     private Dictionary<uint, List<IShop>> shopsByNpcId;
     private Dictionary<uint, List<ItemRow>> itemsByNpcId;
 
@@ -34,6 +35,11 @@ public class ENpcBaseSheet : ExtendedSheet<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
     public ENpcResidentSheet GetENpcResidentSheet()
     {
         return this.eNpcResidentSheet ??= this.SheetManager.GetSheet<ENpcResidentSheet>();
+    }
+
+    public ItemSheet GetItemSheet()
+    {
+        return this.itemSheet ??= this.SheetManager.GetSheet<ItemSheet>();
     }
 
     public bool IsVendor(uint npcId)

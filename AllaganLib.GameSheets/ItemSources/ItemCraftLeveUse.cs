@@ -104,4 +104,8 @@ public sealed class ItemCraftLeveUse : ItemSource
     /// Gets the related param grow.
     /// </summary>
     public RowRef<ParamGrow> ParamGrow { get; }
+
+    public override RelationshipType RelationshipType => RelationshipType.Required;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.Rewards;
 }

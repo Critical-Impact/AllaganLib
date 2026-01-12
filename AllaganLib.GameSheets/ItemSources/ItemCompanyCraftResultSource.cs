@@ -37,4 +37,8 @@ public class ItemCompanyCraftResultSource : ItemSource
         }
         return itemInfos;
     }
+
+    public override RelationshipType RelationshipType => RelationshipType.CraftedInto;
+
+    public override RelationshipType? CostRelationshipType => RelationshipType.CraftedFrom;
 }

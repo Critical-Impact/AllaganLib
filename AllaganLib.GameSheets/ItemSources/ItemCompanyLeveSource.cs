@@ -8,15 +8,15 @@ namespace AllaganLib.GameSheets.ItemSources;
 public class ItemCompanyLeveSource : ItemSource
 {
     public RowRef<CompanyLeve> CompanyLeve { get; }
-    
+
     public RowRef<Leve> Leve { get; }
-    
+
     public uint SealsRewarded { get; }
-    
+
     public RowRef<ParamGrow> ParamGrow;
-    
+
     public virtual int ExpReward => (int)(this.ParamGrow.Value.ScaledQuestXP * (decimal)this.ParamGrow.Value.QuestExpModifier * (decimal)this.Leve.Value.ExpFactor);
-    
+
     public ItemCompanyLeveSource(RowRef<CompanyLeve> companyLeve, RowRef<Leve> leve, ItemRow item)
         : base(ItemInfoType.CompanyLeve)
     {
@@ -28,6 +28,8 @@ public class ItemCompanyLeveSource : ItemSource
         decimal baseSeals = leveSystemDefine.Unknown1 * 0.01M;
         this.SealsRewarded = (uint)(leve.Value.ClassJobLevel * baseSeals);
     }
-    
+
     public override uint Quantity => this.SealsRewarded;
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

@@ -23,4 +23,6 @@ public class ItemMonsterDropSource : ItemSource
     public BNpcNameRow BNpcName => this.bNpcName;
 
     public override HashSet<uint>? MapIds => this.bNpcName.MapIds;
+
+    public override RelationshipType RelationshipType => RelationshipType.DropsFrom;
 }

@@ -9,6 +9,8 @@ namespace AllaganLib.GameSheets.Sheets;
 
 public class BNpcBaseSheet : ExtendedSheet<BNpcBase, BNpcBaseRow, BNpcBaseSheet>, IExtendedSheet
 {
+    private ItemSheet? itemSheet;
+
     public BNpcBaseSheet(GameData gameData, SheetManager sheetManager, SheetIndexer sheetIndexer, ItemInfoCache itemInfoCache)
         : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
     {
@@ -16,5 +18,10 @@ public class BNpcBaseSheet : ExtendedSheet<BNpcBase, BNpcBaseRow, BNpcBaseSheet>
 
     public override void CalculateLookups()
     {
+    }
+
+    public ItemSheet GetItemSheet()
+    {
+        return this.itemSheet ??= this.SheetManager.GetSheet<ItemSheet>();
     }
 }

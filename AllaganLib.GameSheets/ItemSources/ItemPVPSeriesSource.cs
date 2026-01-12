@@ -25,4 +25,6 @@ public class ItemPVPSeriesSource : ItemSource
     public PvPSeries.LevelRewardsStruct LevelRewards => this.PvpSeries.Value.LevelRewards[this.Level];
 
     public override uint Quantity => this.PvpSeries.Value.LevelRewards[this.Level].LevelRewardCount[this.index];
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }

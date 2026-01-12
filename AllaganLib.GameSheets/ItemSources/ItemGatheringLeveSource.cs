@@ -109,4 +109,6 @@ public sealed class ItemGatheringLeveSource : ItemSource
     /// Gets the index of the item inside the leve reward item group.
     /// </summary>
     public int RewardItemGroupIndex { get; }
+
+    public override RelationshipType RelationshipType => RelationshipType.Rewards;
 }
