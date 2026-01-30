@@ -25,4 +25,21 @@ public interface ILocation
     RowRef<PlaceName> PlaceName { get; }
 
     RowRef<TerritoryType> TerritoryType { get; }
+
+    public string FormattedName
+    {
+        get
+        {
+            var map = this.Map.ValueNullable?.PlaceName.ValueNullable?.Name.ToString() ?? "Unknown Map";
+            var region = this.Map.ValueNullable?.PlaceNameRegion.ValueNullable?.Name.ToString() ??
+                         "Unknown Territory";
+            var subArea = this.Map.ValueNullable?.PlaceNameSub.ValueNullable?.Name.ToString() ?? null;
+            if (!string.IsNullOrEmpty(subArea))
+            {
+                subArea = " - " + subArea;
+            }
+
+            return region + " - " + map + (subArea ?? string.Empty);
+        }
+    }
 }

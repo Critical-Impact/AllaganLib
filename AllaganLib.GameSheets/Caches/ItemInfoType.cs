@@ -103,4 +103,6 @@ public enum ItemInfoType
     AnimaWeapon = 98,
     AnimaShop = 99,
     PilgrimsTraverse = 100,
+    Oizys = 101,
+    Gearset = 102,
 }

@@ -74,6 +74,8 @@ public class ItemHydatosSource(ItemRow item, ItemRow costItem, ItemSupplement su
 
 public class ItemPilgrimsTraverseSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
     : ItemSupplementSource(item, costItem, supplement, ItemInfoType.PilgrimsTraverse);
+public class ItemOizysSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
+    : ItemSupplementSource(item, costItem, supplement, ItemInfoType.Oizys);
 
 public class ItemBozjaSource(ItemRow item, ItemRow costItem, ItemSupplement supplement)
     : ItemSupplementSource(item, costItem, supplement, ItemInfoType.Bozja);

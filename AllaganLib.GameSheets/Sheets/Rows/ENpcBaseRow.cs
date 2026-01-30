@@ -8,7 +8,7 @@ using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;
 
-public class ENpcBaseRow : ExtendedRow<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
+public class ENpcBaseRow : ExtendedRow<ENpcBase, ENpcBaseRow, ENpcBaseSheet>, INamed
 {
     private Dictionary<EquipSlot, List<ItemRow>>? relatedItems;
     private List<ILocation>? locations;
@@ -129,4 +129,6 @@ public class ENpcBaseRow : ExtendedRow<ENpcBase, ENpcBaseRow, ENpcBaseSheet>
         }
         return items;
     }
+
+    public string Name => this.ENpcResidentRow.Name;
 }

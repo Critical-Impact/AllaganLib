@@ -30,11 +30,11 @@ public abstract class BooleanColumn<TConfiguration, TData, TMessageBase> : Strin
 
     public abstract int Width { get; set; }
 
-    public bool HideFilter { get; set; }
+    public abstract bool HideFilter { get; set; }
 
     public virtual bool IsHidden { get; set; }
 
-    public virtual ImGuiTableColumnFlags ColumnFlags { get; set; }
+    public abstract ImGuiTableColumnFlags ColumnFlags { get; set; }
 
     public virtual IEnumerable<TMessageBase>? Draw(TConfiguration config, TData item, int rowIndex, int columnIndex)
     {

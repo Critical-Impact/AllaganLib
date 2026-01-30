@@ -30,13 +30,13 @@ public class ChoiceColumnFilter
     {
         var hasChanged = false;
         ImGui.TableSetColumnIndex(columnIndex);
-        ImGui.PushItemWidth(-20.000000f);
         using (ImRaii.PushId(column.Name))
         {
-            using (ImRaii.PushStyle(ImGuiStyleVar.FramePadding, new Vector2(0, 0)))
+            using (ImRaii.PushStyle(ImGuiStyleVar.FramePadding, new Vector2(2, 2)))
             {
-                var currentItem = configuration.Get(column.Key);
+                var currentItem = configuration.Get(column.Key) ?? "";
 
+                ImGui.PushItemWidth(-float.Epsilon);
                 using (var combo = ImRaii.Combo("##Choice", currentItem))
                 {
                     if (combo.Success)
@@ -57,13 +57,10 @@ public class ChoiceColumnFilter
                         }
                     }
                 }
+                ImGui.PopItemWidth();
             }
-
-            ImGui.SameLine(0.0f, ImGui.GetStyle().ItemInnerSpacing.X);
-            ImGui.TableHeader("");
         }
 
-        ImGui.PopItemWidth();
         return hasChanged;
     }
 }

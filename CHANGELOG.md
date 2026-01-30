@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.0.4] - 2026-01-30
+
+### Added
+- AllaganLib.Monitors
+  -  AchievementMonitorService - Monitors the player’s achievement completion state by periodically polling once the achievement window is opened. Caches completed achievements, detects newly completed ones, and exposes achievements for the current character.
+
+### Changed
+- AllaganLib.GameSheets
+  - Added gear sets as a item use type
+  - Added Oizys as a item source
+  - Added AchievementSheet, BattleLeveSheet, CompanyLeveSheet, GatheringLeveSheet, LeveSheet
+
+- AllaganLib.Interface
+  - BaseConfiguration now includes Enum and implements INotifyPropertyChanged
+  - Changes to the table system
+
+
 ## [2.0.3] - 2026-01-12
 
 ### Changed
@@ -22,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added RelationshipType to ItemSources
   - Added related items to ItemSources allowing for sources to provide extra items and the context of their source/use
   - Added RelatedItems to BNpcRow and ENpcRow(Shared models)
-- AllaganLib.Monitor
+- AllaganLib.Monitors
   -  Use dalamud's rapture atk hook
 
 ## [2.0.2] - 2026-01-04

@@ -41,8 +41,7 @@ public interface IColumn<TConfiguration, TData, TMessageBase> : IFormField<TConf
 
     public void Setup(IRenderTable<TConfiguration, TData, TMessageBase> renderTable, int columnIndex)
     {
-        if (renderTable.TableFlags.HasFlag(ImGuiTableFlags.SizingFixedFit) ||
-            renderTable.TableFlags.HasFlag(ImGuiTableFlags.SizingStretchProp))
+        if (this.ColumnFlags.HasFlag(ImGuiTableColumnFlags.WidthFixed))
         {
             ImGui.TableSetupColumn(this.RenderName ?? this.Name, this.ColumnFlags, this.Width, (uint)columnIndex);
         }

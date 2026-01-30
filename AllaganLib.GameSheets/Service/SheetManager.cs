@@ -100,6 +100,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<StoreItem>(CsvLoader.StoreItemResourceName);
         containerBuilder.RegisterCsv<DungeonBoss>(CsvLoader.DungeonBossResourceName);
         containerBuilder.RegisterCsv<DungeonChest>(CsvLoader.DungeonChestResourceName);
+        containerBuilder.RegisterCsv<Gearset>(CsvLoader.GearsetResourceName);
         containerBuilder.RegisterCsv<DungeonChestItem>(CsvLoader.DungeonChestItemResourceName);
         containerBuilder.RegisterCsv<DungeonDrop>(CsvLoader.DungeonDropItemResourceName);
         containerBuilder.RegisterCsv<DungeonBossDrop>(CsvLoader.DungeonBossDropResourceName);

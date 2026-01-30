@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-
 using AllaganLib.GameSheets.Model;
-using AllaganLib.GameSheets.Sheets.Rows;
 using AllaganLib.Shared.Extensions;
 using Lumina.Excel.Sheets;
 
-namespace AllaganLib.GameSheets.Sheets;
+namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class AnimaWeapon5TradeItemRow : ExtendedRow<AnimaWeapon5TradeItem, AnimaWeapon5TradeItemRow, AnimaWeapon5TradeItemSheet>, IShop
 {

@@ -28,15 +28,16 @@ public class StringColumnFilter
         var hasChanged = false;
 
         ImGui.TableSetColumnIndex(columnIndex);
-        ImGui.PushItemWidth(-20.000000f);
         ImGui.PushID(column.Name);
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(0, 0));
-        ImGui.InputText("##" + column.Key + "FilterI" + column.Name, ref filter, this.maxFilterLength);
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(2, 2));
+        ImGui.SetNextItemWidth(-float.Epsilon);
+        ImGui.InputText(
+            "##Filter",
+            ref filter,
+            this.maxFilterLength
+        );
         ImGui.PopStyleVar();
-        ImGui.SameLine(0.0f, ImGui.GetStyle().ItemInnerSpacing.X);
-        ImGui.TableHeader(string.Empty);
         ImGui.PopID();
-        ImGui.PopItemWidth();
         if (filter != (configuration.Get(column.Key) ?? string.Empty))
         {
             configuration.Set(column.Key, filter ?? null);

@@ -1,10 +1,11 @@
 using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Helpers;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;
 
-public class LevelRow : ExtendedRow<Level, LevelRow, LevelSheet>
+public class LevelRow : ExtendedRow<Level, LevelRow, LevelSheet>, ILocation
 {
     public string FormattedName
     {
@@ -62,6 +63,12 @@ public class LevelRow : ExtendedRow<Level, LevelRow, LevelSheet>
             return 0;
         }
     }
+
+    public RowRef<Map> Map => this.Base.Map;
+
+    public RowRef<PlaceName> PlaceName => this.TerritoryType.Value.PlaceName;
+
+    public RowRef<TerritoryType> TerritoryType => this.Base.Territory;
 
     public override string ToString()
     {

@@ -56,6 +56,7 @@ public class ItemInfoCache
     private Dictionary<ItemInfoType, HashSet<uint>>? itemSourceIdsByType;
     private Dictionary<ItemInfoType, HashSet<uint>>? itemUseIdsByType;
     private readonly Dictionary<uint, List<QuestRequiredItem>> questRequiredItems;
+    private readonly List<Gearset> gearsets;
 
     public ItemInfoCache(
         SheetManager sheetManager,
@@ -77,7 +78,8 @@ public class ItemInfoCache
         List<DungeonBossDrop> dungeonBossDrop,
         List<GardeningCrossbreed> gardeningCrossbreeds,
         List<QuestRequiredItem> questRequiredItems,
-        List<FieldOpCoffer> fieldOpCoffers)
+        List<FieldOpCoffer> fieldOpCoffers,
+        List<Gearset> gearsets)
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
@@ -98,6 +100,7 @@ public class ItemInfoCache
         this.dungeonBossDrops = dungeonBossDrop;
         this.gardeningCrossbreeds = gardeningCrossbreeds;
         this.fieldOpCoffers = fieldOpCoffers;
+        this.gearsets = gearsets;
         this.itemSources = new Dictionary<uint, List<ItemSource>>();
         this.itemUses = new Dictionary<uint, List<ItemSource>>();
         this.itemSourceUseMap = new Dictionary<(uint, uint), List<ItemSource>>();
@@ -338,6 +341,16 @@ public class ItemInfoCache
         //         }
         //     }
         // }
+
+        foreach (var gearset in this.gearsets)
+        {
+            var gearsetItems = gearset.Items.Where(c => c.RowId != 0).Select(c => itemSheet.GetRow(c.RowId)).ToList();
+            foreach (var setItem in gearsetItems)
+            {
+                var itemSource = new ItemGearsetSource(setItem, gearsetItems, gearset);
+                this.AddItemUse(itemSource);
+            }
+        }
 
         var classJobMap = classJobSheet.Where(c => c.ClassJobType != ClassJobType.Unknown).ToDictionary(c => c.ClassJobType, c => c);
 
@@ -1633,6 +1646,9 @@ public class ItemInfoCache
                 case ItemSupplementSource.PilgrimsTraverse:
                     source = new ItemPilgrimsTraverseSource(item, sourceItem, supplementalItem);
                     break;
+                case ItemSupplementSource.Oizys:
+                    source = new ItemOizysSource(item, sourceItem, supplementalItem);
+                    continue;
                 case ItemSupplementSource.SkybuilderHandIn:
                     continue;
                 case ItemSupplementSource.Unknown:
