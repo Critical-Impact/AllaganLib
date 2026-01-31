@@ -48,8 +48,8 @@ public abstract class IconColumn<TConfiguration, TData, TMessageBase> : IntegerF
                 bool isHq = currentValue > 500000;
                 currentValue %= 500000;
 
-                ImGui.AlignTextToFramePadding();
-                ImGui.Image(this.textureProvider.GetFromGameIcon(new GameIconLookup((uint)currentValue, isHq)).GetWrapOrEmpty().Handle, this.IconSize);
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + ImGui.GetStyle().CellPadding.Y);
+                ImGui.Image(this.textureProvider.GetFromGameIcon(new GameIconLookup((uint)currentValue, isHq)).GetWrapOrEmpty().Handle, this.IconSize * ImGui.GetIO().FontGlobalScale);
             }
             else
             {

@@ -152,6 +152,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
 
     public void Dispose()
     {
+        this.sheetCache.Clear();
         this.sheetContainer.Dispose();
     }
 

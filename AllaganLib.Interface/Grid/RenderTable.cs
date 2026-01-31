@@ -21,6 +21,9 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
     private readonly CsvLoaderService csvLoaderService;
     private Task? currentLoadTask;
     private CancellationTokenSource? cancellationTokenSource;
+    private bool wasResizable;
+    private bool? wasResized;
+    private int frameWaited;
 
     public RenderTable(
         CsvLoaderService csvLoaderService,
@@ -66,6 +69,8 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
 
     public bool UseClipper { get; set; } = true;
 
+    public bool ResizeOnOpen { get; set; } = false;
+
     public virtual Func<TData, List<TMessageBase>>? RightClickFunc { get; set; } = null;
 
     public ImGuiSortDirection? SortDirection { get; set; }
@@ -75,6 +80,8 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
     private List<TData> items = new();
 
     public abstract List<TData> GetItems();
+
+    public virtual int RowHeight { get; } = 32;
 
     public virtual Task<List<TData>> GetItemsAsync()
     {
@@ -175,6 +182,36 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
         {
             if (filterTableChild.Success)
             {
+                if (this.ResizeOnOpen)
+                {
+                    if (this.wasResized == null)
+                    {
+                        if (this.TableFlags.HasFlag(ImGuiTableFlags.Resizable))
+                        {
+                            this.TableFlags &= ~ImGuiTableFlags.Resizable;
+                            this.TableFlags |= ImGuiTableFlags.NoSavedSettings;
+                            this.wasResizable = true;
+                            this.wasResized = false;
+                        }
+                    }
+                    else if (this.wasResized == false)
+                    {
+                        if (this.frameWaited != 5)
+                        {
+                            this.frameWaited++;
+                        }
+                        else
+                        {
+                            this.wasResized = true;
+                            if (this.wasResizable)
+                            {
+                                this.TableFlags |= ImGuiTableFlags.Resizable;
+                                this.TableFlags &= ~ImGuiTableFlags.NoSavedSettings;
+                            }
+                        }
+                    }
+                }
+
                 using var table = ImRaii.Table(this.Key, this.Columns.Count(c => !c.IsHidden), this.TableFlags);
                 if (table.Success)
                 {
@@ -248,7 +285,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                         unsafe
                         {
                             clipper = ImGui.ImGuiListClipper();
-                            clipper.ItemsHeight = 32;
+                            clipper.ItemsHeight = this.RowHeight * ImGui.GetIO().FontGlobalScale;
                         }
 
                         _ = this.GetFilteredItemsAsync(configuration);
@@ -262,7 +299,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                 if (index >= 0 && index < filteredItems.Count)
                                 {
                                     var item = filteredItems[index];
-                                    ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
+                                    ImGui.TableNextRow(ImGuiTableRowFlags.None, this.RowHeight * ImGui.GetIO().FontGlobalScale);
                                     for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
                                     {
                                         using var colId = ImRaii.PushId(columnIndex);
@@ -277,6 +314,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                             item,
                                             index,
                                             columnIndex);
+
                                         if (this.HasFooter)
                                         {
                                             this.ColumnWidths[columnIndex] = ImGui.GetContentRegionAvail().X;
@@ -291,7 +329,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                                         {
                                             ImGui.SameLine();
                                             var hoveredRow = -1;
-                                            var available = ImGui.GetFrameHeightWithSpacing();
+                                            var available = this.RowHeight * ImGui.GetIO().FontGlobalScale;
                                             ImGui.Selectable(
                                                 "",
                                                 false,
@@ -334,7 +372,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                             if (index >= 0 && index < filteredItems.Count)
                             {
                                 var item = filteredItems[index];
-                                ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
+                                ImGui.TableNextRow(ImGuiTableRowFlags.None, this.RowHeight * ImGui.GetIO().FontGlobalScale);
                                 for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
                                 {
                                     using var colId = ImRaii.PushId(columnIndex);
@@ -433,7 +471,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                     }
 
                     var filteredItems = this.GetFilteredItems(configuration);
-                    ImGui.TableNextRow(ImGuiTableRowFlags.None, 32);
+                    ImGui.TableNextRow(ImGuiTableRowFlags.None, this.RowHeight * ImGui.GetIO().FontGlobalScale);
                     for (var columnIndex = 0; columnIndex < this.Columns.Count; columnIndex++)
                     {
                         var column = this.Columns[columnIndex];

@@ -13,8 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [2.0.4] - 2026-01-30
+## [2.0.5] - 2026-01-31
 
+## [2.0.4] - 2026-01-30
+### Fixed
+- AllaganLib.GameSheets
+  - Empty item sources were being made for craft leves
+  - Fixed a concurrency issue in extended sheet
+  - Fixed an issue where the sheet cache left a hanging reference
+
+- AllaganLib.Interface
+  - Fixed a scaling issue in IconColumn
+  - RenderTable can auto-resize it's columns on first draw
+  - RenderTable now has a dynamic row height
+  
 ### Added
 - AllaganLib.Monitors
   -  AchievementMonitorService - Monitors the player’s achievement completion state by periodically polling once the achievement window is opened. Caches completed achievements, detects newly completed ones, and exposes achievements for the current character.

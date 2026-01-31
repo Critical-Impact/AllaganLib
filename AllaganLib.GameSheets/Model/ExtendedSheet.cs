@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Caches;
@@ -16,8 +17,7 @@ public abstract class ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> : IRead
     where TExtendedSheet : ExtendedSheet<TBase, TExtendedRow, TExtendedSheet>,
     IExtendedSheet
 {
-    private Dictionary<uint, TExtendedRow> extendedRows;
-    private Dictionary<(uint, ushort), TExtendedRow> extendedSubRows;
+    private ConcurrentDictionary<uint, TExtendedRow> extendedRows;
     private uint? startRow;
 
     public ExtendedSheet(
@@ -31,7 +31,7 @@ public abstract class ExtendedSheet<TBase, TExtendedRow, TExtendedSheet> : IRead
         this.SheetManager = sheetManager;
         this.SheetIndexer = sheetIndexer;
         this.ItemInfoCache = itemInfoCache;
-        this.extendedRows = new Dictionary<uint, TExtendedRow>(this.BaseSheet.Count);
+        this.extendedRows = new ConcurrentDictionary<uint, TExtendedRow>(Environment.ProcessorCount, this.BaseSheet.Count);
     }
 
     public GameData GameData { get; }

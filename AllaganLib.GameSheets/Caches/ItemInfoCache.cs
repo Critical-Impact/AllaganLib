@@ -143,6 +143,22 @@ public class ItemInfoCache
         return [];
     }
 
+    public List<T> GetItemSourcesByType<T>(params ItemInfoType[] types)
+        where T : ItemSource
+    {
+        this.itemSourcesByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
+        List<T> sources = [];
+        foreach (var type in types)
+        {
+            if (this.itemSourcesByType.TryGetValue(type, out var byType))
+            {
+                sources.AddRange(byType.Cast<T>());
+            }
+        }
+
+        return sources.ToList();
+    }
+
     public HashSet<uint> GetItemSourceIdsByType(ItemInfoType type)
     {
         this.itemSourceIdsByType ??= this.itemSources.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.Select(d => d.Item.RowId).Distinct().ToHashSet());
@@ -189,6 +205,18 @@ public class ItemInfoCache
         return [];
     }
 
+    public List<T> GetItemUsesByType<T>(ItemInfoType type)
+        where T : ItemSource
+    {
+        this.itemUsesByType ??= this.itemUses.SelectMany(c => c.Value).GroupBy(c => c.Type).ToDictionary(c => c.Key, c => c.ToList());
+        if (this.itemUsesByType.TryGetValue(type, out var byType))
+        {
+            return byType.Cast<T>().ToList();
+        }
+
+        return [];
+    }
+
     public List<ItemSource>? GetItemSources(uint itemId, uint? sourceId = null)
     {
         if (sourceId != null)
@@ -202,6 +230,11 @@ public class ItemInfoCache
     public List<T>? GetItemSources<T>(uint itemId, ItemInfoType itemInfoType)
     {
         return this.itemSources.GetValueOrDefault(itemId)?.Where(c => c.Type == itemInfoType).OfType<T>().ToList();
+    }
+
+    public List<T>? GetItemSources<T>(uint itemId, params ItemInfoType[] itemInfoTypes)
+    {
+        return this.itemSources.GetValueOrDefault(itemId)?.Where(c => itemInfoTypes.Contains(c.Type)).OfType<T>().ToList();
     }
 
     public bool HasItemSources(uint itemId, ItemInfoType itemInfoType)
@@ -978,6 +1011,10 @@ public class ItemInfoCache
                                 for (var groupIndex = 0; groupIndex < reward.Item.Count; groupIndex++)
                                 {
                                     var item = reward.Item[groupIndex];
+                                    if (item.RowId == 0)
+                                    {
+                                        continue;
+                                    }
                                     var itemRow = itemSheet.GetRowOrDefault(item.RowId);
                                     if (itemRow != null)
                                     {
