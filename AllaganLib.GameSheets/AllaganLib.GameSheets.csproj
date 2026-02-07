@@ -20,6 +20,10 @@
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dalamud">
+      <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Serilog">
       <HintPath>$(DalamudLibPath)Serilog.dll</HintPath>
       <Private>False</Private>
