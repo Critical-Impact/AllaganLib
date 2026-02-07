@@ -13,9 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [2.0.5] - 2026-01-31
+## [2.0.6] - 2026-02-07
+### Added
+- AllaganLib.GameSheets
+  - NpcLevelCache and NpcShopCache can now cache data inside dalamud's data share making boot times for plugins using this data faster
+  - Added CacheInDataShare and PersistInDataShare to SheetManager's startup options
 
-## [2.0.4] - 2026-01-30
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel upgraded to 4.1.8
+
+## [2.0.5] - 2026-01-31
 ### Fixed
 - AllaganLib.GameSheets
   - Empty item sources were being made for craft leves
@@ -26,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed a scaling issue in IconColumn
   - RenderTable can auto-resize it's columns on first draw
   - RenderTable now has a dynamic row height
-  
+
+## [2.0.4] - 2026-01-30
 ### Added
 - AllaganLib.Monitors
   -  AchievementMonitorService - Monitors the player’s achievement completion state by periodically polling once the achievement window is opened. Caches completed achievements, detects newly completed ones, and exposes achievements for the current character.

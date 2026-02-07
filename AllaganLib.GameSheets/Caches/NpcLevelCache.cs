@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllaganLib.GameSheets.Model;
+using AllaganLib.GameSheets.Service;
+using Dalamud.Plugin;
 using Lumina;
 using Lumina.Data.Files;
 using Lumina.Data.Parsing.Layer;
@@ -11,22 +13,34 @@ using LuminaSupplemental.Excel.Model;
 
 namespace AllaganLib.GameSheets.Caches;
 
-public class NpcLevelCache
+public class NpcLevelCache : IDisposable
 {
+    public const string LocationsName = "Locations";
+
     private readonly ExcelSheet<TerritoryType> territoryTypeSheet;
     private readonly ExcelSheet<Map> mapSheet;
     private readonly ExcelSheet<Level> levelSheet;
     private readonly List<ENpcPlace> eNpcPlaces;
     private readonly GameData gameData;
+    private readonly IDalamudPluginInterface pluginInterface;
+    private readonly SheetManagerStartupOptions startupOptions;
     private Dictionary<uint, Dictionary<uint, RowRef<Map>>> npcLayerCache;
     private Dictionary<(uint, sbyte), uint>? mapIdByTerritoryTypeAndMapIndex;
     private Dictionary<uint,HashSet<NpcLocation>> locations;
 
+    public int Version { get; } = 1;
+
+    public string DataShareTag { get; } = "AllaganLib.Data.NpcLevelCache";
+
     public NpcLevelCache(
         List<ENpcPlace> eNpcPlaces,
-        GameData gameData)
+        GameData gameData,
+        IDalamudPluginInterface pluginInterface,
+        SheetManagerStartupOptions startupOptions)
     {
         this.gameData = gameData;
+        this.pluginInterface = pluginInterface;
+        this.startupOptions = startupOptions;
         this.territoryTypeSheet = gameData.GetExcelSheet<TerritoryType>()!;
         this.mapSheet = gameData.GetExcelSheet<Map>()!;
         this.levelSheet = gameData.GetExcelSheet<Level>()!;
@@ -96,7 +110,76 @@ public class NpcLevelCache
         return this.locations.GetValueOrDefault(npcId);
     }
 
-    public Dictionary<uint, HashSet<NpcLocation>> BuildLevelMap()
+    public void BuildLevelMap()
+    {
+        if (this.startupOptions.CacheInDataShare)
+        {
+            if (!this.LoadDataShare())
+            {
+                this.BuildLevels();
+                this.CreateDataShare();
+            }
+        }
+        else
+        {
+            this.BuildLevels();
+        }
+    }
+
+    private string GetDataShareTag(string lookupName)
+    {
+        return this.DataShareTag + "." + lookupName + "." + this.Version;
+    }
+
+    private bool LoadDataShare()
+    {
+        if (!this.pluginInterface.TryGetData(this.GetDataShareTag(LocationsName), out Dictionary<uint, IReadOnlyCollection<Tuple<uint, uint, uint, double, double, bool>>>? value))
+        {
+            return false;
+        }
+
+        this.BuildLevelsFromDataShare(value);
+
+        return true;
+    }
+
+    private void BuildLevelsFromDataShare(Dictionary<uint, IReadOnlyCollection<Tuple<uint, uint, uint, double, double, bool>>> data)
+    {
+        var levels = new Dictionary<uint, HashSet<NpcLocation>>();
+
+        foreach (var level in data)
+        {
+            levels.Add(level.Key, []);
+            foreach (var location in level.Value)
+            {
+                levels[level.Key].Add(new NpcLocation(location.Item4, location.Item5, new RowRef<Map>(this.gameData.Excel, location.Item1), new RowRef<PlaceName>(this.gameData.Excel, location.Item2), new RowRef<TerritoryType>(this.gameData.Excel, location.Item3), location.Item6));
+            }
+        }
+
+        this.locations = levels;
+    }
+
+    private void CreateDataShare()
+    {
+        this.pluginInterface.GetOrCreateData<Dictionary<uint, IReadOnlyCollection<Tuple<uint, uint, uint, double, double, bool>>>>(
+            this.GetDataShareTag(LocationsName),
+            () =>
+            {
+                var data = new Dictionary<uint, List<Tuple<uint, uint, uint, double, double, bool>>>();
+                foreach (var dict in this.locations)
+                {
+                    data.Add(dict.Key, []);
+                    foreach (var item in dict.Value)
+                    {
+                        data[dict.Key].Add(new Tuple<uint, uint, uint, double, double, bool>(item.Map.RowId, item.PlaceName.RowId, item.TerritoryType.RowId, item.X, item.Y, item.AlreadyConverted));
+                    }
+                }
+
+                return data.ToDictionary<KeyValuePair<uint, List<Tuple<uint, uint, uint, double, double, bool>>>, uint, IReadOnlyCollection<Tuple<uint, uint, uint, double, double, bool>>>(c => c.Key, c => c.Value.AsReadOnly());
+            });
+    }
+
+    public Dictionary<uint, HashSet<NpcLocation>> BuildLevels()
     {
         var npcLevelLookup = new Dictionary<uint, HashSet<NpcLocation>>();
 
@@ -204,5 +287,13 @@ public class NpcLevelCache
         this.locations = npcLevelLookup;
 
         return npcLevelLookup;
+    }
+
+    public void Dispose()
+    {
+        if (!this.startupOptions.PersistInDataShare)
+        {
+            this.pluginInterface.RelinquishData(this.GetDataShareTag(LocationsName));
+        }
     }
 }

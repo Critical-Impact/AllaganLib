@@ -1,15 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using AllaganLib.GameSheets.Service;
+using Dalamud.Plugin;
 using Lumina;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Caches;
 
-public class NpcShopCache
+public class NpcShopCache : IDisposable
 {
+    public const string NpcIdToShopIdLookupName = "NpcIdToShopIdLookup";
+    public const string ShopIdToNpcIdLookupName = "ShopIdToNpcIdLookup";
+    public const string NpcIdToTripleTriadLookupName = "NpcIdToTripleTriadLookup";
+    public const string TripleTriadToNpcIdLookupName = "TripleTriadToNpcIdLookup";
+    public const string NpcIdToFateShopIdLookupName = "NpcIdToFateShopIdLookup";
+    public const string NpcIdToSpecialShopIdLookupName = "NpcIdToSpecialShopIdLookup";
+    public const string NpcIdToFccShopIdLookupName = "NpcIdToFccShopIdLookup";
+    public const string NpcIdToGilShopIdLookupName = "NpcIdToGilShopIdLookup";
+    public const string NpcIdToGcShopIdLookupName = "NpcIdToGcShopIdLookup";
+    public const string NpcIdToInclusionShopIdLookupName = "NpcIdToInclusionShopIdLookup";
+    public const string NpcIdToCollectablesShopIdLookupName = "NpcIdToCollectablesShopIdLookup";
+    public const string NpcIdToAnimaShopIdLookupName = "NpcIdToAnimaShopIdLookup";
+    public const string FateShopIdToNpcIdLookupName = "FateShopIdToNpcIdLookup";
+    public const string SpecialShopIdToNpcIdLookupName = "SpecialShopIdToNpcIdLookup";
+    public const string FccShopIdToNpcIdLookupName = "FccShopIdToNpcIdLookup";
+    public const string GilShopIdToNpcIdLookupName = "GilShopIdToNpcIdLookup";
+    public const string GcShopIdToNpcIdLookupName = "GcShopIdToNpcIdLookup";
+    public const string InclusionShopIdToNpcLookupName = "InclusionShopIdToNpcLookup";
+    public const string CollectablesShopIdToNpcLookupName = "CollectablesShopIdToNpcLookup";
+    public const string AnimaShopIdToNpcIdLookupName = "AnimaShopIdToNpcIdLookup";
+
+    private readonly IDalamudPluginInterface pluginInterface;
     private readonly GameData gameData;
+    private readonly SheetManagerStartupOptions startupOptions;
+
     private Dictionary<uint, HashSet<uint>> npcIdToShopIdLookup;
     private Dictionary<uint, HashSet<uint>> shopIdToNpcIdLookup;
 
@@ -34,10 +61,120 @@ public class NpcShopCache
     private Dictionary<uint, HashSet<uint>> collectablesShopIdToNpcLookup;
     private Dictionary<uint, HashSet<uint>> animaShopIdToNpcIdLookup;
 
+    private IReadOnlyList<DataShareBinding<Dictionary<uint, HashSet<uint>>>> DataShareBindings
+    =>
+    [
+        new(
+                NpcIdToShopIdLookupName,
+                () => this.npcIdToShopIdLookup,
+                v => this.npcIdToShopIdLookup = v),
 
-    public NpcShopCache(GameData gameData)
+            new(
+                ShopIdToNpcIdLookupName,
+                () => this.shopIdToNpcIdLookup,
+                v => this.shopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToTripleTriadLookupName,
+                () => this.npcIdToTripleTriadLookup,
+                v => this.npcIdToTripleTriadLookup = v),
+
+            new(
+                TripleTriadToNpcIdLookupName,
+                () => this.tripleTriadToNpcIdLookup,
+                v => this.tripleTriadToNpcIdLookup = v),
+
+            new(
+                NpcIdToFateShopIdLookupName,
+                () => this.npcIdToFateShopIdLookup,
+                v => this.npcIdToFateShopIdLookup = v),
+
+            new(
+                FateShopIdToNpcIdLookupName,
+                () => this.fateShopIdToNpcIdLookup,
+                v => this.fateShopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToSpecialShopIdLookupName,
+                () => this.npcIdToSpecialShopIdLookup,
+                v => this.npcIdToSpecialShopIdLookup = v),
+
+            new(
+                SpecialShopIdToNpcIdLookupName,
+                () => this.specialShopIdToNpcIdLookup,
+                v => this.specialShopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToFccShopIdLookupName,
+                () => this.npcIdToFccShopIdLookup,
+                v => this.npcIdToFccShopIdLookup = v),
+
+            new(
+                FccShopIdToNpcIdLookupName,
+                () => this.fccShopIdToNpcIdLookup,
+                v => this.fccShopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToGilShopIdLookupName,
+                () => this.npcIdToGilShopIdLookup,
+                v => this.npcIdToGilShopIdLookup = v),
+
+            new(
+                GilShopIdToNpcIdLookupName,
+                () => this.gilShopIdToNpcIdLookup,
+                v => this.gilShopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToGcShopIdLookupName,
+                () => this.npcIdToGcShopIdLookup,
+                v => this.npcIdToGcShopIdLookup = v),
+
+            new(
+                GcShopIdToNpcIdLookupName,
+                () => this.gcShopIdToNpcIdLookup,
+                v => this.gcShopIdToNpcIdLookup = v),
+
+            new(
+                NpcIdToInclusionShopIdLookupName,
+                () => this.npcIdToInclusionShopIdLookup,
+                v => this.npcIdToInclusionShopIdLookup = v),
+
+            new(
+                InclusionShopIdToNpcLookupName,
+                () => this.inclusionShopIdToNpcLookup,
+                v => this.inclusionShopIdToNpcLookup = v),
+
+            new(
+                NpcIdToCollectablesShopIdLookupName,
+                () => this.npcIdToCollectablesShopIdLookup,
+                v => this.npcIdToCollectablesShopIdLookup = v),
+
+            new(
+                CollectablesShopIdToNpcLookupName,
+                () => this.collectablesShopIdToNpcLookup,
+                v => this.collectablesShopIdToNpcLookup = v),
+
+            new(
+                NpcIdToAnimaShopIdLookupName,
+                () => this.npcIdToAnimaShopIdLookup,
+                v => this.npcIdToAnimaShopIdLookup = v),
+
+            new(
+                AnimaShopIdToNpcIdLookupName,
+                () => this.animaShopIdToNpcIdLookup,
+                v => this.animaShopIdToNpcIdLookup = v)
+    ];
+
+    public int Version { get; } = 1;
+
+    public string DataShareTag { get; } = "AllaganLib.Data.NpcShopCache";
+
+
+    public NpcShopCache(IDalamudPluginInterface pluginInterface, GameData gameData, SheetManagerStartupOptions startupOptions)
     {
+        this.pluginInterface = pluginInterface;
         this.gameData = gameData;
+        this.startupOptions = startupOptions;
         this.npcIdToShopIdLookup = [];
         this.shopIdToNpcIdLookup = [];
         this.npcIdToFateShopIdLookup = [];
@@ -105,6 +242,53 @@ public class NpcShopCache
 
     public void BuildDataMap()
     {
+        if (this.startupOptions.CacheInDataShare)
+        {
+            if (!this.LoadDataShare())
+            {
+                this.BuildData();
+                this.CreateDataShare();
+            }
+        }
+        else
+        {
+            this.BuildData();
+        }
+    }
+
+    private string GetDataShareTag(string lookupName)
+    {
+        return this.DataShareTag + "." + lookupName + "." + this.Version;
+    }
+
+    private bool LoadDataShare()
+    {
+        foreach (var binding in this.DataShareBindings)
+        {
+            if (!this.pluginInterface.TryGetData(
+                    this.GetDataShareTag(binding.Name),
+                    out Dictionary<uint, HashSet<uint>>? value))
+            {
+                return false;
+            }
+
+            binding.Setter(value);
+        }
+
+        return true;
+    }
+
+    private void CreateDataShare()
+    {
+        foreach (var binding in this.DataShareBindings)
+        {
+            this.pluginInterface.GetOrCreateData(this.GetDataShareTag(binding.Name), binding.Getter);
+        }
+    }
+
+
+    private void BuildData()
+    {
         var npcBaseSheet = this.gameData.GetExcelSheet<ENpcBase>()!;
         var fateShopSheet = this.gameData.GetExcelSheet<FateShop>()!;
         var fccShopSheet = this.gameData.GetExcelSheet<FccShop>()!;
@@ -168,7 +352,7 @@ public class NpcShopCache
             }
         }
 
-        var npcToShopIdCount = npcIdToShopIdLookup.Count;
+        var npcToShopIdCount = this.npcIdToShopIdLookup.Count;
         var shopIdToNpcIdCount = this.shopIdToNpcIdLookup.Count;
 
         void EvalulateRowRef(ENpcBase npcBase, RowRef rowRef, ReadOnlySpan<Type> customTalkTypes)
@@ -395,5 +579,16 @@ public class NpcShopCache
     {
         this.shopIdToNpcIdLookup.TryGetValue(shopId, out var npcIds);
         return npcIds;
+    }
+
+    public void Dispose()
+    {
+        if (!this.startupOptions.PersistInDataShare)
+        {
+            foreach (var binding in this.DataShareBindings)
+            {
+                this.pluginInterface.RelinquishData(this.GetDataShareTag(binding.Name));
+            }
+        }
     }
 }

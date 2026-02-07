@@ -13,9 +13,20 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
 
     public RowRef<TerritoryType> TerritoryType { get; }
 
-    private readonly double X;
-    private readonly double Y;
-    private readonly bool AlreadyConverted;
+    /// <summary>
+    /// The raw X value.
+    /// </summary>
+    public double X { get; }
+
+    /// <summary>
+    /// The raw Y value;
+    /// </summary>
+    public double Y { get; }
+
+    /// <summary>
+    /// Does the raw X/Y value represent a map X/Y already.
+    /// </summary>
+    public bool AlreadyConverted { get; }
 
     public NpcLocation(
         double mapX,

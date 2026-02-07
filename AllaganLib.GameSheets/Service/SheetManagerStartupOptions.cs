@@ -27,6 +27,16 @@ public class SheetManagerStartupOptions
     public bool CalculateLookups { get; set; } = true;
 
     /// <summary>
+    /// Cache certain data in dalamud's datashare.
+    /// </summary>
+    public bool CacheInDataShare { get; set; } = true;
+
+    /// <summary>
+    /// Should any data in the DataShare be relinquished on dispose.
+    /// </summary>
+    public bool PersistInDataShare { get; set; } = false;
+
+    /// <summary>
     /// If you need to add custom sheets/classes to the SheetManager container, you can provide a hook that the SheetManager will run will building it's container.
     /// </summary>
     public Action<ContainerBuilder>? ContainerBuilderHook { get; set; } = null;

@@ -5,6 +5,7 @@ using AllaganLib.GameSheets.Caches;
 using AllaganLib.GameSheets.Extensions;
 using AllaganLib.GameSheets.Model;
 using Autofac;
+using Dalamud.Plugin;
 using Lumina;
 using Lumina.Excel;
 using LuminaSupplemental.Excel.Model;
@@ -19,6 +20,7 @@ namespace AllaganLib.GameSheets.Service;
 /// </summary>
 public class SheetManager : IDisposable, IAsyncDisposable
 {
+    private readonly IDalamudPluginInterface pluginInterface;
     private IContainer sheetContainer;
     private Dictionary<Type, object> sheetCache;
     private SheetIndexer? sheetIndexer;
@@ -29,10 +31,12 @@ public class SheetManager : IDisposable, IAsyncDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetManager"/> class.
     /// </summary>
+    /// <param name="pluginInterface">Dalamud's plugin interface.</param>
     /// <param name="gameData">An instance of Lumina's GameData. If you are using dalamud, this is available via IDataManager.GameData.</param>
     /// <param name="startupOptions">The options to use when constructing the sheet manager.</param>
-    public SheetManager(GameData gameData, SheetManagerStartupOptions startupOptions)
+    public SheetManager(IDalamudPluginInterface pluginInterface, GameData gameData, SheetManagerStartupOptions startupOptions)
     {
+        this.pluginInterface = pluginInterface;
         this.sheetContainer = this.CreateContainer(gameData, startupOptions);
         this.sheetCache = new Dictionary<Type, object>();
         if (startupOptions.BuildNpcLevels)
@@ -74,6 +78,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
     {
         var containerBuilder = new ContainerBuilder();
         containerBuilder.RegisterInstance(gameData);
+        containerBuilder.RegisterInstance(this.pluginInterface).AsImplementedInterfaces();
         containerBuilder.RegisterType<SheetIndexer>().SingleInstance();
         containerBuilder.RegisterInstance(this).SingleInstance();
         containerBuilder.RegisterType<NpcShopCache>().SingleInstance();
