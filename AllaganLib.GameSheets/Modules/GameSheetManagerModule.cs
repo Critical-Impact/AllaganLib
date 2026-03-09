@@ -29,6 +29,7 @@ public class GameSheetManagerModule : Module
         containerBuilder.Register<ItemInfoCache>(c => c.Resolve<SheetManager>().ItemInfoCache).SingleInstance().ExternallyOwned();
         containerBuilder.Register<NpcLevelCache>(c => c.Resolve<SheetManager>().NpcLevelCache).SingleInstance().ExternallyOwned();
         containerBuilder.Register<NpcShopCache>(c => c.Resolve<SheetManager>().NpcShopCache).SingleInstance().ExternallyOwned();
+        containerBuilder.Register<SharedModelCache>(c => c.Resolve<SheetManager>().SharedModelCache).SingleInstance().ExternallyOwned();
         containerBuilder.RegisterModule<GameDataModule>();
 
         Assembly assembly = typeof(SheetManager).Assembly;

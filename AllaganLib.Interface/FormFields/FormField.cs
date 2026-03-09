@@ -30,7 +30,7 @@ public abstract class FormField<TValue, TConfiguration> : IFormField<TConfigurat
 
     public bool ColourModified { get; set; } = true;
 
-    public abstract string Version { get; }
+    public abstract string Version { get; set; }
 
     public virtual string? Image { get; } = null;
 

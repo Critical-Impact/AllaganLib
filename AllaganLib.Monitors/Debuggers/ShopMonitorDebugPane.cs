@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using AllaganLib.GameSheets.Sheets.Rows;
+using AllaganLib.Monitors.Enums;
 using AllaganLib.Monitors.Interfaces;
 using AllaganLib.Monitors.Services;
 using AllaganLib.Shared.Extensions;
@@ -88,7 +91,7 @@ public class ShopMonitorDebugPane : DebugLogPane
 
     public override void DrawInfo()
     {
-        var shopInfo = this.shopMonitor.GetCurrentShopType();
+        var shopInfo = this.shopMonitor.GetCurrentShopTypeIds();
 
         if (shopInfo is null)
         {
@@ -96,15 +99,40 @@ public class ShopMonitorDebugPane : DebugLogPane
         }
         else
         {
-            var (npc, shops, activeShop) = shopInfo.Value;
+            var npc = shopInfo.Value.ENpcBase;
+            var menuItems = shopInfo.Value.MenuItems;
+            var subMenuItems = shopInfo.Value.SubmenuItems;
+            var activeShop = shopInfo.Value.ActiveShopId;
+
             ImGui.Text($"NPC: {npc.ENpcResidentRow.Base.Singular.ToImGuiString()} (ID: {npc.RowId})");
             ImGui.Separator();
 
-            ImGui.Text("Shops:");
-            foreach (var shop in shops)
+            ImGui.Text("Menu Items:");
+            foreach (var menuItem in menuItems)
             {
-                bool isActive = activeShop != null && shop.RowId == activeShop.RowId;
-                string shopDisplay = $"- {shop.Name} (ID: {shop.RowId})";
+                bool isActive = menuItem.IsActive;
+
+                string shopDisplay;
+                if (menuItem.TopicSelect != null)
+                {
+                    shopDisplay = $"- {menuItem.TopicSelect.Value.Value.Name.ToImGuiString()} (Prehandler ID: {menuItem.TopicSelect.Value.RowId})";
+                }
+                else if(menuItem.Shops.Count > 0)
+                {
+                    var shop = this.shopMonitor.GetShopByIdAndType(menuItem.Shops.First().ShopId, menuItem.Shops.First().ShopType);
+                    if (shop != null)
+                    {
+                        shopDisplay = $"- {shop.Name} (ID: {shop.RowId})";
+                    }
+                    else
+                    {
+                        shopDisplay = "- Shop not found";
+                    }
+                }
+                else
+                {
+                    shopDisplay = "- No shops available";
+                }
 
                 if (isActive)
                 {
@@ -113,6 +141,49 @@ public class ShopMonitorDebugPane : DebugLogPane
                 else
                 {
                     ImGui.Text(shopDisplay);
+                }
+            }
+
+            ImGui.Text("Submenu Items:");
+            if (subMenuItems != null)
+            {
+                foreach (var menuItem in subMenuItems)
+                {
+                    bool isActive = menuItem.IsActive;
+
+                    string shopDisplay;
+                    if (menuItem.TopicSelect != null)
+                    {
+                        shopDisplay =
+                            $"- {menuItem.TopicSelect.Value.Value.Name.ToImGuiString()} (Prehandler ID: {menuItem.TopicSelect.Value.RowId})";
+                    }
+                    else if (menuItem.Shops.Count > 0)
+                    {
+                        var shop = this.shopMonitor.GetShopByIdAndType(
+                            menuItem.Shops.First().ShopId,
+                            menuItem.Shops.First().ShopType);
+                        if (shop != null)
+                        {
+                            shopDisplay = $"- {shop.Name} (ID: {shop.RowId})";
+                        }
+                        else
+                        {
+                            shopDisplay = "- Shop not found";
+                        }
+                    }
+                    else
+                    {
+                        shopDisplay = "- No shops available";
+                    }
+
+                    if (isActive)
+                    {
+                        ImGui.TextColored(new Vector4(0.2f, 1f, 0.2f, 1f), shopDisplay);
+                    }
+                    else
+                    {
+                        ImGui.Text(shopDisplay);
+                    }
                 }
             }
         }

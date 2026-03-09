@@ -196,7 +196,7 @@ public abstract class RenderTable<TConfiguration, TData, TMessageBase> : IDispos
                     }
                     else if (this.wasResized == false)
                     {
-                        if (this.frameWaited != 5)
+                        if (this.frameWaited != 10)
                         {
                             this.frameWaited++;
                         }

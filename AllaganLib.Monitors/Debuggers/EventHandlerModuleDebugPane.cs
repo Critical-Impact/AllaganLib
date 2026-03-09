@@ -58,14 +58,14 @@ public unsafe class EventHandlerModuleDebugPane : DebugLogPane
             foreach (var eventHandler in module.EventHandlerMap)
             {
                 string line = $"EventId: {eventHandler.Item1}";
-                results.Add(line);
                 foreach (var eventObject in eventHandler.Item2.Value->EventObjects)
                 {
                     if (this.targetManager.Target?.DataId == eventObject.Value->BaseId)
                     {
-                        results.Add($"Currently related to target {this.targetManager.Target.EntityId}");
+                        line += $" - Currently related to target {this.targetManager.Target.EntityId}";
                     }
                 }
+                results.Add(line);
             }
         }
         catch (Exception ex)

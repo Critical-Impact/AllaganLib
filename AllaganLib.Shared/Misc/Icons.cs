@@ -57,4 +57,11 @@ public static class Icons
     public const int StellarMissionIcon = 65123;
     public const int TripleTriadIcon = 71101;
     public const int SwordIcon = 63972;
+    public const int FlagIcon = 60468;
+    public const int BeastTribeIcon = 61814;
+    public const int ManSwordIcon = 62914;
+    public const int QuestIcon = 61411;
+    public const int CombinedClothingIcon = 62917;
+    public const int QuestionMarkBag = 60051;
+    public const int ThreePeople = 61536;
 }

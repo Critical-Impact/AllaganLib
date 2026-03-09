@@ -27,6 +27,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
     private NpcShopCache? npcShopCache;
     private NpcLevelCache? npcLevelCache;
     private ItemInfoCache? itemInfoCache;
+    private SharedModelCache? sharedModelCache;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SheetManager"/> class.
@@ -73,6 +74,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
     public NpcLevelCache NpcLevelCache => this.npcLevelCache ??= this.sheetContainer.Resolve<NpcLevelCache>();
 
     public ItemInfoCache ItemInfoCache => this.itemInfoCache ??= this.sheetContainer.Resolve<ItemInfoCache>();
+    public SharedModelCache SharedModelCache => this.sharedModelCache ??= this.sheetContainer.Resolve<SharedModelCache>();
 
     private IContainer CreateContainer(GameData gameData, SheetManagerStartupOptions startupOptions)
     {
@@ -84,6 +86,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterType<NpcShopCache>().SingleInstance();
         containerBuilder.RegisterType<NpcLevelCache>().SingleInstance();
         containerBuilder.RegisterType<ItemInfoCache>().SingleInstance();
+        containerBuilder.RegisterType<SharedModelCache>().SingleInstance();
         if (startupOptions.Logger != null)
         {
             containerBuilder.RegisterInstance(startupOptions.Logger).As<ILogger>();

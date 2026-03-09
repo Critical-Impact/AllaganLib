@@ -3,6 +3,8 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using AllaganLib.Monitors.Enums;
 using AllaganLib.Monitors.Services;
+using Lumina.Excel;
+using Lumina.Excel.Sheets;
 
 namespace AllaganLib.Monitors.Interfaces;
 
@@ -45,7 +47,7 @@ public interface IShopMonitorService
     /// If the player is currently viewing a shop, provides the NPC, shop entries and active shop.
     /// </summary>
     /// <returns>A tuple containing the npc, shops and active shop or null if no shop.</returns>
-    public (ENpcBaseRow Npc, List<IShop> Shops, IShop? ActiveShop)? GetCurrentShopType();
+    public (ENpcBaseRow Npc, List<List<IShop>> Shops, List<List<IShop>>? SubShops, IShop? ActiveShop)? GetCurrentShopType();
 
     /// <summary>
     /// Given a shop ID and type, returns the shop if available.
@@ -59,5 +61,36 @@ public interface IShopMonitorService
     /// If the player is at a NPC that has shops available, returns a list of shop types and the IDs of the shops along with the active shop's type and ID.
     /// </summary>
     /// <returns>Returns a list of shop types and the IDs of the shops along with the active shop's type and ID.</returns>
-    public (uint NpcId, List<(ShopType, uint)> Shops, (ShopType, uint)? ActiveShopId)? GetCurrentShopTypeIds();
+    public (ENpcBaseRow ENpcBase, List<IShopMenu> MenuItems, List<IShopMenu>? SubmenuItems, (ShopType, uint)? ActiveShopId)? GetCurrentShopTypeIds();
+}
+
+public interface IShopMenu
+{
+    /// <summary>
+    /// All the shops related to this menu item, may only be 1 item.
+    /// </summary>
+    List<(ShopType ShopType, uint ShopId)> Shops { get; }
+
+    /// <summary>
+    /// If this menu item opens a new submenu, returns the related topic select.
+    /// </summary>
+    RowRef<TopicSelect>? TopicSelect { get; }
+
+    bool IsActive { get; }
+}
+
+public class ShopMenu : IShopMenu
+{
+    public ShopMenu(List<(ShopType ShopType, uint ShopId)> shops, bool isActive, RowRef<TopicSelect>? topicSelect = null)
+    {
+        this.Shops = shops;
+        this.TopicSelect = topicSelect;
+        this.IsActive = isActive;
+    }
+
+    public List<(ShopType ShopType, uint ShopId)> Shops { get; }
+
+    public RowRef<TopicSelect>? TopicSelect { get; }
+
+    public bool IsActive { get; }
 }

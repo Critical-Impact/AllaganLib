@@ -8,8 +8,44 @@ namespace AllaganLib.GameSheets.Sheets.Rows;
 public class ClassJobRow : ExtendedRow<ClassJob, ClassJobRow, ClassJobSheet>
 {
     private ClassJobType? classJobType;
+    private ClassJobCategoryRow? classJobCategoryRow;
 
     public int Icon => (int)(62000 + this.RowId);
+
+    public RoleType Role
+    {
+        get
+        {
+            if (this.Base.Role == 0)
+            {
+                var category = this.ClassJobCategory;
+                if (category != null)
+                {
+                    if (category.IsCrafting)
+                    {
+                        return RoleType.Crafting;
+                    }
+
+                    if (category.IsGathering)
+                    {
+                        return RoleType.Gathering;
+                    }
+
+                    return RoleType.Other;
+                }
+            }
+
+            return (RoleType)this.Base.Role;
+        }
+    }
+
+    public ClassJobCategoryRow? ClassJobCategory
+    {
+        get
+        {
+            return this.classJobCategoryRow ??= this.Sheet.GetClassCategorySheet().GetRowOrDefault(this.Base.ClassJobCategory.RowId);
+        }
+    }
 
     public ClassJobType ClassJobType
     {
@@ -23,6 +59,17 @@ public class ClassJobRow : ExtendedRow<ClassJob, ClassJobRow, ClassJobSheet>
             return this.classJobType.Value;
         }
     }
+}
+
+public enum RoleType
+{
+    Tank = 1,
+    DPSMelee = 2,
+    DPSRanged = 3,
+    Healer = 4,
+    Crafting = 5,
+    Gathering = 6,
+    Other = 7
 }
 
 public enum ClassJobType
