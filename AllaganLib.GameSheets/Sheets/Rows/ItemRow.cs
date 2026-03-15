@@ -623,6 +623,38 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
+    public string GamerEscapeName
+    {
+        get
+        {
+            var name = this.NameString.Replace(' ', '_');
+            name = name.Replace('–', '-');
+
+            if (name.StartsWith("_"))
+            {
+                name = name.Substring(2);
+            }
+
+            return name;
+        }
+    }
+
+    public string ConsoleGamesWikiName
+    {
+        get
+        {
+            var name = this.NameString.Replace("#"," ").Replace("  ", " ").Replace(' ', '_');
+            name = name.Replace('–', '-');
+
+            if (name.StartsWith("_"))
+            {
+                name = name.Substring(2);
+            }
+
+            return name;
+        }
+    }
+
     // Shared Models
 
     public ushort ModelBase => (ushort)this.Base.ModelMain;
