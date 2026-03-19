@@ -15,8 +15,6 @@ using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
 using ItemSupplementSource = LuminaSupplemental.Excel.Model.ItemSupplementSource;
 
-using Quest = Lumina.Excel.Sheets.Experimental.Quest;
-
 namespace AllaganLib.GameSheets.Caches;
 
 public class ItemInfoCache
@@ -326,7 +324,7 @@ public class ItemInfoCache
         var classJobSheet = this.sheetManager.GetSheet<ClassJobSheet>()!;
         var animaTradeItemSheet = this.sheetManager.GetSheet<AnimaWeapon5TradeItemSheet>()!;
 
-
+        //
         // var wksMissionUnitSheet = this.gameData.GetExcelSheet<WKSMissionUnit>()!;
         // var wksMissionTodoSheet = this.gameData.GetExcelSheet<WKSMissionToDo>()!;
         // var wksMissionSupplyItemSheet = this.gameData.GetExcelSheet<WKSMissionSupplyItem>()!;
@@ -375,12 +373,13 @@ public class ItemInfoCache
         //     }
         // }
 
-        foreach (var gearset in this.gearsets)
+        for (var gearsetIndex = 0; gearsetIndex < this.gearsets.Count; gearsetIndex++)
         {
+            var gearset = this.gearsets[gearsetIndex];
             var gearsetItems = gearset.Items.Where(c => c.RowId != 0).Select(c => itemSheet.GetRow(c.RowId)).ToList();
             foreach (var setItem in gearsetItems)
             {
-                var itemSource = new ItemGearsetSource(setItem, gearsetItems, gearset);
+                var itemSource = new ItemGearsetSource(setItem, gearsetItems, gearset, gearsetIndex);
                 this.AddItemUse(itemSource);
             }
         }

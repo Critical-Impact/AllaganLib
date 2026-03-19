@@ -10,11 +10,15 @@ namespace AllaganLib.GameSheets.ItemSources;
 
 public class ItemGearsetSource : ItemSource
 {
+
     private readonly List<ItemRow> setItems;
     private readonly Gearset gearset;
+    private readonly int gearsetIndex;
 
-    public ItemGearsetSource(ItemRow itemRow, List<ItemRow> setItems, Gearset gearset) : base(ItemInfoType.Gearset)
+    public ItemGearsetSource(ItemRow itemRow, List<ItemRow> setItems, Gearset gearset, int gearsetIndex)
+        : base(ItemInfoType.Gearset)
     {
+        this.gearsetIndex = gearsetIndex;
         this.setItems = setItems;
         this.gearset = gearset;
         this.Item = itemRow;
@@ -36,4 +40,6 @@ public class ItemGearsetSource : ItemSource
     public List<ItemRow> SetItems => this.setItems;
 
     public Gearset Gearset => this.gearset;
+
+    public int GearsetIndex => this.gearsetIndex;
 }

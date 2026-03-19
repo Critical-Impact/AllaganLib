@@ -6,7 +6,6 @@ using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using LuminaSupplemental.Excel.Model;
-using Quest = Lumina.Excel.Sheets.Experimental.Quest;
 
 namespace AllaganLib.GameSheets.ItemSources;
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AllaganLib.GameSheets.Extensions;
 using AllaganLib.GameSheets.Model;
+using Lumina.Excel;
 using Lumina.Excel.Sheets;
 
 namespace AllaganLib.GameSheets.Sheets.Rows;
@@ -13,6 +14,8 @@ public class ContentFinderConditionRow : ExtendedRow<ContentFinderCondition, Con
     private string? roulettes;
 
     public string FormattedName => this.formattedName ??= this.Base.Name.ExtractText().ToTitleCase();
+
+    public RowRef<InstanceContent> InstanceContent => new(this.Sheet.GameData.Excel, this.Sheet.GetRelatedInstanceContent(this.RowId) ?? 0);
 
     public ClassJobCategoryRow? AcceptClassJobCategory
     {

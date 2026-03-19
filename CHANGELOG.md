@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.1.3] - 2026-03-09
+### Added
+- AllaganLib.GameSheets
+  - Gearsets sources provide an index allowing you to have a reference back to the original gearsets list 
+  - ContentFinderConditionRow has a RowRef to InstanceContent
+
+
 ## [2.1.2] - 2026-03-09
 ### Added
 - AllaganLib.GameSheets
