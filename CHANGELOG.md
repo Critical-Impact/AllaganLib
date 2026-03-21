@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.1.4] - 2026-03-09
+### Added
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 4.2.2
+  - QuestExtensions added
+  - BGMOrchestrion added to SheetManager
+
 ## [2.1.3] - 2026-03-09
 ### Added
 - AllaganLib.GameSheets

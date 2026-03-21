@@ -120,6 +120,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<FestivalName>(CsvLoader.FestivalNameResourceName);
         containerBuilder.RegisterCsv<FieldOpCoffer>(CsvLoader.FieldOpCofferResourceName);
         containerBuilder.RegisterCsv<QuestRequiredItem>(CsvLoader.QuestRequiredItemResourceName);
+        containerBuilder.RegisterCsv<BGMOrchestrion>(CsvLoader.BGMOrchestrionResourceName);
         if (startupOptions.ContainerBuilderHook != null)
         {
             startupOptions.ContainerBuilderHook.Invoke(containerBuilder);
