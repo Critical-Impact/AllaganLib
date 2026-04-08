@@ -33,6 +33,10 @@ public static class ItemInfoTypeExtensions
                 return itemInfoType.IsExplorationVenture() || itemInfoType.IsNormalVenture() || itemInfoType == ItemInfoType.QuickVenture;
             case ItemInfoCategory.Shop:
                 return itemInfoType.IsShop();
+            case ItemInfoCategory.RelicWeapon:
+                return itemInfoType.IsRelicWeapon();
+            case ItemInfoCategory.RelicTool:
+                return itemInfoType.IsRelicTool();
         }
 
         return false;
@@ -60,6 +64,10 @@ public static class ItemInfoTypeExtensions
                 return itemInfoTypes.Any(c => c.IsExplorationVenture() || c.IsNormalVenture() || c == ItemInfoType.QuickVenture);
             case ItemInfoCategory.Shop:
                 return itemInfoTypes.Any(c => c.IsShop());
+            case ItemInfoCategory.RelicWeapon:
+                return itemInfoTypes.Any(c => c.IsRelicWeapon());
+            case ItemInfoCategory.RelicTool:
+                return itemInfoTypes.Any(c => c.IsRelicTool());
         }
 
         return false;
@@ -143,6 +151,25 @@ public static class ItemInfoTypeExtensions
             or ItemInfoType.CollectablesShop
             or ItemInfoType.CalamitySalvagerShop
             or ItemInfoType.AnimaShop;
+    }
+
+    public static bool IsRelicWeapon(this ItemInfoType itemInfoType)
+    {
+        return itemInfoType is ItemInfoType.AnimaWeapon
+            or ItemInfoType.MandervilleWeapon
+            or ItemInfoType.EurekanWeapon
+            or ItemInfoType.PhantomWeapon
+            or ItemInfoType.ResistanceWeapon
+            or ItemInfoType.ZodiacWeapon;
+    }
+
+    public static bool IsRelicTool(this ItemInfoType itemInfoType)
+    {
+        return itemInfoType is ItemInfoType.MastercraftTool
+            or ItemInfoType.SkysteelTool
+            or ItemInfoType.ResplendentTool
+            or ItemInfoType.SplendorousTool
+            or ItemInfoType.CosmicTool;
     }
 
     public static bool IsDungeon(this ItemInfoType itemInfoType)

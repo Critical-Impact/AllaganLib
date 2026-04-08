@@ -5,37 +5,73 @@ using AllaganLib.GameSheets.Model;
 using AllaganLib.GameSheets.Sheets.Rows;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
+using LuminaSupplemental.Excel.Model;
 
 namespace AllaganLib.GameSheets.ItemSources;
 
-public class ItemZodiacWeaponSource : ItemSource
+public class ItemZodiacWeaponSource : ItemRelicWeaponSource
 {
-    public ClassJobRow ClassJob { get; }
+    public ItemZodiacWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.ZodiacWeapon)
+    {
+    }
+}
 
-    public ItemRow Zodiac;
-    public ItemRow ZenithZodiac;
-    public ItemRow AtmaZodiac;
-    public ItemRow AnimusZodiac;
-    public ItemRow NovusZodiac;
-    public ItemRow NexusZodiac;
-    public ItemRow ZodiacBraves;
-    public ItemRow ZodiacZeta;
+public class ItemAnimaWeaponSource : ItemRelicWeaponSource
+{
+    public ItemAnimaWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.AnimaWeapon)
+    {
+    }
+}
+
+public class ItemEurekanWeaponSource : ItemRelicWeaponSource
+{
+    public ItemEurekanWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.EurekanWeapon)
+    {
+    }
+}
+
+public class ItemResistanceWeaponSource : ItemRelicWeaponSource
+{
+    public ItemResistanceWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.ResistanceWeapon)
+    {
+    }
+}
+
+public class ItemMandervilleWeaponSource : ItemRelicWeaponSource
+{
+    public ItemMandervilleWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.MandervilleWeapon)
+    {
+    }
+}
+
+public class ItemPhantomWeaponSource : ItemRelicWeaponSource
+{
+    public ItemPhantomWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems)
+        : base(item, relicWeapon, forms, relatedItems, ItemInfoType.PhantomWeapon)
+    {
+    }
+}
+
+public abstract class ItemRelicWeaponSource : ItemSource
+{
+    public RelicWeapon RelicWeapon { get; }
+
+    public List<RelicWeapon> Forms { get; }
+
     public List<ItemRow> Items;
 
-    public ItemZodiacWeaponSource(ItemRow item, ClassJobRow classJob, List<ItemRow> relatedItems)
-        : base(ItemInfoType.ZodiacWeapon)
+    public ItemRelicWeaponSource(ItemRow item, RelicWeapon relicWeapon, List<RelicWeapon> forms, List<ItemRow> relatedItems, ItemInfoType itemInfoType)
+        : base(itemInfoType)
     {
-        this.ClassJob = classJob;
+        this.RelicWeapon = relicWeapon;
+        this.Forms = forms;
         this.Item = item;
         this.Items = relatedItems;
-        this.Zodiac = relatedItems[0];
-        this.ZenithZodiac = relatedItems[1];
-        this.AtmaZodiac = relatedItems[2];
-        this.AnimusZodiac = relatedItems[3];
-        this.NovusZodiac = relatedItems[4];
-        this.NexusZodiac = relatedItems[5];
-        this.ZodiacBraves = relatedItems[6];
-        this.ZodiacZeta = relatedItems[7];
     }
 
     protected override IReadOnlyList<ItemInfo>? CreateRewardItems()

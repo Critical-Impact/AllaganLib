@@ -7,11 +7,17 @@ namespace AllaganLib.GameSheets.Model;
 
 public class NpcLocation : ILocation, IEquatable<NpcLocation>
 {
+    /// <inheritdoc/>
     public RowRef<Map> Map { get; }
 
+    /// <inheritdoc/>
     public RowRef<PlaceName> PlaceName { get; }
 
+    /// <inheritdoc/>
     public RowRef<TerritoryType> TerritoryType { get; }
+
+    /// <inheritdoc/>
+    public bool HasCoordinates => true;
 
     /// <summary>
     /// The raw X value.
@@ -94,6 +100,7 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
         }
     }
 
+    /// <inheritdoc/>
     public string FormattedName
     {
         get
@@ -110,11 +117,13 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
         }
     }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         return this.FormattedName;
     }
 
+    /// <inheritdoc/>
     public bool Equals(NpcLocation? other)
     {
         if (other == null)
@@ -126,6 +135,7 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
                this.PlaceName.RowId.Equals(other.PlaceName.RowId);
     }
 
+    /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
         return obj is NpcLocation other && this.Equals(other);
@@ -148,6 +158,7 @@ public class NpcLocation : ILocation, IEquatable<NpcLocation>
         return false;
     }
 
+    /// <inheritdoc/>
     public override int GetHashCode()
     {
         return HashCode.Combine(this.X, this.Y, this.Map.RowId, this.PlaceName.RowId);

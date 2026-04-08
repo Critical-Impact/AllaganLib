@@ -55,6 +55,8 @@ public class ItemInfoCache
     private Dictionary<ItemInfoType, HashSet<uint>>? itemUseIdsByType;
     private readonly Dictionary<uint, List<QuestRequiredItem>> questRequiredItems;
     private readonly List<Gearset> gearsets;
+    private readonly List<RelicWeapon> relicWeapons;
+    private readonly List<RelicTool> relicTools;
 
     public ItemInfoCache(
         SheetManager sheetManager,
@@ -77,7 +79,9 @@ public class ItemInfoCache
         List<GardeningCrossbreed> gardeningCrossbreeds,
         List<QuestRequiredItem> questRequiredItems,
         List<FieldOpCoffer> fieldOpCoffers,
-        List<Gearset> gearsets)
+        List<Gearset> gearsets,
+        List<RelicWeapon> relicWeapons,
+        List<RelicTool> relicTools)
     {
         this.sheetManager = sheetManager;
         this.sheetIndexer = sheetIndexer;
@@ -99,6 +103,8 @@ public class ItemInfoCache
         this.gardeningCrossbreeds = gardeningCrossbreeds;
         this.fieldOpCoffers = fieldOpCoffers;
         this.gearsets = gearsets;
+        this.relicWeapons = relicWeapons;
+        this.relicTools = relicTools;
         this.itemSources = new Dictionary<uint, List<ItemSource>>();
         this.itemUses = new Dictionary<uint, List<ItemSource>>();
         this.itemSourceUseMap = new Dictionary<(uint, uint), List<ItemSource>>();
@@ -384,85 +390,82 @@ public class ItemInfoCache
             }
         }
 
-        var classJobMap = classJobSheet.Where(c => c.ClassJobType != ClassJobType.Unknown).ToDictionary(c => c.ClassJobType, c => c);
-
-        var zodiacWeapons = new Dictionary<ClassJobType, List<ItemRow>>()
+        foreach (var group in this.relicWeapons.OrderBy(c => c.Type).GroupBy(c => (c.ClassJobId, c.Category)))
         {
-            { ClassJobType.PLD, new List<ItemRow>() },
-            { ClassJobType.MNK, new List<ItemRow>() },
-            { ClassJobType.WAR, new List<ItemRow>() },
-            { ClassJobType.DRG, new List<ItemRow>() },
-            { ClassJobType.BRD, new List<ItemRow>() },
-            { ClassJobType.WHM, new List<ItemRow>() },
-            { ClassJobType.BLM, new List<ItemRow>() },
-            { ClassJobType.SMN, new List<ItemRow>() },
-            { ClassJobType.SCH, new List<ItemRow>() },
-            { ClassJobType.NIN, new List<ItemRow>() },
-        };
-
-        foreach (var zodiacItem in zodiacItemSheet)
-        {
-            zodiacWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(zodiacItem.GladiatorItem.RowId)!);
-            zodiacWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(zodiacItem.ShieldItem.RowId)!);
-            zodiacWeapons[ClassJobType.MNK].Add(itemSheet.GetRowOrDefault(zodiacItem.PugilistItem.RowId)!);
-            zodiacWeapons[ClassJobType.WAR].Add(itemSheet.GetRowOrDefault(zodiacItem.MarauderItem.RowId)!);
-            zodiacWeapons[ClassJobType.DRG].Add(itemSheet.GetRowOrDefault(zodiacItem.LancerItem.RowId)!);
-            zodiacWeapons[ClassJobType.BRD].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcherItem.RowId)!);
-            zodiacWeapons[ClassJobType.WHM].Add(itemSheet.GetRowOrDefault(zodiacItem.ConjurerItem.RowId)!);
-            zodiacWeapons[ClassJobType.BLM].Add(itemSheet.GetRowOrDefault(zodiacItem.ThaumaturgeItem.RowId)!);
-            zodiacWeapons[ClassJobType.SMN].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcanistSMNItem.RowId)!);
-            zodiacWeapons[ClassJobType.SCH].Add(itemSheet.GetRowOrDefault(zodiacItem.ArcanistSCHItem.RowId)!);
-            zodiacWeapons[ClassJobType.NIN].Add(itemSheet.GetRowOrDefault(zodiacItem.RogueItem.RowId)!);
-        }
-
-        foreach (var zodiacWeaponSet in zodiacWeapons)
-        {
-            foreach (var item in zodiacWeaponSet.Value)
+            var relatedItems = new List<ItemRow>();
+            foreach (var weapon in group)
             {
-                this.AddItemUse(new ItemZodiacWeaponSource(item, classJobMap[zodiacWeaponSet.Key], zodiacWeaponSet.Value));
+                relatedItems.Add(itemSheet.GetRow(weapon.ItemId));
+                if (weapon.OffhandItemId != 0)
+                {
+                    relatedItems.Add(itemSheet.GetRow(weapon.OffhandItemId));
+                }
+            }
+            foreach (var weapon in group)
+            {
+                if (weapon.ItemId == 0)
+                {
+                    continue;
+                }
+
+                var item = itemSheet.GetRow(weapon.ItemId);
+                switch (group.Key.Category)
+                {
+                    case RelicWeaponCategory.Zodiac:
+                        this.AddItemUse(new ItemZodiacWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                    case RelicWeaponCategory.Anima:
+                        this.AddItemUse(new ItemAnimaWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                    case RelicWeaponCategory.Eurekan:
+                        this.AddItemUse(new ItemEurekanWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                    case RelicWeaponCategory.Resistance:
+                        this.AddItemUse(new ItemResistanceWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                    case RelicWeaponCategory.Manderville:
+                        this.AddItemUse(new ItemMandervilleWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                    case RelicWeaponCategory.Phantom:
+                        this.AddItemUse(new ItemPhantomWeaponSource(item, weapon, group.ToList(), relatedItems));
+                        break;
+                }
             }
         }
 
-        var animaWeapons = new Dictionary<ClassJobType, List<ItemRow>>()
+        foreach (var group in this.relicTools.OrderBy(c => c.Type).GroupBy(c => (c.ClassJobId, c.Category)))
         {
-            { ClassJobType.PLD, new List<ItemRow>() },
-            { ClassJobType.MNK, new List<ItemRow>() },
-            { ClassJobType.WAR, new List<ItemRow>() },
-            { ClassJobType.DRG, new List<ItemRow>() },
-            { ClassJobType.BRD, new List<ItemRow>() },
-            { ClassJobType.WHM, new List<ItemRow>() },
-            { ClassJobType.BLM, new List<ItemRow>() },
-            { ClassJobType.SMN, new List<ItemRow>() },
-            { ClassJobType.SCH, new List<ItemRow>() },
-            { ClassJobType.NIN, new List<ItemRow>() },
-            { ClassJobType.AST, new List<ItemRow>() },
-            { ClassJobType.MCH, new List<ItemRow>() },
-            { ClassJobType.DRK, new List<ItemRow>() },
-        };
-
-        foreach (var animaItem in animaItemSheet)
-        {
-            animaWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(animaItem.Item[0].RowId)!);
-            animaWeapons[ClassJobType.MNK].Add(itemSheet.GetRowOrDefault(animaItem.Item[1].RowId)!);
-            animaWeapons[ClassJobType.WAR].Add(itemSheet.GetRowOrDefault(animaItem.Item[2].RowId)!);
-            animaWeapons[ClassJobType.DRG].Add(itemSheet.GetRowOrDefault(animaItem.Item[3].RowId)!);
-            animaWeapons[ClassJobType.BRD].Add(itemSheet.GetRowOrDefault(animaItem.Item[4].RowId)!);
-            animaWeapons[ClassJobType.WHM].Add(itemSheet.GetRowOrDefault(animaItem.Item[5].RowId)!);
-            animaWeapons[ClassJobType.BLM].Add(itemSheet.GetRowOrDefault(animaItem.Item[6].RowId)!);
-            animaWeapons[ClassJobType.SMN].Add(itemSheet.GetRowOrDefault(animaItem.Item[7].RowId)!);
-            animaWeapons[ClassJobType.SCH].Add(itemSheet.GetRowOrDefault(animaItem.Item[8].RowId)!);
-            animaWeapons[ClassJobType.NIN].Add(itemSheet.GetRowOrDefault(animaItem.Item[9].RowId)!);
-            animaWeapons[ClassJobType.MCH].Add(itemSheet.GetRowOrDefault(animaItem.Item[10].RowId)!);
-            animaWeapons[ClassJobType.DRK].Add(itemSheet.GetRowOrDefault(animaItem.Item[11].RowId)!);
-            animaWeapons[ClassJobType.AST].Add(itemSheet.GetRowOrDefault(animaItem.Item[12].RowId)!);
-            animaWeapons[ClassJobType.PLD].Add(itemSheet.GetRowOrDefault(animaItem.Item[13].RowId)!);
-        }
-
-        foreach (var animaWeaponSet in animaWeapons)
-        {
-            foreach (var item in animaWeaponSet.Value)
+            var relatedItems = new List<ItemRow>();
+            foreach (var tool in group)
             {
-                this.AddItemUse(new ItemAnimaWeaponSource(item, classJobMap[animaWeaponSet.Key], animaWeaponSet.Value));
+                relatedItems.Add(itemSheet.GetRow(tool.ItemId));
+            }
+            foreach (var tool in group)
+            {
+                if (tool.ItemId == 0)
+                {
+                    continue;
+                }
+
+                var item = itemSheet.GetRow(tool.ItemId);
+                switch (group.Key.Category)
+                {
+                    case RelicToolCategory.Mastercraft:
+                        this.AddItemUse(new ItemMastercraftToolSource(item, tool, group.ToList(), relatedItems));
+                        break;
+                    case RelicToolCategory.Skysteel:
+                        this.AddItemUse(new ItemSkysteelToolSource(item, tool, group.ToList(), relatedItems));
+                        break;
+                    case RelicToolCategory.Resplendent:
+                        this.AddItemUse(new ItemResplendentToolSource(item, tool, group.ToList(), relatedItems));
+                        break;
+                    case RelicToolCategory.Splendorous:
+                        this.AddItemUse(new ItemSplendorousToolSource(item, tool, group.ToList(), relatedItems));
+                        break;
+                    case RelicToolCategory.Cosmic:
+                        this.AddItemUse(new ItemCosmicToolSource(item, tool, group.ToList(), relatedItems));
+                        break;
+                }
             }
         }
 
@@ -530,20 +533,6 @@ public class ItemInfoCache
                                 new RowRef<Quest>(this.gameData.Excel, quest.RowId));
                             this.AddItemUse(source);
                         }
-                    }
-                }
-
-                if (classesWithRelicQuests.ContainsKey(quest.RowId))
-                {
-                    var relatedClass = classesWithRelicQuests[quest.RowId];
-
-                    foreach (var relicItem in zodiacWeapons[relatedClass.ClassJobType])
-                    {
-                        var source = new ItemQuestSource(
-                            relicItem,
-                            requiredItems,
-                            new RowRef<Quest>(this.gameData.Excel, quest.RowId));
-                        this.AddItemSource(source);
                     }
                 }
             }

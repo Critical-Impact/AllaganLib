@@ -7,6 +7,7 @@ namespace AllaganLib.GameSheets.Sheets.Rows;
 
 public class LevelRow : ExtendedRow<Level, LevelRow, LevelSheet>, ILocation
 {
+    /// <inheritdoc/>
     public string FormattedName
     {
         get
@@ -64,12 +65,19 @@ public class LevelRow : ExtendedRow<Level, LevelRow, LevelSheet>, ILocation
         }
     }
 
+    /// <inheritdoc/>
+    public bool HasCoordinates => true;
+
+    /// <inheritdoc/>
     public RowRef<Map> Map => this.Base.Map;
 
+    /// <inheritdoc/>
     public RowRef<PlaceName> PlaceName => this.TerritoryType.Value.PlaceName;
 
+    /// <inheritdoc/>
     public RowRef<TerritoryType> TerritoryType => this.Base.Territory;
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         return this.FormattedName;

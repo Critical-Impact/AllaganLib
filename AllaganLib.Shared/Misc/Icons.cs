@@ -64,4 +64,7 @@ public static class Icons
     public const int CombinedClothingIcon = 62917;
     public const int QuestionMarkBag = 60051;
     public const int ThreePeople = 61536;
+    public const int ToolIcon = 61816;
+    public const int WeaponIcon = 61805;
+    public const int CustomDeliveriesIcon = 61827;
 }

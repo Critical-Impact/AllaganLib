@@ -186,6 +186,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
                 return this.GetSourcesByType<T>(allTypes.Where(c => c.IsExplorationVenture() || c.IsNormalVenture() || c == ItemInfoType.QuickVenture).ToArray());
             case ItemInfoCategory.Shop:
                 return this.GetSourcesByType<T>(allTypes.Where(c => c.IsShop()).ToArray());
+            case ItemInfoCategory.RelicWeapon:
+                return this.GetSourcesByType<T>(allTypes.Where(c => c.IsRelicWeapon()).ToArray());
+            case ItemInfoCategory.RelicTool:
+                return this.GetSourcesByType<T>(allTypes.Where(c => c.IsRelicTool()).ToArray());
         }
 
         return new List<T>();
@@ -214,6 +218,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
                 return this.HasSourcesByType(allTypes.Where(c => c.IsExplorationVenture() || c.IsNormalVenture() || c == ItemInfoType.QuickVenture).ToArray());
             case ItemInfoCategory.Shop:
                 return this.HasSourcesByType(allTypes.Where(c => c.IsShop()).ToArray());
+            case ItemInfoCategory.RelicWeapon:
+                return this.HasSourcesByType(allTypes.Where(c => c.IsRelicWeapon()).ToArray());
+            case ItemInfoCategory.RelicTool:
+                return this.HasSourcesByType(allTypes.Where(c => c.IsRelicTool()).ToArray());
         }
 
         return false;
@@ -242,6 +250,10 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
                 return this.GetUsesByType<T>(allTypes.Where(c => c.IsExplorationVenture() || c.IsNormalVenture() || c == ItemInfoType.QuickVenture).ToArray());
             case ItemInfoCategory.Shop:
                 return this.GetUsesByType<T>(allTypes.Where(c => c.IsShop()).ToArray());
+            case ItemInfoCategory.RelicWeapon:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsRelicWeapon()).ToArray());
+            case ItemInfoCategory.RelicTool:
+                return this.GetUsesByType<T>(allTypes.Where(c => c.IsRelicTool()).ToArray());
         }
 
         return new List<T>();

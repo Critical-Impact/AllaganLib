@@ -50,6 +50,7 @@ public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSp
         }
     }
 
+    /// <inheritdoc/>
     public double MapX
     {
         get
@@ -65,6 +66,7 @@ public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSp
         }
     }
 
+    /// <inheritdoc/>
     public double MapY
     {
         get
@@ -79,6 +81,9 @@ public class FishingSpotRow : ExtendedRow<FishingSpot, FishingSpotRow, FishingSp
             return 0;
         }
     }
+
+    /// <inheritdoc/>
+    public bool HasCoordinates => true;
 
     public RowRef<Map> Map => this.TerritoryType.Value.Map;
 

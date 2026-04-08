@@ -40,6 +40,7 @@ public class SpearfishingNotebookRow : ExtendedRow<SpearfishingNotebook, Spearfi
         }
     }
 
+    /// <inheritdoc/>
     public double MapX
     {
         get
@@ -55,6 +56,7 @@ public class SpearfishingNotebookRow : ExtendedRow<SpearfishingNotebook, Spearfi
         }
     }
 
+    /// <inheritdoc/>
     public double MapY
     {
         get
@@ -70,10 +72,16 @@ public class SpearfishingNotebookRow : ExtendedRow<SpearfishingNotebook, Spearfi
         }
     }
 
+    /// <inheritdoc/>
+    public bool HasCoordinates => true;
+
+    /// <inheritdoc/>
     public RowRef<Map> Map => this.TerritoryType.Value.Map;
 
+    /// <inheritdoc/>
     public RowRef<PlaceName> PlaceName => this.Base.PlaceName;
 
+    /// <inheritdoc/>
     public RowRef<TerritoryType> TerritoryType => this.Base.TerritoryType;
 
     public TerritoryTypeRow? TerritoryTypeRow

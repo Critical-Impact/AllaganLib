@@ -105,4 +105,13 @@ public enum ItemInfoType
     PilgrimsTraverse = 100,
     Oizys = 101,
     Gearset = 102,
+    EurekanWeapon = 103,
+    ResistanceWeapon = 104,
+    MandervilleWeapon = 105,
+    PhantomWeapon = 106,
+    MastercraftTool = 107,
+    SkysteelTool = 108,
+    ResplendentTool = 109,
+    SplendorousTool = 110,
+    CosmicTool = 111,
 }

@@ -11,4 +11,6 @@ public enum ItemInfoCategory
     NormalVenture,
     ExplorationVenture,
     Shop,
+    RelicWeapon,
+    RelicTool,
 }

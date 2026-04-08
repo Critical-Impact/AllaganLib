@@ -20,6 +20,11 @@ public interface ILocation
     /// <value>The y-coordinate of the current object.</value>
     double MapY { get; }
 
+    /// <summary>
+    /// Does the location have coordinates or is it just a territory/map.
+    /// </summary>
+    bool HasCoordinates { get; }
+
     RowRef<Map> Map { get; }
 
     RowRef<PlaceName> PlaceName { get; }

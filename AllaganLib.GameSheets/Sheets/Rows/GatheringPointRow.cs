@@ -48,6 +48,7 @@ public class GatheringPointRow : ExtendedRow<GatheringPoint, GatheringPointRow, 
         }
     }
 
+    /// <inheritdoc/>
     public double MapX
     {
         get
@@ -64,6 +65,7 @@ public class GatheringPointRow : ExtendedRow<GatheringPoint, GatheringPointRow, 
         }
     }
 
+    /// <inheritdoc/>
     public double MapY
     {
         get
@@ -80,9 +82,15 @@ public class GatheringPointRow : ExtendedRow<GatheringPoint, GatheringPointRow, 
         }
     }
 
+    /// <inheritdoc/>
+    public bool HasCoordinates => true;
+
+    /// <inheritdoc/>
     public RowRef<Map> Map => this.TerritoryType.Value.Map;
 
+    /// <inheritdoc/>
     public RowRef<PlaceName> PlaceName => this.Base.PlaceName;
 
+    /// <inheritdoc/>
     public RowRef<TerritoryType> TerritoryType => this.Base.TerritoryType;
 }

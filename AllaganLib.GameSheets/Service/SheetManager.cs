@@ -121,6 +121,8 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<FieldOpCoffer>(CsvLoader.FieldOpCofferResourceName);
         containerBuilder.RegisterCsv<QuestRequiredItem>(CsvLoader.QuestRequiredItemResourceName);
         containerBuilder.RegisterCsv<BGMOrchestrion>(CsvLoader.BGMOrchestrionResourceName);
+        containerBuilder.RegisterCsv<RelicWeapon>(CsvLoader.RelicWeaponResourceName);
+        containerBuilder.RegisterCsv<RelicTool>(CsvLoader.RelicToolResourceName);
         if (startupOptions.ContainerBuilderHook != null)
         {
             startupOptions.ContainerBuilderHook.Invoke(containerBuilder);
