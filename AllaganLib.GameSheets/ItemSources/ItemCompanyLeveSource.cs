@@ -25,7 +25,7 @@ public class ItemCompanyLeveSource : ItemSource
         this.Item = item;
         this.ParamGrow = new RowRef<ParamGrow>(item.Sheet.GameData.Excel, this.Leve.Value.ClassJobLevel);
         var leveSystemDefine = this.Item.Sheet.GameData.GetExcelSheet<LeveSystemDefine>()!.GetRow(23);
-        decimal baseSeals = leveSystemDefine.Unknown1 * 0.01M;
+        decimal baseSeals = leveSystemDefine.DefineValue * 0.01M;
         this.SealsRewarded = (uint)(leve.Value.ClassJobLevel * baseSeals);
     }
 

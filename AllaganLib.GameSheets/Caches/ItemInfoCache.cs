@@ -310,7 +310,6 @@ public class ItemInfoCache
         var cabinetSheet = this.sheetManager.GetSheet<CabinetSheet>();
         var gcSupplyDutyRewardSheet = this.sheetManager.GetSheet<GCSupplyDutyRewardSheet>();
         var stainSheet = this.gameData.GetExcelSheet<Stain>()!;
-        var stainTransientSheet = this.gameData.GetExcelSheet<StainTransient>()!;
         var achievementSheet = this.gameData.GetExcelSheet<Achievement>()!;
         var buddyItemSheet = this.gameData.GetExcelSheet<BuddyItem>()!;
         var housingFurnitureSheet = this.gameData.GetExcelSheet<HousingFurniture>()!;
@@ -714,27 +713,17 @@ public class ItemInfoCache
                 continue;
             }
 
-            var stainTransient = stainTransientSheet.GetRow(stain.RowId);
-
-            if (stainTransient.Item1.IsValid && stainTransient.Item1.RowId != 0)
+            foreach (var stainItem in stain.Item)
             {
-                var item = itemSheet.GetRowOrDefault(stainTransient.Item1.RowId);
-
-                if (item != null)
+                if (stainItem.IsValid && stainItem.RowId != 0)
                 {
-                    var source = new ItemStainSource(item, new RowRef<Stain>(this.gameData.Excel, stain.RowId));
-                    this.AddItemUse(source);
-                }
-            }
+                    var item = itemSheet.GetRowOrDefault(stainItem.RowId);
 
-            if (stainTransient.Item2.IsValid && stainTransient.Item2.RowId != 0)
-            {
-                var item = itemSheet.GetRowOrDefault(stainTransient.Item2.RowId);
-
-                if (item != null)
-                {
-                    var source = new ItemStainSource(item, new RowRef<Stain>(this.gameData.Excel, stain.RowId));
-                    this.AddItemUse(source);
+                    if (item != null)
+                    {
+                        var source = new ItemStainSource(item, new RowRef<Stain>(this.gameData.Excel, stain.RowId));
+                        this.AddItemUse(source);
+                    }
                 }
             }
         }

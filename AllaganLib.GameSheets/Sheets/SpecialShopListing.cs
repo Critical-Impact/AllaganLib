@@ -62,7 +62,7 @@ public class SpecialShopListing : IShopListing
                         this,
                         costItemId,
                         costItem.CurrencyCost,
-                        costItem.HqCost == 1,
+                        costItem.CostType == 1,
                         costItem.CollectabilityCost));
             }
         }

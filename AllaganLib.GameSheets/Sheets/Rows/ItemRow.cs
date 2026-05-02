@@ -322,7 +322,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
-    public EquipRaceCategoryRow? EquipRaceCategory => this.Sheet.GetEquipRaceCategorySheet().GetRowOrDefault(this.Base.EquipRestriction);
+    public EquipRaceCategoryRow? EquipRaceCategory => this.Sheet.GetEquipRaceCategorySheet().GetRowOrDefault(this.Base.EquipRestriction.RowId);
 
     public CharacterRace EquipRace => this.EquipRaceCategory?.EquipRace ?? CharacterRace.None;
 
@@ -351,7 +351,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool CanBeEquippedByRaceGender(CharacterRace race, CharacterSex sex)
     {
-        if (this.Base.EquipRestriction == 0)
+        if (this.Base.EquipRestriction.RowId == 0)
         {
             return false;
         }
@@ -719,7 +719,7 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
     {
         get
         {
-            switch (this.Base.EquipRestriction)
+            switch (this.Base.EquipRestriction.RowId)
             {
                 case 0: return 0; // Not equippable
                 case 1: return 101; // Unrestricted, default to male hyur

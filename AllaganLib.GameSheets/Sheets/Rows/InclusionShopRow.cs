@@ -12,7 +12,7 @@ public class InclusionShopRow : ExtendedRow<InclusionShop, InclusionShopRow, Inc
     private IEnumerable<ItemRow>? rewards;
     private IEnumerable<ItemRow>? costs;
 
-    public string Name => this.Base.Unknown0.ToImGuiString();
+    public string Name => this.Base.ShopName.ToImGuiString();
 
     public IEnumerable<IShopListing> ShopListings { get; set; }
 
