@@ -31,7 +31,24 @@ public class LeveRow : ExtendedRow<Leve, LeveRow, LeveSheet>
             {
                 return (uint)(this.ParamGrow.Value.ScaledQuestXP * (decimal)this.ParamGrow.Value.QuestExpModifier * (decimal)this.Base.ExpFactor);
             }
+            if (this.LeveType == LeveType.Craft)
+            {
+                return this.Base.ExpReward;
+            }
             return (uint)(this.ParamGrow.Value.ScaledQuestXP * (decimal)this.ParamGrow.Value.QuestExpModifier * (decimal)this.Base.ExpFactor) + 1;
+        }
+    }
+
+    public ushort HandIns
+    {
+        get
+        {
+            if (this.LeveType == LeveType.Craft)
+            {
+                return (ushort)(this.CraftLeve!.Base.Repeats + 1);
+            }
+
+            return 1;
         }
     }
 

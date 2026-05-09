@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.2.1] - 2026-05-09
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 4.3.2
+  - Fixed Craft Leve exp reward
+
 ## [2.2.0] - 2026-05-02
 ### Changed
 - AllaganLib.GameSheets

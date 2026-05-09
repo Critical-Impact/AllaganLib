@@ -18,7 +18,7 @@ public class SpearfishingItemRow : ExtendedRow<SpearfishingItem, SpearfishingIte
     {
         get
         {
-            return this.spearfishingNotebookRow ??= this.GatheringPoints.FirstOrDefault()?.SpearfishingNotebook;
+            return this.spearfishingNotebookRow ??= this.GatheringPoints.FirstOrDefault(c => c.SpearfishingNotebook != null)?.SpearfishingNotebook;
         }
     }
 
