@@ -475,6 +475,8 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
         }
     }
 
+    public List<ItemShopSource> AllShopSources => this.GetSourcesByCategory<ItemShopSource>(ItemInfoCategory.Shop);
+
     private void CacheVendorLookup()
     {
         this.specialShops = [];
