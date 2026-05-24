@@ -114,4 +114,8 @@ public enum ItemInfoType
     ResplendentTool = 109,
     SplendorousTool = 110,
     CosmicTool = 111,
+    FolkloreTome = 112,
+    SecretRecipeBook = 113,
+    JobSoulCrystal = 114,
+    CraftSoulCrystal = 115,
 }

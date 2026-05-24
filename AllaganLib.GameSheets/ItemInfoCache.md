@@ -44,7 +44,10 @@ FreeCompanyCraftRecipe
 
 
 ItemUse:
+CraftSoulCrystal
 Crafting
+JobSoulCrystal
+SecretRecipeBook
 SpecialShop
 Cabinet
 DailySupply

@@ -328,6 +328,7 @@ public class ItemInfoCache
         var animaItemSheet = this.gameData.GetExcelSheet<AnimaWeaponItem>()!;
         var classJobSheet = this.sheetManager.GetSheet<ClassJobSheet>()!;
         var animaTradeItemSheet = this.sheetManager.GetSheet<AnimaWeapon5TradeItemSheet>()!;
+        var secretRecipeBookSheet = this.gameData.GetExcelSheet<SecretRecipeBook>()!;
 
         //
         // var wksMissionUnitSheet = this.gameData.GetExcelSheet<WKSMissionUnit>()!;
@@ -1125,6 +1126,44 @@ public class ItemInfoCache
             }
         }
 
+        var recipesBySecretBookId = new Dictionary<uint, List<RecipeRow>>();
+        foreach (var recipe in recipeSheet)
+        {
+            var bookId = recipe.Base.SecretRecipeBook.RowId;
+            if (bookId == 0)
+            {
+                continue;
+            }
+
+            if (!recipesBySecretBookId.TryGetValue(bookId, out var list))
+            {
+                list = new List<RecipeRow>();
+                recipesBySecretBookId[bookId] = list;
+            }
+
+            list.Add(recipe);
+        }
+
+        foreach (var secretBook in secretRecipeBookSheet)
+        {
+            if (secretBook.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            var bookItem = itemSheet.GetRowOrDefault(secretBook.Item.RowId);
+            if (bookItem == null)
+            {
+                continue;
+            }
+
+            var recipes = recipesBySecretBookId.GetValueOrDefault(secretBook.RowId) ?? new List<RecipeRow>();
+            this.AddItemUse(new ItemSecretRecipeBookUse(
+                new RowRef<SecretRecipeBook>(this.gameData.Excel, secretBook.RowId),
+                bookItem,
+                recipes));
+        }
+
         foreach (var companyCraftSequence in companyCraftSequenceSheet)
         {
             if (companyCraftSequence.Base.ResultItem.RowId == 0)
@@ -1849,6 +1888,85 @@ public class ItemInfoCache
             }
         }
 
+        var folkloreTomeItemsByDivision = new Dictionary<uint, ItemRow>();
+        var gatheringSubCategorySheet = this.gameData.GetExcelSheet<GatheringSubCategory>()!;
+        foreach (var subCategory in gatheringSubCategorySheet)
+        {
+            if (subCategory.Division == 0 || subCategory.Item.RowId == 0)
+            {
+                continue;
+            }
+
+            if (folkloreTomeItemsByDivision.ContainsKey(subCategory.Division))
+            {
+                continue;
+            }
+
+            var tomeItem = itemSheet.GetRowOrDefault(subCategory.Item.RowId);
+            if (tomeItem != null)
+            {
+                folkloreTomeItemsByDivision[subCategory.Division] = tomeItem;
+            }
+        }
+
+        var unlockedItemsByDivision = new Dictionary<uint, List<ItemRow>>();
+        var seenItemsByDivision = new Dictionary<uint, HashSet<uint>>();
+        foreach (var gatheringItem in gatheringItemSheet)
+        {
+            if (gatheringItem.Item == null)
+            {
+                continue;
+            }
+
+            var divisionsForItem = new HashSet<uint>();
+            foreach (var gatheringPoint in gatheringItem.GatheringPoints)
+            {
+                var subCategoryId = gatheringPoint.Base.GatheringSubCategory.RowId;
+                if (subCategoryId == 0)
+                {
+                    continue;
+                }
+
+                var subCategory = gatheringSubCategorySheet.GetRowOrDefault(subCategoryId);
+                if (subCategory == null)
+                {
+                    continue;
+                }
+
+                uint divisionId = subCategory.Value.Division;
+                if (divisionId == 0 || !folkloreTomeItemsByDivision.ContainsKey(divisionId))
+                {
+                    continue;
+                }
+
+                if (!divisionsForItem.Add(divisionId))
+                {
+                    continue;
+                }
+
+                if (!unlockedItemsByDivision.TryGetValue(divisionId, out var list))
+                {
+                    list = new List<ItemRow>();
+                    unlockedItemsByDivision[divisionId] = list;
+                    seenItemsByDivision[divisionId] = new HashSet<uint>();
+                }
+
+                if (seenItemsByDivision[divisionId].Add(gatheringItem.Item.RowId))
+                {
+                    list.Add(gatheringItem.Item);
+                }
+            }
+        }
+
+        foreach (var kv in folkloreTomeItemsByDivision)
+        {
+            var divisionId = kv.Key;
+            var tomeItem = kv.Value;
+            var unlockedItems = unlockedItemsByDivision.GetValueOrDefault(divisionId) ?? new List<ItemRow>();
+            var notebookRef = new RowRef<NotebookDivision>(this.gameData.Excel, divisionId);
+            this.AddItemUse(new ItemFolkloreTomeSource(tomeItem, notebookRef, unlockedItems));
+        }
+
         foreach (var aquariumRow in aquariumFishSheet)
         {
             if (aquariumRow.Base.Item.RowId == 0)
@@ -1885,6 +2003,35 @@ public class ItemInfoCache
 
                     this.AddItemUse(new ItemGCSupplyDutySource(gcSupplyDuty, count, item));
                 }
+            }
+        }
+
+        foreach (var classJob in classJobSheet)
+        {
+            if (classJob.Base.ItemSoulCrystal.RowId == 0)
+            {
+                continue;
+            }
+
+            var soulCrystalItem = itemSheet.GetRowOrDefault(classJob.Base.ItemSoulCrystal.RowId);
+            if (soulCrystalItem == null)
+            {
+                continue;
+            }
+
+            if (classJob.Role == RoleType.Crafting)
+            {
+                this.AddItemUse(new ItemCraftSoulCrystalUse(classJob, soulCrystalItem));
+            }
+            else
+            {
+                ClassJobRow? parentClassJob = null;
+                if (classJob.Base.ClassJobParent.RowId != classJob.RowId)
+                {
+                    parentClassJob = classJobSheet.GetRowOrDefault(classJob.Base.ClassJobParent.RowId);
+                }
+
+                this.AddItemUse(new ItemJobSoulCrystalUse(classJob, parentClassJob, soulCrystalItem));
             }
         }
     }

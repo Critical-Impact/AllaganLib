@@ -199,27 +199,15 @@ public class LeveRow : ExtendedRow<Leve, LeveRow, LeveSheet>
     {
         get
         {
-            if (this.Base.DataId.Is<BattleLeve>())
+            // This is required because fishing levels are stored within the craft leve sheet but most people consider them gathering
+            return this.Base.LeveAssignmentType.RowId switch
             {
-                return LeveType.Battle;
-            }
-
-            if (this.Base.DataId.Is<GatheringLeve>())
-            {
-                return LeveType.Gathering;
-            }
-
-            if (this.Base.DataId.Is<CraftLeve>())
-            {
-                return LeveType.Craft;
-            }
-
-            if (this.Base.DataId.Is<CompanyLeve>())
-            {
-                return LeveType.Company;
-            }
-
-            return LeveType.Unknown;
+                1 => LeveType.Battle,
+                2 or 3 or 4 => LeveType.Gathering,
+                5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 => LeveType.Craft,
+                13 or 14 or 15 => LeveType.Company,
+                _ => LeveType.Unknown,
+            };
         }
     }
 }
