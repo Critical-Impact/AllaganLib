@@ -13,6 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.2.4] - 2026-05-27
+### Changed
+- AllaganLib.GameSheets
+  - Bump version
+
+## [2.2.3] - 2026-05-24
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 4.3.4
+  - Added Master Recipe Books and Folklore Tomes as a use
+  - Added Job/Craft Soul Crystals as a use
+  
+### Fixed
+- AllaganLib.GameSheets
+  - Corrected fishing leves being returned as craft leves 
+
 ## [2.2.2] - 2026-05-10
 ### Changed
 - AllaganLib.GameSheets
