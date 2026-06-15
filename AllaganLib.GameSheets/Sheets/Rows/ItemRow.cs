@@ -92,6 +92,8 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     public bool IsCurrency => (this.IsVenture || this.IsCompanySeal || this.SpentSpecialShop || this.IsGil) && this.Base.ItemUICategory.RowId != 59;
 
+    public bool IsUnobtainable => this.Sheet.IsUnobtainableItem(this.RowId);
+
     public decimal Patch => this.Sheet.GetItemPatch(this.RowId);
 
     public string FormattedRarity

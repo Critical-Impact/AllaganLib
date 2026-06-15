@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.2.5] - 2026-06-15
+### Added
+- AllaganLib.GameSheets
+  - Added Auxesia as a source
+  - Added unobtainable items to ItemSheet/ItemRow
+
 ## [2.2.4] - 2026-05-27
 ### Changed
 - AllaganLib.GameSheets

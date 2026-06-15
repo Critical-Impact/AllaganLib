@@ -15,6 +15,7 @@ namespace AllaganLib.GameSheets.Sheets;
 public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
 {
     private readonly List<ItemPatch> itemPatchesList;
+    private readonly HashSet<uint> unobtainableItems;
     private Dictionary<uint, List<GatheringItemRow>>? gatheringItems;
     private Dictionary<uint, List<FishingSpotRow>>? fishingSpots;
     private GatheringItemSheet? gatheringItemSheet;
@@ -35,10 +36,12 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         SheetManager sheetManager,
         SheetIndexer sheetIndexer,
         ItemInfoCache itemInfoCache,
-        List<ItemPatch> itemPatches)
+        List<ItemPatch> itemPatches,
+        List<UnobtainableItem> unobtainableItems)
         : base(gameData, sheetManager, sheetIndexer, itemInfoCache)
     {
         this.itemPatchesList = itemPatches;
+        this.unobtainableItems = unobtainableItems.Select(c => c.ItemId).ToHashSet();
     }
 
     private decimal currentPatch = new decimal(7.5);
@@ -51,6 +54,11 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         }
 
         return this.itemPatches.GetValueOrDefault(itemId, this.currentPatch);
+    }
+
+    public bool IsUnobtainableItem(uint itemId)
+    {
+        return this.unobtainableItems.Contains(itemId);
     }
 
     public Dictionary<string, uint> ItemsByName

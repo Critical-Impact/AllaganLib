@@ -1702,6 +1702,9 @@ public class ItemInfoCache
                 case ItemSupplementSource.Oizys:
                     source = new ItemOizysSource(item, sourceItem, supplementalItem);
                     continue;
+                case ItemSupplementSource.Auxesia:
+                    source = new ItemAuxesiaSource(item, sourceItem, supplementalItem);
+                    continue;
                 case ItemSupplementSource.SkybuilderHandIn:
                     continue;
                 case ItemSupplementSource.Unknown:

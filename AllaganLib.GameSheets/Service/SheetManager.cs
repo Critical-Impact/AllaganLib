@@ -123,6 +123,7 @@ public class SheetManager : IDisposable, IAsyncDisposable
         containerBuilder.RegisterCsv<BGMOrchestrion>(CsvLoader.BGMOrchestrionResourceName);
         containerBuilder.RegisterCsv<RelicWeapon>(CsvLoader.RelicWeaponResourceName);
         containerBuilder.RegisterCsv<RelicTool>(CsvLoader.RelicToolResourceName);
+        containerBuilder.RegisterCsv<UnobtainableItem>(CsvLoader.UnobtainableItemResourceName);
         if (startupOptions.ContainerBuilderHook != null)
         {
             startupOptions.ContainerBuilderHook.Invoke(containerBuilder);
