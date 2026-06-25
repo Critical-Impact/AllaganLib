@@ -16,7 +16,19 @@ public class BNpcNameRow : ExtendedRow<BNpcName, BNpcNameRow, BNpcNameSheet>
     private HashSet<NpcType>? mobTypes;
 
 
-    public string GarlandToolsId => this.RelatedBases.First().RowId + "0000000" + this.RowId;
+    public string? GarlandToolsId
+    {
+        get
+        {
+            var relatedBase = this.RelatedBases.FirstOrDefault();
+            if (relatedBase == null)
+            {
+                return null;
+            }
+
+            return relatedBase.RowId + "0000000" + this.RowId;
+        }
+    }
 
     public List<BNpcBaseRow> RelatedBases
     {
