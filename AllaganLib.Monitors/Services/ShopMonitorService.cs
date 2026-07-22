@@ -383,214 +383,213 @@ public class ShopMonitorService : IHostedService, IDisposable, IShopMonitorServi
     public unsafe (ENpcBaseRow ENpcBase, List<IShopMenu> MenuItems, List<IShopMenu>? SubmenuItems, (ShopType, uint)? ActiveShopId)? GetCurrentShopTypeIds()
     {
         var eventFramework = EventFramework.Instance();
-        if (eventFramework != null)
+        if (eventFramework is null)
         {
-            uint? npcId = null;
-            ENpcBaseRow? npcBase = null;
-            List<IShopMenu> menuItems = [];
-            List<IShopMenu>? submenuItems = null;
-            (ShopType, uint)? shopId = null;
-            List<StdPair<uint, Pointer<EventHandler>>> relatedItems = [];
-            HashSet<uint> activeEventHandlers = [];
+            return null;
+        }
 
-            foreach (var eventHandler in eventFramework->EventHandlerModule.EventHandlerMap)
+        var npcId = this.targetManager.Target?.BaseId;
+        if (npcId is null)
+        {
+            return null;
+        }
+
+        var npcBase = this.enpcBaseSheet.GetRowOrDefault(npcId.Value);
+        if (npcBase is null)
+        {
+            return null;
+        }
+
+        List<StdPair<uint, Pointer<EventHandler>>> relatedItems = [];
+        HashSet<uint> activeEventHandlers = [];
+        foreach (var eventHandler in eventFramework->EventHandlerModule.EventHandlerMap)
+        {
+            if (eventHandler.Item2.Value->SceneGameObject != null)
             {
-                if (eventHandler.Item2.Value->SceneGameObject != null)
-                {
-                    activeEventHandlers.Add(eventHandler.Item1);
-                }
-
-                var related = false;
-                foreach (var eventObject in eventHandler.Item2.Value->EventObjects)
-                {
-                    if (this.targetManager.Target?.BaseId == eventObject.Value->BaseId)
-                    {
-                        npcId = this.targetManager.Target?.BaseId;
-                        related = true;
-                    }
-                }
-
-                if (related)
-                {
-                    relatedItems.Add(eventHandler);
-                }
+                activeEventHandlers.Add(eventHandler.Item1);
             }
 
-            if (npcId != null)
+            foreach (var eventObject in eventHandler.Item2.Value->EventObjects)
             {
-                npcBase = this.enpcBaseSheet.GetRowOrDefault(npcId.Value);
-                if (npcBase != null)
+                if (npcId == eventObject.Value->BaseId)
                 {
-                    var correctOrder = npcBase.Base.ENpcData.Select(c => c.RowId);
-
-                    foreach (var eventHandler in relatedItems.OrderBySequence(correctOrder, tuple => tuple.Item1))
-                    {
-                        bool isActive = false;
-                        if (eventHandler.Item2.Value->SceneGameObject != null)
-                        {
-                            isActive = true;
-                        }
-
-                        if (eventHandler.Item2.Value != null)
-                        {
-                            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.Shop)
-                            {
-                                if (this.collectableShops.Contains(eventHandler.Item1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.Collectable, eventHandler.Item1)], isActive));
-                                }
-                                else if (this.inclusionShops.Contains(eventHandler.Item1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.InclusionShop, eventHandler.Item1)], isActive));
-                                }
-                                else if (this.gilShops.Contains(eventHandler.Item1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.Gil, eventHandler.Item1)], isActive));
-                                }
-                                else if (this.specialShops.Contains(eventHandler.Item1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.SpecialShop, eventHandler.Item1)], isActive));
-                                }
-                                else if (this.fccShops.Contains(eventHandler.Item1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.FreeCompanyShop, eventHandler.Item1)], isActive));
-                                }
-                            }
-
-                            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.CustomTalk)
-                            {
-                                if (this.collectableShopCustomTalk.TryGetValue(eventHandler.Item1, out var value))
-                                {
-                                    foreach (var customTalkShopId in value)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.Collectable, customTalkShopId)], isActive));
-                                    }
-                                }
-                                else if (this.inclusionShopCustomTalk.TryGetValue(eventHandler.Item1, out var value1))
-                                {
-                                    foreach (var customTalkShopId in value1)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.InclusionShop, customTalkShopId)], isActive));
-                                    }
-                                }
-                                else if (this.gilShopCustomTalk.TryGetValue(eventHandler.Item1, out var value2))
-                                {
-                                    foreach (var customTalkShopId in value2)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.Gil, customTalkShopId)], isActive));
-                                    }
-                                }
-                                else if (this.specialShopCustomTalk.TryGetValue(eventHandler.Item1, out var value3))
-                                {
-                                    foreach (var customTalkShopId in value3)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.SpecialShop, customTalkShopId)], isActive));
-                                    }
-                                }
-                                else if (this.fccShopCustomTalk.TryGetValue(eventHandler.Item1, out var value4))
-                                {
-                                    foreach (var customTalkShopId in value4)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.FreeCompanyShop, customTalkShopId)], isActive));
-                                    }
-                                }
-                                else if (this.collectableShopSpecialLink.TryGetValue(eventHandler.Item1, out var value9))
-                                {
-                                    foreach (var collectableShopId in value9)
-                                    {
-                                        menuItems.Add(new ShopMenu([(ShopType.Collectable, collectableShopId)], isActive));
-                                    }
-                                }
-                            }
-
-                            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.PreHandler)
-                            {
-                                if (this.collectableShopPreHandlers.TryGetValue(eventHandler.Item1, out var value1))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.Collectable, value1)], isActive));
-                                }
-                                else if (this.inclusionShopPreHandlers.TryGetValue(eventHandler.Item1, out var value2))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.InclusionShop, value2)], isActive));
-                                }
-                                else if (this.gilShopPreHandlers.TryGetValue(eventHandler.Item1, out var value3))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.Gil, value3)], isActive));
-                                }
-                                else if (this.specialShopPreHandlers.TryGetValue(eventHandler.Item1, out var value4))
-                                {
-                                    menuItems.Add(new ShopMenu([(ShopType.SpecialShop, value4)], isActive));
-                                }
-                            }
-
-                            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.TopicSelect)
-                            {
-                                if (this.gilShopTopicSelect.TryGetValue(eventHandler.Item1, out var value1))
-                                {
-                                    menuItems.Add(new ShopMenu(value1.Select(c => (ShopType.Gil, c)).ToList(), isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
-                                    if (activeEventHandlers.Contains(eventHandler.Item1))
-                                    {
-                                        foreach (var topicSelectShopId in value1)
-                                        {
-                                            submenuItems ??= [];
-                                            submenuItems.Add(new ShopMenu([(ShopType.Gil, topicSelectShopId)], activeEventHandlers.Contains(topicSelectShopId)));
-                                        }
-                                    }
-                                }
-                                else if (this.specialShopTopicSelect.TryGetValue(eventHandler.Item1, out var value2))
-                                {
-                                    menuItems.Add(new ShopMenu(value2.Select(c => (ShopType.SpecialShop, c)).ToList(), isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
-                                    if (activeEventHandlers.Contains(eventHandler.Item1))
-                                    {
-                                        foreach (var topicSelectShopId in value2)
-                                        {
-                                            submenuItems ??= [];
-                                            submenuItems.Add(new ShopMenu([(ShopType.SpecialShop, topicSelectShopId)], activeEventHandlers.Contains(topicSelectShopId)));
-                                        }
-                                    }
-                                }
-                                //handle this
-                                else if (this.gilShopTopicSelectPrehandler.TryGetValue(eventHandler.Item1, out var value3))
-                                {
-                                    menuItems.Add(new ShopMenu([], isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
-                                    if (activeEventHandlers.Contains(eventHandler.Item1))
-                                    {
-                                        foreach (var topicSelectShopId in value3)
-                                        {
-                                            submenuItems ??= [];
-                                            submenuItems.Add(new ShopMenu([(ShopType.Gil, topicSelectShopId.Item2)], activeEventHandlers.Contains(topicSelectShopId.Item2)));
-                                        }
-                                    }
-                                }
-                                else if (this.specialShopTopicSelectPrehandler.TryGetValue(eventHandler.Item1, out var value4))
-                                {
-                                    menuItems.Add(new ShopMenu([], isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
-                                    if (activeEventHandlers.Contains(eventHandler.Item1))
-                                    {
-                                        foreach (var topicSelectShopId in value4)
-                                        {
-                                            submenuItems ??= [];
-                                            submenuItems.Add(new ShopMenu([(ShopType.SpecialShop, topicSelectShopId.Item2)], activeEventHandlers.Contains(topicSelectShopId.Item2)));
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (eventHandler.Item2.Value->EventSceneModule != null && eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.Shop)
-                            {
-                                if (menuItems.Count > 0 && menuItems[0].Shops.Count > 0)
-                                {
-                                    shopId = menuItems[0].Shops.Last();
-                                }
-                            }
-                        }
-                    }
-                    return (npcBase, menuItems, submenuItems, shopId);
+                    relatedItems.Add(eventHandler);
+                    break;
                 }
             }
         }
 
-        return null;
+        List<IShopMenu> menuItems = [];
+        List<IShopMenu>? submenuItems = null;
+        (ShopType, uint)? shopId = null;
+
+        var correctOrder = npcBase.Base.ENpcData.Select(c => c.RowId);
+        foreach (var eventHandler in relatedItems.OrderBySequence(correctOrder, tuple => tuple.Item1))
+        {
+            bool isActive = false;
+            if (eventHandler.Item2.Value->SceneGameObject != null)
+            {
+                isActive = true;
+            }
+
+            if (eventHandler.Item2.Value is null)
+            {
+                continue;
+            }
+
+            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.Shop)
+            {
+                if (this.collectableShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Collectable, eventHandler.Item1)], isActive));
+                }
+                else if (this.inclusionShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.InclusionShop, eventHandler.Item1)], isActive));
+                }
+                else if (this.gilShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Gil, eventHandler.Item1)], isActive));
+                }
+                else if (this.specialShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.SpecialShop, eventHandler.Item1)], isActive));
+                }
+                else if (this.fccShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.FreeCompanyShop, eventHandler.Item1)], isActive));
+                }
+            }
+
+            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.CustomTalk)
+            {
+                if (this.collectableShopCustomTalk.TryGetValue(eventHandler.Item1, out var value))
+                {
+                    foreach (var customTalkShopId in value)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.Collectable, customTalkShopId)], isActive));
+                    }
+                }
+                else if (this.inclusionShopCustomTalk.TryGetValue(eventHandler.Item1, out var value1))
+                {
+                    foreach (var customTalkShopId in value1)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.InclusionShop, customTalkShopId)], isActive));
+                    }
+                }
+                else if (this.gilShopCustomTalk.TryGetValue(eventHandler.Item1, out var value2))
+                {
+                    foreach (var customTalkShopId in value2)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.Gil, customTalkShopId)], isActive));
+                    }
+                }
+                else if (this.specialShopCustomTalk.TryGetValue(eventHandler.Item1, out var value3))
+                {
+                    foreach (var customTalkShopId in value3)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.SpecialShop, customTalkShopId)], isActive));
+                    }
+                }
+                else if (this.fccShopCustomTalk.TryGetValue(eventHandler.Item1, out var value4))
+                {
+                    foreach (var customTalkShopId in value4)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.FreeCompanyShop, customTalkShopId)], isActive));
+                    }
+                }
+                else if (this.collectableShopSpecialLink.TryGetValue(eventHandler.Item1, out var value9))
+                {
+                    foreach (var collectableShopId in value9)
+                    {
+                        menuItems.Add(new ShopMenu([(ShopType.Collectable, collectableShopId)], isActive));
+                    }
+                }
+            }
+
+            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.PreHandler)
+            {
+                if (this.collectableShopPreHandlers.TryGetValue(eventHandler.Item1, out var value1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Collectable, value1)], isActive));
+                }
+                else if (this.inclusionShopPreHandlers.TryGetValue(eventHandler.Item1, out var value2))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.InclusionShop, value2)], isActive));
+                }
+                else if (this.gilShopPreHandlers.TryGetValue(eventHandler.Item1, out var value3))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Gil, value3)], isActive));
+                }
+                else if (this.specialShopPreHandlers.TryGetValue(eventHandler.Item1, out var value4))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.SpecialShop, value4)], isActive));
+                }
+            }
+
+            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.TopicSelect)
+            {
+                if (this.gilShopTopicSelect.TryGetValue(eventHandler.Item1, out var value1))
+                {
+                    menuItems.Add(new ShopMenu(value1.Select(c => (ShopType.Gil, c)).ToList(), isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
+                    if (activeEventHandlers.Contains(eventHandler.Item1))
+                    {
+                        foreach (var topicSelectShopId in value1)
+                        {
+                            submenuItems ??= [];
+                            submenuItems.Add(new ShopMenu([(ShopType.Gil, topicSelectShopId)], activeEventHandlers.Contains(topicSelectShopId)));
+                        }
+                    }
+                }
+                else if (this.specialShopTopicSelect.TryGetValue(eventHandler.Item1, out var value2))
+                {
+                    menuItems.Add(new ShopMenu(value2.Select(c => (ShopType.SpecialShop, c)).ToList(), isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
+                    if (activeEventHandlers.Contains(eventHandler.Item1))
+                    {
+                        foreach (var topicSelectShopId in value2)
+                        {
+                            submenuItems ??= [];
+                            submenuItems.Add(new ShopMenu([(ShopType.SpecialShop, topicSelectShopId)], activeEventHandlers.Contains(topicSelectShopId)));
+                        }
+                    }
+                }
+                //handle this
+                else if (this.gilShopTopicSelectPrehandler.TryGetValue(eventHandler.Item1, out var value3))
+                {
+                    menuItems.Add(new ShopMenu([], isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
+                    if (activeEventHandlers.Contains(eventHandler.Item1))
+                    {
+                        foreach (var topicSelectShopId in value3)
+                        {
+                            submenuItems ??= [];
+                            submenuItems.Add(new ShopMenu([(ShopType.Gil, topicSelectShopId.Item2)], activeEventHandlers.Contains(topicSelectShopId.Item2)));
+                        }
+                    }
+                }
+                else if (this.specialShopTopicSelectPrehandler.TryGetValue(eventHandler.Item1, out var value4))
+                {
+                    menuItems.Add(new ShopMenu([], isActive, new RowRef<TopicSelect>(this.module, eventHandler.Item1)));
+                    if (activeEventHandlers.Contains(eventHandler.Item1))
+                    {
+                        foreach (var topicSelectShopId in value4)
+                        {
+                            submenuItems ??= [];
+                            submenuItems.Add(new ShopMenu([(ShopType.SpecialShop, topicSelectShopId.Item2)], activeEventHandlers.Contains(topicSelectShopId.Item2)));
+                        }
+                    }
+                }
+            }
+
+            if (eventHandler.Item2.Value->EventSceneModule != null && eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.Shop)
+            {
+                if (menuItems.Count > 0 && menuItems[0].Shops.Count > 0)
+                {
+                    shopId = menuItems[0].Shops.Last();
+                }
+            }
+        }
+
+        return (npcBase, menuItems, submenuItems, shopId);
     }
 
     /// <inheritdoc/>
