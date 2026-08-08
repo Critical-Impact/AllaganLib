@@ -13,11 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.2.7] - 2026-08-08
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 5.1.1
+
 ## [2.2.6] - 2026-06-25
 ### Changed
 - AllaganLib.GameSheets
   - LuminaSupplemental.Excel updated to 4.3.7
-  - Fix a potential exception when a BNpc has no matching related base 
+  - Fix a potential exception when a BNpc has no matching related base
 
 
 ## [2.2.5] - 2026-06-15

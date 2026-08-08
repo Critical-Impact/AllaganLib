@@ -44,7 +44,7 @@ public class ItemSheet : ExtendedSheet<Item, ItemRow, ItemSheet>, IExtendedSheet
         this.unobtainableItems = unobtainableItems.Select(c => c.ItemId).ToHashSet();
     }
 
-    private decimal currentPatch = new decimal(7.5);
+    private decimal currentPatch = new decimal(7.55);
 
     public decimal GetItemPatch(uint itemId)
     {

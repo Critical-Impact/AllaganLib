@@ -18,7 +18,7 @@ public class GameDataModule : Module
                 var sheet = method!.Invoke(gameData, [null, null])!;
                 return sheet;
             })
-            .As(typeof(ExcelSheet<>));
+            .As(typeof(ExcelSheet<>)).SingleInstance();
         containerBuilder.RegisterGeneric((context, parameters) =>
             {
                 var gameData = context.Resolve<GameData>();
@@ -27,6 +27,6 @@ public class GameDataModule : Module
                 var sheet = method!.Invoke(gameData, [null, null])!;
                 return sheet;
             })
-            .As(typeof(SubrowExcelSheet<>));
+            .As(typeof(SubrowExcelSheet<>)).SingleInstance();
     }
 }
