@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.2.9] - 2026-09-13
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 5.1.5
+  - Minor optimizations
+  - BST support
+
+- AllaganLib.Monitors
+  - Add some extra handlers for shops we might have missed
+
+
 ## [2.2.8] - 2026-08-08
 ### Changed
 - AllaganLib.GameSheets

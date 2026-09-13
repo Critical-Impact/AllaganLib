@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using AllaganLib.GameSheets.Extensions;
 using AllaganLib.GameSheets.Model;
 using Lumina.Excel.Sheets;
 
@@ -33,7 +34,7 @@ public class ClassJobCategoryRow : ExtendedRow<ClassJobCategory, ClassJobCategor
             baseRow.ACN ||
             baseRow.SMN || baseRow.SCH || baseRow.ROG || baseRow.NIN || baseRow.MCH || baseRow.DRK || baseRow.AST ||
             baseRow.SAM || baseRow.RDM || baseRow.BLU || baseRow.GNB || baseRow.DNC || baseRow.RPR || baseRow.SGE ||
-            baseRow.VPR || baseRow.PCT)
+            baseRow.VPR || baseRow.PCT || baseRow.BST)
         {
             this.isCombat = true;
         }
@@ -249,6 +250,11 @@ public class ClassJobCategoryRow : ExtendedRow<ClassJobCategory, ClassJobCategor
         if (baseRow.PCT)
         {
             this.classJobIds.Add(42);
+        }
+
+        if (baseRow.BST)
+        {
+            this.classJobIds.Add(43);
         }
 
         this.lookupsCalculated = true;

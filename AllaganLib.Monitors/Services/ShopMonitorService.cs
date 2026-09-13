@@ -461,6 +461,31 @@ public class ShopMonitorService : IHostedService, IDisposable, IShopMonitorServi
                 }
             }
 
+            if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.SpecialShop)
+            {
+                // Unlikely we'll hit some of these but worth checking incase SQ has done something we don't expect
+                if (this.collectableShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Collectable, eventHandler.Item1)], isActive));
+                }
+                else if (this.inclusionShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.InclusionShop, eventHandler.Item1)], isActive));
+                }
+                else if (this.gilShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.Gil, eventHandler.Item1)], isActive));
+                }
+                else if (this.specialShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.SpecialShop, eventHandler.Item1)], isActive));
+                }
+                else if (this.fccShops.Contains(eventHandler.Item1))
+                {
+                    menuItems.Add(new ShopMenu([(ShopType.FreeCompanyShop, eventHandler.Item1)], isActive));
+                }
+            }
+
             if (eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.CustomTalk)
             {
                 if (this.collectableShopCustomTalk.TryGetValue(eventHandler.Item1, out var value))
@@ -581,6 +606,14 @@ public class ShopMonitorService : IHostedService, IDisposable, IShopMonitorServi
             }
 
             if (eventHandler.Item2.Value->EventSceneModule != null && eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.Shop)
+            {
+                if (menuItems.Count > 0 && menuItems[0].Shops.Count > 0)
+                {
+                    shopId = menuItems[0].Shops.Last();
+                }
+            }
+
+            if (eventHandler.Item2.Value->EventSceneModule != null && eventHandler.Item2.Value->Info.EventId.ContentId == EventHandlerContent.SpecialShop)
             {
                 if (menuItems.Count > 0 && menuItems[0].Shops.Count > 0)
                 {

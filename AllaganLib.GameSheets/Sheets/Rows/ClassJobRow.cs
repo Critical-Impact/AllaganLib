@@ -53,7 +53,7 @@ public class ClassJobRow : ExtendedRow<ClassJob, ClassJobRow, ClassJobSheet>
         {
             if (this.classJobType == null)
             {
-                this.classJobType = (ClassJobType)this.Base.RowId;
+                this.classJobType = (ClassJobType)this.RowId;
             }
 
             return this.classJobType.Value;
@@ -117,4 +117,5 @@ public enum ClassJobType
     SGE = 40,
     VPR = 41,
     PCT = 42,
+    BST = 43,
 }

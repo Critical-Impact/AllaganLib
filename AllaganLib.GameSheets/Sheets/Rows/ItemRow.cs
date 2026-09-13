@@ -59,8 +59,6 @@ public partial class ItemRow : ExtendedRow<Item, ItemRow, ItemSheet>
 
     private static readonly ActionType[] ValidActions = (ActionType[])Enum.GetValues(typeof(ActionType));
 
-    public uint RowId => this.Base.RowId;
-
     public string SearchString
     {
         get

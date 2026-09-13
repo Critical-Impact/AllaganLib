@@ -13,7 +13,7 @@ public class GatheringPointRow : ExtendedRow<GatheringPoint, GatheringPointRow, 
 
     public GatheringPointBaseRow GatheringPointBase => this.gatheringPointBaseRow ??= this.Sheet.GetGatheringPointBaseSheet().GetRow(this.Base.GatheringPointBase.RowId);
 
-    public GatheringPointTransientRow GatheringPointTransient => this.gatheringPointTransientRow ??= this.Sheet.GetGatheringPointTransientSheet().GetRow(this.Base.RowId);
+    public GatheringPointTransientRow GatheringPointTransient => this.gatheringPointTransientRow ??= this.Sheet.GetGatheringPointTransientSheet().GetRow(this.RowId);
 
     public GatheringPointNameRow GatheringPointNameRow => this.gatheringPointNameRow ??=
         this.Sheet.SheetManager.GetSheet<GatheringPointNameSheet>().GetRow(this.Base.Type);

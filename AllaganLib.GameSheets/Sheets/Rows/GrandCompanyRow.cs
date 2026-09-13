@@ -10,7 +10,7 @@ public class GrandCompanyRow : ExtendedRow<GrandCompany, GrandCompanyRow, GrandC
     {
         get
         {
-            return this.Base.RowId switch
+            return this.RowId switch
             {
                 1 => HardcodedItems.StormSealId,
                 2 => HardcodedItems.SerpentSealId,
