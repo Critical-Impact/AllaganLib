@@ -19,6 +19,9 @@ namespace AllaganLib.GameSheets.Caches;
 
 public class ItemInfoCache
 {
+    // ItemAction.Action of the gourds that unlock beastmaster familiars
+    private const uint BeastmasterFamiliarItemActionType = 50454;
+
     private readonly SheetManager sheetManager;
     private readonly SheetIndexer sheetIndexer;
     private readonly NpcShopCache npcShopCache;
@@ -1701,10 +1704,10 @@ public class ItemInfoCache
                     break;
                 case ItemSupplementSource.Oizys:
                     source = new ItemOizysSource(item, sourceItem, supplementalItem);
-                    continue;
+                    break;
                 case ItemSupplementSource.Auxesia:
                     source = new ItemAuxesiaSource(item, sourceItem, supplementalItem);
-                    continue;
+                    break;
                 case ItemSupplementSource.SkybuilderHandIn:
                     continue;
                 case ItemSupplementSource.Unknown:
@@ -2036,6 +2039,28 @@ public class ItemInfoCache
 
                 this.AddItemUse(new ItemJobSoulCrystalUse(classJob, parentClassJob, soulCrystalItem));
             }
+        }
+
+        var xbmPetSheet = this.gameData.GetExcelSheet<LuminaSheets.XBMPet>()!;
+        foreach (var item in itemSheet)
+        {
+            var itemAction = item.Base.ItemAction.ValueNullable;
+            if (itemAction == null || itemAction.Value.Action.RowId != BeastmasterFamiliarItemActionType)
+            {
+                continue;
+            }
+
+            // Data[0] is the XBMPet row the item unlocks
+            var familiar = xbmPetSheet.GetRowOrDefault(itemAction.Value.Data[0]);
+            if (familiar == null || familiar.Value.Pet.RowId == 0)
+            {
+                continue;
+            }
+
+            this.AddItemUse(new ItemBeastmasterFamiliarUse(
+                item,
+                new RowRef<LuminaSheets.XBMPet>(this.gameData.Excel, familiar.Value.RowId),
+                new RowRef<Pet>(this.gameData.Excel, familiar.Value.Pet.RowId)));
         }
     }
 

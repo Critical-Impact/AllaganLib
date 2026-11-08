@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.3.0] - 2026-11-08
+### Added
+- AllaganLib.GameSheets
+  - Added Beastmaster familiar gourds as a use
+  - Added XBMPet sheet
+  - Added GetByBNpcNameId to NotoriousMonsterSheet
+
+### Changed
+- AllaganLib.GameSheets
+  - LuminaSupplemental.Excel updated to 7.0.1
+
+### Fixed
+- AllaganLib.GameSheets
+  - Oizys and Auxesia sources were not being added
+  - BNpcNameRow.NotoriousMonster was looking up the notorious monster by the wrong ID
+
+- AllaganLib.Universalis
+  - Websocket will now reconnect after the connection is aborted
+  - User-Agent header is now kept when the websocket reconnects
+
 ## [2.2.9] - 2026-09-13
 ### Changed
 - AllaganLib.GameSheets

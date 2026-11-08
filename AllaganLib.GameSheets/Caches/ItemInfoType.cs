@@ -119,4 +119,5 @@ public enum ItemInfoType
     JobSoulCrystal = 114,
     CraftSoulCrystal = 115,
     Auxesia = 116,
+    BeastmasterFamiliar = 117,
 }

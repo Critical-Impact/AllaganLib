@@ -66,6 +66,6 @@ public class BNpcNameRow : ExtendedRow<BNpcName, BNpcNameRow, BNpcNameSheet>
 
     public List<MobSpawnPosition> MobSpawnPositions => this.mobSpawnPosition ??= this.Sheet.GetMobSpawnPositionsByBNpcNameId(this.RowId);
 
-    public NotoriousMonsterRow? NotoriousMonster => this.Sheet.GetNotoriousMonsterSheet().GetRowOrDefault(this.RowId);
+    public NotoriousMonsterRow? NotoriousMonster => this.Sheet.GetNotoriousMonsterSheet().GetByBNpcNameId(this.RowId);
 
 }

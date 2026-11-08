@@ -28,11 +28,15 @@ public class UniversalisWebsocketService : BackgroundService
     private readonly ConcurrentQueue<(EventType, uint)> unsubscriptionChannelQueue = new();
     private readonly HashSet<(EventType, uint)> subscriptions = [];
     private readonly Dictionary<uint, uint> backoffCounts = new();
+    private DateTime? disconnectedAt;
+    private bool hasConnected;
+    private readonly string userAgentHeader;
 
     public UniversalisWebsocketService(ClientWebSocket client, UniversalisUserAgent userAgent, Func<ClientWebSocket> websocketFactory, IPluginLog pluginLog)
     {
+        this.userAgentHeader = $"{userAgent.PluginName}/{userAgent.PluginVersion}";
         this.client = client;
-        this.client.Options.SetRequestHeader("User-Agent", $"{userAgent.PluginName}/{userAgent.PluginVersion}");
+        this.client.Options.SetRequestHeader("User-Agent", this.userAgentHeader);
         this.websocketFactory = websocketFactory;
         this.pluginLog = pluginLog;
     }
@@ -45,7 +49,11 @@ public class UniversalisWebsocketService : BackgroundService
 
     public delegate void UniversalisEventDelegate(SubscriptionReceivedMessage subscriptionReceivedMessage);
 
+    public delegate void ReconnectedDelegate(TimeSpan disconnectedFor);
+
     public event UniversalisEventDelegate? OnUniversalisEvent;
+
+    public event ReconnectedDelegate? OnReconnected;
 
     public enum EventType
     {
@@ -112,8 +120,13 @@ public class UniversalisWebsocketService : BackgroundService
                 continue;
             }
 
-            if (this.Client.State is WebSocketState.None or WebSocketState.Closed)
+            if (this.Client.State is WebSocketState.None or WebSocketState.Closed or WebSocketState.Aborted)
             {
+                if (this.hasConnected)
+                {
+                    this.disconnectedAt ??= DateTime.UtcNow;
+                }
+
                 if (this.subscriptionChannelQueue.Count != 0)
                 {
                     await this.ConnectWithRetryAsync(cancellationToken);
@@ -188,7 +201,7 @@ public class UniversalisWebsocketService : BackgroundService
                 break;
             }
 
-            if (this.Client.State is WebSocketState.None or WebSocketState.Closed or WebSocketState.Connecting or WebSocketState.CloseReceived or WebSocketState.CloseSent)
+            if (this.Client.State is WebSocketState.None or WebSocketState.Closed or WebSocketState.Connecting or WebSocketState.CloseReceived or WebSocketState.CloseSent or WebSocketState.Aborted)
             {
                 await Task.Delay(500, cancellationToken);
                 continue;
@@ -328,6 +341,12 @@ public class UniversalisWebsocketService : BackgroundService
                     this.pluginLog.Info("WebSocket connection closed.");
                     return;
                 }
+                catch (WebSocketException ex)
+                {
+                    this.pluginLog.Info($"WebSocket connection lost: {ex.Message}");
+                    this.Client.Abort();
+                    return;
+                }
 
                 messageBytes.AddRange(buffer.Take(result.Count));
             }
@@ -336,7 +355,15 @@ public class UniversalisWebsocketService : BackgroundService
             if (result.MessageType == WebSocketMessageType.Close)
             {
                 this.pluginLog.Info("WebSocket connection closed.");
-                await this.Client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken);
+                try
+                {
+                    await this.Client.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, cancellationToken);
+                }
+                catch (WebSocketException ex)
+                {
+                    this.pluginLog.Info($"WebSocket close handshake failed: {ex.Message}");
+                    this.Client.Abort();
+                }
             }
             else
             {
@@ -353,12 +380,14 @@ public class UniversalisWebsocketService : BackgroundService
             if (!cancellationToken.IsCancellationRequested)
             {
                 // Websocket clients can only be used once so we need to request a new one.
-                if (this.Client.State == WebSocketState.Closed)
+                if (this.Client.State is WebSocketState.Closed or WebSocketState.Aborted)
                 {
                     this.client = this.websocketFactory.Invoke();
+                    this.client.Options.SetRequestHeader("User-Agent", this.userAgentHeader);
                 }
 
                 await this.Client.ConnectAsync(this.uri, cancellationToken);
+                this.hasConnected = true;
                 if (this.AutoResubscribe && this.subscriptions.Count != 0)
                 {
                     this.pluginLog.Info("Resubscribing to worlds.");
@@ -373,6 +402,12 @@ public class UniversalisWebsocketService : BackgroundService
             }
 
             this.pluginLog.Info("Connected to universalis websocket.");
+            if (this.disconnectedAt.HasValue)
+            {
+                var gap = DateTime.UtcNow - this.disconnectedAt.Value;
+                this.disconnectedAt = null;
+                this.OnReconnected?.Invoke(gap);
+            }
         }
         catch (Exception ex)
         {
