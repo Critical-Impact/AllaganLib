@@ -77,3 +77,27 @@ public class ItemOccultGoldenCofferSource : ItemFieldOpCofferSource
     {
     }
 }
+
+public class ItemOccultNorthHornTreasureCofferSource : ItemFieldOpCofferSource
+{
+    public ItemOccultNorthHornTreasureCofferSource(ItemRow itemRow, FieldOpCoffer fieldOpCoffer)
+        : base(itemRow, fieldOpCoffer, ItemInfoType.OccultNorthHornTreasure)
+    {
+    }
+}
+
+public class ItemOccultNorthHornPotSource : ItemFieldOpCofferSource
+{
+    public ItemOccultNorthHornPotSource(ItemRow itemRow, FieldOpCoffer fieldOpCoffer)
+        : base(itemRow, fieldOpCoffer, ItemInfoType.OccultNorthHornPot)
+    {
+    }
+}
+
+public class ItemOccultNorthHornGoldenCofferSource : ItemFieldOpCofferSource
+{
+    public ItemOccultNorthHornGoldenCofferSource(ItemRow itemRow, FieldOpCoffer fieldOpCoffer)
+        : base(itemRow, fieldOpCoffer, ItemInfoType.OccultNorthHornGoldenCoffer)
+    {
+    }
+}

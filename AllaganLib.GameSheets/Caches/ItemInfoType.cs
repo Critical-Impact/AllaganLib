@@ -120,4 +120,7 @@ public enum ItemInfoType
     CraftSoulCrystal = 115,
     Auxesia = 116,
     BeastmasterFamiliar = 117,
+    OccultNorthHornTreasure = 118,
+    OccultNorthHornPot = 119,
+    OccultNorthHornGoldenCoffer = 120,
 }

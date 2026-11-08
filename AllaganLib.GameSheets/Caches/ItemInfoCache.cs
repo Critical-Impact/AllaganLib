@@ -706,6 +706,15 @@ public class ItemInfoCache
                     case FieldOpType.OccultGoldenCoffer:
                         this.AddItemSource(new ItemOccultGoldenCofferSource(resultItem, fieldOpCoffer));
                         break;
+                    case FieldOpType.OccultNorthHornTreasure:
+                        this.AddItemSource(new ItemOccultNorthHornTreasureCofferSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.OccultNorthHornPot:
+                        this.AddItemSource(new ItemOccultNorthHornPotSource(resultItem, fieldOpCoffer));
+                        break;
+                    case FieldOpType.OccultNorthHornGoldenCoffer:
+                        this.AddItemSource(new ItemOccultNorthHornGoldenCofferSource(resultItem, fieldOpCoffer));
+                        break;
                 }
             }
         }
