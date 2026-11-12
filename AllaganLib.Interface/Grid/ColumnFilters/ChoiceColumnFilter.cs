@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
 using AllaganLib.Interface.FormFields;
 using Dalamud.Interface.Utility.Raii;
@@ -9,16 +10,31 @@ namespace AllaganLib.Interface.Grid.ColumnFilters;
 
 public class ChoiceColumnFilter
 {
-    public List<string> Choices { get; }
+    private readonly Dictionary<string, string> labels;
 
     public ChoiceColumnFilter(List<string> choices)
     {
         this.Choices = choices;
+        this.labels = new Dictionary<string, string>();
+    }
+
+    public ChoiceColumnFilter(List<(string Value, string Label)> choices)
+    {
+        this.Choices = choices.Select(c => c.Value).ToList();
+        this.labels = choices.ToDictionary(c => c.Value, c => c.Label);
+    }
+
+    public List<string> Choices { get; }
+
+    public string GetLabel(string choice)
+    {
+        return this.labels.GetValueOrDefault(choice, choice);
     }
 
     public void Setup<TConfiguration, TData, TMessageBase>(
         IColumn<TConfiguration, TData, TMessageBase> column,
-        int columnIndex) where TConfiguration : INotifyPropertyChanged
+        int columnIndex)
+        where TConfiguration : INotifyPropertyChanged
     {
     }
 
@@ -37,7 +53,7 @@ public class ChoiceColumnFilter
                 var currentItem = configuration.Get(column.Key) ?? "";
 
                 ImGui.PushItemWidth(-float.Epsilon);
-                using (var combo = ImRaii.Combo("##Choice", currentItem))
+                using (var combo = ImRaii.Combo("##Choice", this.GetLabel(currentItem)))
                 {
                     if (combo.Success)
                     {
@@ -49,7 +65,7 @@ public class ChoiceColumnFilter
 
                         foreach (var choice in this.Choices)
                         {
-                            if (ImGui.Selectable(choice, currentItem == choice))
+                            if (ImGui.Selectable(this.GetLabel(choice), currentItem == choice))
                             {
                                 configuration.Set(column.Key, choice);
                                 hasChanged = true;
