@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [2.3.3] - 2026-11-12
+### Fixed
+- AllaganLib.Interface
+  - Fixed thrown exception in ChoiceColumnFilter
+
 ## [2.3.2] - 2026-11-12
 ### Added
 - AllaganLib.Interface

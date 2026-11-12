@@ -57,7 +57,7 @@ public class ChoiceColumnFilter
                 {
                     if (combo.Success)
                     {
-                        if (ImGui.Selectable("", false))
+                        if (ImGui.Selectable("##ClearChoice", false))
                         {
                             configuration.Set(column.Key, null);
                             hasChanged = true;
